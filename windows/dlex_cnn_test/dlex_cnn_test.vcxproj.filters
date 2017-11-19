@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="源文件\operator_test">
+      <UniqueIdentifier>{7a2649cc-d0d2-4e70-a327-51450da51731}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\util_test">
+      <UniqueIdentifier>{51b9c458-aca5-43f8-9a26-bcf150ab6c64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\common">
+      <UniqueIdentifier>{d19332ba-54da-4001-a807-927d24b56d9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\train_test">
+      <UniqueIdentifier>{f2fa3da7-33ea-40ff-b334-bca6f8aa9fbb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\core_test\operator_test\convolution_op_test.cpp">
+      <Filter>源文件\operator_test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\core_test\main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\core_test\operator_test\pooling_op_test.cpp">
+      <Filter>源文件\operator_test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\core_test\operator_test\deconvolution_op_test.cpp">
+      <Filter>源文件\operator_test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\core_test\util_test\thread_pool_test.cpp">
+      <Filter>源文件\util_test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\core_test\common\printout.cpp">
+      <Filter>源文件\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\core_test\train_test\mnist_train.cpp">
+      <Filter>源文件\train_test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\core_test\train_test\mnist_loader.cpp">
+      <Filter>源文件\train_test</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\core_test\operator_test\convolution_op_test.h">
+      <Filter>源文件\operator_test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\core_test\operator_test\pooling_op_test.h">
+      <Filter>源文件\operator_test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\core_test\operator_test\deconvolution_op_test.h">
+      <Filter>源文件\operator_test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\core_test\train_test\mnist_train.h">
+      <Filter>源文件\train_test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\core_test\train_test\mnist_loader.h">
+      <Filter>源文件\train_test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\core_test\common\tools.h">
+      <Filter>源文件\common</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

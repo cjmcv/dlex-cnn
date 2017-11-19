@@ -1,0 +1,13 @@
+////////////////////////////////////////////////////////////////
+// > Copyright (c) 2017 by Contributors. 
+// > https://github.com/cjmcv
+// > brief  
+// > author Jianming Chen
+////////////////////////////////////////////////////////////////
+
+#ifndef DLEX_CONFIG_HPP_
+#define DLEX_CONFIG_HPP_
+
+#define UNIT_TEST
+
+#endif
