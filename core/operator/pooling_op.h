@@ -26,7 +26,7 @@ namespace dlex_cnn
 	}
 	struct PoolingOpParam : public OpParam
 	{
-		tind::PoolingType poolingType = tind::eMAX;
+		tind::PoolingType poolingType = tind::eAVE;
 		int kernel_h = 3, kernel_w = 3;
 		int stride_h = 1, stride_w = 1;
 		int pad_h = 0, pad_w = 0;
@@ -77,7 +77,7 @@ namespace dlex_cnn
 		std::string op_type_;
 		std::vector<std::shared_ptr<Tensor<Dtype>>> diff_;
 		std::shared_ptr<Tensor<Dtype>> rand_idx_map_;
-		std::shared_ptr<Tensor<int>> max_idx_map_;
+		std::shared_ptr<Tensor<int>> max_idx_map_ = NULL;
 		PoolingOpParam param_;
 
 	};

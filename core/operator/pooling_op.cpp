@@ -42,15 +42,6 @@ namespace dlex_cnn
 	template <typename Dtype>
 	std::string PoolingOp<Dtype>::genOpParamStr() const
 	{
-		//tind::PoolingType type = tind::eMAX;
-		//int kernel_h = 3, kernel_w = 3;
-		//int stride_h = 1, stride_w = 1;
-		//int pad_h = 0, pad_w = 0;
-		////int channels;
-		////int height_, width_;	//输入图像数据大小
-		////int pooled_height_, pooled_width_;	//实际池化输出大小，static_cast<int>(ceil(static_cast<float>(height_ + 2 * pad_h_ - kernel_h_) / stride_h_)) + 1;
-		//bool global_pooling = false;	//为true时，kernel大小为输入大小
-
 		std::stringstream paramStr;
 		paramStr << "poolingType:" << param_.poolingType 
 			<< ",kernel_h:" << param_.kernel_h << ",kernel_w:" << param_.kernel_w 
@@ -135,7 +126,7 @@ namespace dlex_cnn
 		{
 		case tind::eMAX:
 			// Initialize
-			if (max_idx_map_->getSize()[tind::e4D] != nextSize[tind::e4D])
+			if (max_idx_map_ == NULL || max_idx_map_->getSize()[tind::e4D] != nextSize[tind::e4D])
 				max_idx_map_.reset(new Tensor<int>(nextShape));
 
 			mask = (int *)max_idx_map_->getData();
@@ -243,7 +234,8 @@ namespace dlex_cnn
 						for (int pw = 0; pw < nextShape[tind::eWidth]; ++pw) {
 							const int index = ph * nextShape[tind::eWidth] + pw;
 							const int bottom_index = mask[index];
-							prevDiffData[bottom_index] += nextDiffData[index];
+							if (bottom_index >= 0)
+								prevDiffData[bottom_index] += nextDiffData[index];
 						}
 					}
 					prevDiffData += prevDiffSize[tind::e2D];

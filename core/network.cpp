@@ -121,6 +121,7 @@ namespace dlex_cnn {
 			nodes[i]->inferInteOp();	// get new op
 			nodes[i]->inferOutShape();
 			nodes[i]->initOp();
+
 			////graph_->nodes_[i]->initNode();	// 这里会改变node的权重
 		}
 		return 0;
@@ -132,7 +133,7 @@ namespace dlex_cnn {
 	{
 		//setPhase(Phase::Train);
 
-		printf("inputDataTensor[0] = %d\n", inputDataTensor->getShape()[0]);;
+		printf("inputDataTensor[0] = %d\n", inputDataTensor->getShape()[0]);
 		//printf("trainBatch start forward\n");
 		forward(inputDataTensor, labelDataTensor);
 		//printf("trainBatch finish forward\n");

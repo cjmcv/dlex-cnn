@@ -333,8 +333,8 @@ namespace dlex_cnn
 		PoolingParam.global_pooling = false;
 		PoolingParam.kernel_h = 3;
 		PoolingParam.kernel_w = 3;
-		PoolingParam.pad_h = 0;
-		PoolingParam.pad_w = 0;
+		PoolingParam.pad_h = 1;
+		PoolingParam.pad_w = 1;
 		PoolingParam.stride_h = 1;
 		PoolingParam.stride_w = 1;
 		PoolingParam.poolingType = dlex_cnn::tind::eMAX;
@@ -476,7 +476,7 @@ namespace dlex_cnn
 		float learningRate = 0.1f;
 		const float decayRate = 0.8f;
 		const float minLearningRate = 0.001f;
-		const int testAfterBatches = 60;
+		const int testAfterBatches = 10;
 		const int maxBatches = 10000;
 		int batchSize = 128;
 		const int channels = train_data_[0].first.channels;
@@ -545,8 +545,9 @@ namespace dlex_cnn
 
 			//network.netWorkShow();
 
+
 			const float batch_loss = network.trainBatch(inputDataTensor, labelDataTensor);
-		
+
 			train_batches++;
 			train_total_loss += batch_loss;
 			printf("batch[%d]->train_batch_loss: %f\n", batchIdx, batch_loss);
