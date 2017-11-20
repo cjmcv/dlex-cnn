@@ -77,7 +77,7 @@ namespace dlex_cnn
 		std::string op_type_;
 		std::vector<std::shared_ptr<Tensor<Dtype>>> diff_;
 		std::shared_ptr<Tensor<Dtype>> rand_idx_map_;
-		std::shared_ptr<Tensor<int>> max_idx_map_ = NULL;
+		std::shared_ptr<Tensor<int>> max_idx_map_;
 		PoolingOpParam param_;
 
 	};

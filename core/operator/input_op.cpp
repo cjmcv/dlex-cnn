@@ -29,36 +29,11 @@ namespace dlex_cnn
 	template <typename Dtype>
 	int InputOp<Dtype>::setOpParam(const std::string &opParamStr)
 	{
-		std::string strFlagVec[4] = {"num:", "channels:", "height:", "width:"};
-		for (int i = 0; i < 4; i++)
-		{
-			int blasIdx_start = opParamStr.find(strFlagVec[i]) + strFlagVec[i].length();
-			int blasIdx_end = opParamStr.find(",", blasIdx_start);
-			switch (i)
-			{
-			case 0:
-			{
-				param_.num = atoi(opParamStr.substr(blasIdx_start, blasIdx_end).c_str());
-				break;
-			}
-			case 1:
-			{
-				param_.channels = atoi(opParamStr.substr(blasIdx_start, blasIdx_end).c_str());
-				break;
-			}
-			case 2:
-			{
-				param_.height = atoi(opParamStr.substr(blasIdx_start, blasIdx_end).c_str());
-				break;
-			}
-			case 3:
-			{
-				param_.width = atoi(opParamStr.substr(blasIdx_start, blasIdx_end).c_str());
-				break;
-			}
-			}
-			
-		}
+		std::string optStr = opParamStr;
+		param_.num = atoi(fetchSubStr(optStr, "num:", ",").c_str());
+		param_.channels = atoi(fetchSubStr(optStr, "channels:", ",").c_str());
+		param_.height = atoi(fetchSubStr(optStr, "height:", ",").c_str());
+		param_.width = atoi(fetchSubStr(optStr, "width:", ",").c_str());
 
 		return 0;
 	}

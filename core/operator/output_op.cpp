@@ -30,21 +30,8 @@ namespace dlex_cnn
 	template <typename Dtype>
 	int OutputOp<Dtype>::setOpParam(const std::string &opParamStr)
 	{
-		//std::string strFlag = "type:";
-		//int typeIdx_start = opParamStr.find(strFlag) + strFlag.length();
-		//int typeIdx_end = opParamStr.find(",", typeIdx_start);
-		//strFlag = opParamStr.substr(typeIdx_start, typeIdx_end);
-
-		//if (strFlag != op_type_)
-		//{
-		//	DLOG_ERR("[ InnerProductOp::setOpParam ]: op_type_ is not matched.\n");
-		//	return -1;
-		//}
-
-		std::string strFlag = "label_dim:";
-		int labelDimIdx_start = opParamStr.find(strFlag) + strFlag.length();
-		int labelDimIdx_end = opParamStr.find(",", labelDimIdx_start);
-		param_.label_dim = atoi(opParamStr.substr(labelDimIdx_start, labelDimIdx_end).c_str());
+		std::string optStr = opParamStr;
+		param_.label_dim = atoi(fetchSubStr(optStr, "label_dim:", ",").c_str());
 
 		return 0;
 	}

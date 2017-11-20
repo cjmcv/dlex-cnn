@@ -55,6 +55,7 @@ namespace dlex_cnn
 	{
 		std::string optStr = opParamStr;
 		param_.activationType = (tind::Activation)atoi(fetchSubStr(optStr, "activationType:", ",").c_str());
+		param_.negative_slope = (tind::Activation)atoi(fetchSubStr(optStr, "negative_slope:", ",").c_str());
 
 		setOpFunc();
 		return 0;

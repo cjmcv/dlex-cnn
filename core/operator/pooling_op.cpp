@@ -14,11 +14,13 @@ namespace dlex_cnn
 	PoolingOp<Dtype>::PoolingOp()
 	{
 		op_type_ = "Pooling";
+		max_idx_map_ = NULL;
 	}
 	template <typename Dtype>
 	PoolingOp<Dtype>::PoolingOp(PoolingOpParam param)
 	{
 		op_type_ = "Pooling";
+		max_idx_map_ = NULL;
 		param_ = param;
 	}
 	template <typename Dtype>
@@ -35,6 +37,8 @@ namespace dlex_cnn
 		param_.kernel_w = atoi(fetchSubStr(optStr, "kernel_w:", ",").c_str());
 		param_.stride_h = atoi(fetchSubStr(optStr, "stride_h:", ",").c_str());
 		param_.stride_w = atoi(fetchSubStr(optStr, "stride_w:", ",").c_str());
+		param_.pad_h = atoi(fetchSubStr(optStr, "pad_h:", ",").c_str());
+		param_.pad_w = atoi(fetchSubStr(optStr, "pad_w:", ",").c_str());
 		param_.global_pooling = atoi(fetchSubStr(optStr, "global_pooling:", ",").c_str());
 
 		return 0;
@@ -122,13 +126,16 @@ namespace dlex_cnn
 		const bool use_top_mask = next.size() > 1;
 
 		int* mask = NULL;
+		bool mflag = true;
 		switch (this->param_.poolingType) 
 		{
 		case tind::eMAX:
 			// Initialize
-			if (max_idx_map_ == NULL || max_idx_map_->getSize()[tind::e4D] != nextSize[tind::e4D])
+			if (max_idx_map_ == NULL)
+				mflag = false;
+			else if (max_idx_map_->getSize()[tind::e4D] != nextSize[tind::e4D])
 				max_idx_map_.reset(new Tensor<int>(nextShape));
-
+				
 			mask = (int *)max_idx_map_->getData();
 			max_idx_map_->setValue(Dtype(-1));
 
@@ -150,7 +157,8 @@ namespace dlex_cnn
 									const int index = h * prevShape[tind::eWidth] + w;
 									if (prevData[index] > nextData[pool_index]) {
 										nextData[pool_index] = prevData[index];
-										mask[pool_index] = index;
+										if (mflag)
+											mask[pool_index] = index;
 									}
 								}
 							}
@@ -159,7 +167,8 @@ namespace dlex_cnn
 					// compute offset
 					prevData += prevSize[tind::e2D];
 					nextData += nextSize[tind::e2D];
-					mask += nextSize[tind::e2D];
+					if (mflag)
+						mask += nextSize[tind::e2D];
 				}
 			}
 			break;
