@@ -41,6 +41,9 @@
     <ClCompile Include="..\..\core\operator\softmax_op.cpp" />
     <ClCompile Include="..\..\core\optimizer\optimizer.cpp" />
     <ClCompile Include="..\..\core\tensor.cpp" />
+    <ClCompile Include="..\..\core\trainer\network_creator.cpp" />
+    <ClCompile Include="..\..\core\trainer\typical_network\lenet.cpp" />
+    <ClCompile Include="..\..\core\trainer\typical_network\mlp.cpp" />
     <ClCompile Include="..\..\core\util\math_functions.cpp" />
     <ClCompile Include="..\..\core\util\thread_pool.cpp" />
   </ItemGroup>
@@ -70,6 +73,8 @@
     <ClInclude Include="..\..\core\operator\softmax_op.h" />
     <ClInclude Include="..\..\core\optimizer\optimizer.h" />
     <ClInclude Include="..\..\core\tensor.h" />
+    <ClInclude Include="..\..\core\trainer\network_creator.h" />
+    <ClInclude Include="..\..\core\trainer\typical_network.h" />
     <ClInclude Include="..\..\core\util\math_functions.h" />
     <ClInclude Include="..\..\core\util\op_factory.h" />
     <ClInclude Include="..\..\core\util\thread_pool.h" />

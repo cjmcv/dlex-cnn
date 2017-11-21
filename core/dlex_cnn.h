@@ -34,6 +34,9 @@
 #include "node.h"
 #include "tensor.h"
 
+//
+#include "trainer/typical_network.h"
+
 static void registerOpClass()
 {	//register
 	dlex_cnn::OpFactory<float>::getInstance().registerOpClass("Input", dlex_cnn::CreateInputOp<float>);
