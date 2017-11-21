@@ -117,6 +117,44 @@ namespace dlex_cnn
 		return 0;
 	}
 
+	//////////////// Activation //////////////////
+	template <typename Dtype>
+	int NetCreator<Dtype>::createActivationNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network)
+	{
+		std::shared_ptr<dlex_cnn::Op<Dtype>> act_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Activation");
+		if (act_s == NULL)
+			return 1;
+
+		dynamic_cast<dlex_cnn::ActivationOp<Dtype> *>(act_s.get())->setOpParam(param);
+
+		std::vector<std::shared_ptr<dlex_cnn::Op<Dtype>>> act;
+		act.push_back(act_s);
+
+		std::vector<std::string> inNodeNames;
+		inNodeNames.push_back(inNode);
+
+		network.addNode(name, act, inNodeNames);
+		return 0;
+	}
+	template <typename Dtype>
+	int NetCreator<Dtype>::createActivationNode(std::string inNode, std::string name, ActivationOpParam param, NetWork<Dtype> &network)
+	{
+		std::shared_ptr<dlex_cnn::Op<Dtype>> act_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Activation");
+		if (act_s == NULL)
+			return 1;
+
+		dynamic_cast<dlex_cnn::ActivationOp<Dtype> *>(act_s.get())->setOpParam(param);
+
+		std::vector<std::shared_ptr<dlex_cnn::Op<Dtype>>> act;
+		act.push_back(act_s);
+
+		std::vector<std::string> inNodeNames;
+		inNodeNames.push_back(inNode);
+
+		network.addNode(name, act, inNodeNames);
+		return 0;
+	}
+
 	//////////////// Pooling //////////////////
 	template <typename Dtype>
 	int NetCreator<Dtype>::createPoolNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network)
