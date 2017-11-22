@@ -19,50 +19,95 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\core_test\common\printout.cpp" />
-    <ClCompile Include="..\..\core_test\main.cpp" />
-    <ClCompile Include="..\..\core_test\operator_test\convolution_op_test.cpp" />
-    <ClCompile Include="..\..\core_test\operator_test\deconvolution_op_test.cpp" />
-    <ClCompile Include="..\..\core_test\operator_test\pooling_op_test.cpp" />
-    <ClCompile Include="..\..\core_test\train_test\mnist_loader.cpp" />
-    <ClCompile Include="..\..\core_test\train_test\mnist_train.cpp" />
-    <ClCompile Include="..\..\core_test\util_test\thread_pool_test.cpp" />
+    <ClCompile Include="..\..\..\core\common.cpp" />
+    <ClCompile Include="..\..\..\core\dlex_task.cpp" />
+    <ClCompile Include="..\..\..\core\graph.cpp" />
+    <ClCompile Include="..\..\..\core\io\dataloader.cpp" />
+    <ClCompile Include="..\..\..\core\io\preprocessor.cpp" />
+    <ClCompile Include="..\..\..\core\network.cpp" />
+    <ClCompile Include="..\..\..\core\node.cpp" />
+    <ClCompile Include="..\..\..\core\operator\activation_simple_op.cpp" />
+    <ClCompile Include="..\..\..\core\operator\convolution_op.cpp" />
+    <ClCompile Include="..\..\..\core\operator\cross_entropy_lop.cpp" />
+    <ClCompile Include="..\..\..\core\operator\deconvolution_op.cpp" />
+    <ClCompile Include="..\..\..\core\operator\inner_product_op.cpp" />
+    <ClCompile Include="..\..\..\core\operator\input_op.cpp" />
+    <ClCompile Include="..\..\..\core\operator\operator_base.cpp" />
+    <ClCompile Include="..\..\..\core\operator\operator_hybrid.cpp" />
+    <ClCompile Include="..\..\..\core\operator\operator_loss.cpp" />
+    <ClCompile Include="..\..\..\core\operator\output_op.cpp" />
+    <ClCompile Include="..\..\..\core\operator\pooling_op.cpp" />
+    <ClCompile Include="..\..\..\core\operator\softmax_cross_entropy_hop.cpp" />
+    <ClCompile Include="..\..\..\core\operator\softmax_op.cpp" />
+    <ClCompile Include="..\..\..\core\optimizer\optimizer.cpp" />
+    <ClCompile Include="..\..\..\core\tensor.cpp" />
+    <ClCompile Include="..\..\..\core\trainer\network_creator.cpp" />
+    <ClCompile Include="..\..\..\core\trainer\typical_network\lenet.cpp" />
+    <ClCompile Include="..\..\..\core\trainer\typical_network\mix.cpp" />
+    <ClCompile Include="..\..\..\core\trainer\typical_network\mlp.cpp" />
+    <ClCompile Include="..\..\..\core\util\math_functions.cpp" />
+    <ClCompile Include="..\..\..\core\util\thread_pool.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\core_test\common\tools.h" />
-    <ClInclude Include="..\..\core_test\operator_test\convolution_op_test.h" />
-    <ClInclude Include="..\..\core_test\operator_test\deconvolution_op_test.h" />
-    <ClInclude Include="..\..\core_test\operator_test\pooling_op_test.h" />
-    <ClInclude Include="..\..\core_test\train_test\mnist_loader.h" />
-    <ClInclude Include="..\..\core_test\train_test\mnist_train.h" />
+    <ClInclude Include="..\..\..\core\common.h" />
+    <ClInclude Include="..\..\..\core\configure.h" />
+    <ClInclude Include="..\..\..\core\dlex_cnn.h" />
+    <ClInclude Include="..\..\..\core\dlex_task.h" />
+    <ClInclude Include="..\..\..\core\graph.h" />
+    <ClInclude Include="..\..\..\core\io\dataloader.h" />
+    <ClInclude Include="..\..\..\core\io\prefetcher.h" />
+    <ClInclude Include="..\..\..\core\io\preprocessor.h" />
+    <ClInclude Include="..\..\..\core\network.h" />
+    <ClInclude Include="..\..\..\core\node.h" />
+    <ClInclude Include="..\..\..\core\operator\activation_simple_op.h" />
+    <ClInclude Include="..\..\..\core\operator\convolution_op.h" />
+    <ClInclude Include="..\..\..\core\operator\cross_entropy_lop.h" />
+    <ClInclude Include="..\..\..\core\operator\deconvolution_op.h" />
+    <ClInclude Include="..\..\..\core\operator\inner_product_op.h" />
+    <ClInclude Include="..\..\..\core\operator\input_op.h" />
+    <ClInclude Include="..\..\..\core\operator\operator_base.h" />
+    <ClInclude Include="..\..\..\core\operator\operator_hybrid.h" />
+    <ClInclude Include="..\..\..\core\operator\operator_loss.h" />
+    <ClInclude Include="..\..\..\core\operator\output_op.h" />
+    <ClInclude Include="..\..\..\core\operator\pooling_op.h" />
+    <ClInclude Include="..\..\..\core\operator\softmax_cross_entropy_hop.h" />
+    <ClInclude Include="..\..\..\core\operator\softmax_op.h" />
+    <ClInclude Include="..\..\..\core\optimizer\optimizer.h" />
+    <ClInclude Include="..\..\..\core\tensor.h" />
+    <ClInclude Include="..\..\..\core\trainer\network_creator.h" />
+    <ClInclude Include="..\..\..\core\trainer\typical_network.h" />
+    <ClInclude Include="..\..\..\core\util\math_functions.h" />
+    <ClInclude Include="..\..\..\core\util\op_factory.h" />
+    <ClInclude Include="..\..\..\core\util\thread_pool.h" />
+    <ClInclude Include="..\..\..\core\util\timer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{79754D77-D8A1-4C84-89B8-AA03BA19DC08}</ProjectGuid>
+    <ProjectGuid>{B83A591F-2B04-479F-959A-1178D4B15B3B}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>dlex_cnn_test</RootNamespace>
+    <RootNamespace>dlex_cnn</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -102,14 +147,12 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../header/;E:\agosuncn\VideoAnalysis\GXX_车辆识别组\公共库\GXX_3rdparty\hpp\opencv310_withDNN</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;DLEX_CNN_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../header;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\agosuncn\VideoAnalysis\GXX_车辆识别组\公共库\GXX_3rdparty\libs\opencv310_withDNN;C:\Program Files (x86)\Visual Leak Detector\lib\Win32;D:\DeepLearning\DLFrameWork\dlex-cnn\windows\Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_imgproc310d.lib;opencv_core310d.lib;opencv_highgui310d.lib;opencv_video310d.lib;opencv_imgcodecs310d.lib;dlex_cnn.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -118,15 +161,13 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../core/;../../core_test/</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;DLEX_CNN_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../../core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\agosuncn\VideoAnalysis\GXX_车辆识别组\公共库\GXX_3rdparty\libs\opencv310_withDNN_x64;C:\Program Files (x86)\Visual Leak Detector\lib\Win32;..\x64\Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_imgproc310d.lib;opencv_core310d.lib;opencv_highgui310d.lib;opencv_video310d.lib;opencv_imgcodecs310d.lib;dlex_cnn.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -140,10 +181,10 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;DLEX_CNN_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
@@ -157,16 +198,14 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../core/;../../core_test/%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;DLEX_CNN_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../../core</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>E:\agosuncn\VideoAnalysis\GXX_车辆识别组\公共库\GXX_3rdparty\libs\opencv310_withDNN_x64;..\x64\Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_imgproc310.lib;opencv_core310.lib;opencv_highgui310.lib;opencv_video310.lib;opencv_imgcodecs310.lib;dlex_cnn.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
