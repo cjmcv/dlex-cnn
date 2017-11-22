@@ -117,6 +117,44 @@ namespace dlex_cnn
 		return 0;
 	}
 
+	//////////////// Deconvolution //////////////////
+	template <typename Dtype>
+	int NetCreator<Dtype>::createDeconvNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network)
+	{
+		std::shared_ptr<dlex_cnn::Op<Dtype>> deconv_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Deconvolution");
+		if (deconv_s == NULL)
+			return 1;
+
+		dynamic_cast<dlex_cnn::DeconvolutionOp<Dtype> *>(deconv_s.get())->setOpParam(param);
+
+		std::vector<std::shared_ptr<dlex_cnn::Op<Dtype>>> deconv;
+		deconv.push_back(deconv_s);
+
+		std::vector<std::string> inNodeNames;
+		inNodeNames.push_back(inNode);
+
+		network.addNode(name, deconv, inNodeNames);
+		return 0;
+	}
+	template <typename Dtype>
+	int NetCreator<Dtype>::createDeconvNode(std::string inNode, std::string name, DeconvolutionOpParam param, NetWork<Dtype> &network)
+	{
+		std::shared_ptr<dlex_cnn::Op<Dtype>> deconv_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Deconvolution");
+		if (deconv_s == NULL)
+			return 1;
+
+		dynamic_cast<dlex_cnn::DeconvolutionOp<Dtype> *>(deconv_s.get())->setOpParam(param);
+
+		std::vector<std::shared_ptr<dlex_cnn::Op<Dtype>>> deconv;
+		deconv.push_back(deconv_s);
+
+		std::vector<std::string> inNodeNames;
+		inNodeNames.push_back(inNode);
+
+		network.addNode(name, deconv, inNodeNames);
+		return 0;
+	}
+
 	//////////////// Activation //////////////////
 	template <typename Dtype>
 	int NetCreator<Dtype>::createActivationNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network)
@@ -197,19 +235,42 @@ namespace dlex_cnn
 	template <typename Dtype>
 	int NetCreator<Dtype>::createSoftmaxLossNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network)
 	{
-		std::shared_ptr<dlex_cnn::Op<Dtype>> sm_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("SoftmaxCrossEntropyLossH");
+		//std::shared_ptr<dlex_cnn::Op<Dtype>> sm_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("SoftmaxCrossEntropyLossH");
+		//if (sm_s == NULL)
+		//	return 1;
+
+		//dynamic_cast<dlex_cnn::SoftmaxCrossEntropyLossHOp<Dtype> *>(sm_s.get())->setOpParam(param);
+
+		//std::vector<std::shared_ptr<dlex_cnn::Op<Dtype>>> sm;
+		//sm.push_back(sm_s);
+
+		//std::vector<std::string> inNodeNames;
+		//inNodeNames.push_back(inNode);
+
+		//network.addNode(name, sm, inNodeNames);
+
+		//////////// way 2 /////////////
+
+		std::shared_ptr<dlex_cnn::Op<Dtype>> sm_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Softmax");
 		if (sm_s == NULL)
 			return 1;
+		dlex_cnn::SoftmaxOpParam softmaxParam;
+		dynamic_cast<dlex_cnn::SoftmaxOp<Dtype> *>(sm_s.get())->setOpParam(softmaxParam);
 
-		dynamic_cast<dlex_cnn::SoftmaxCrossEntropyLossHOp<Dtype> *>(sm_s.get())->setOpParam(param);
-
+		std::shared_ptr<dlex_cnn::Op<Dtype>> cel_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("CrossEntropyLoss");
+		if (cel_s == NULL)
+			return 1;
+		dlex_cnn::CrossEntropyLossOpParam CELParam;
+		dynamic_cast<dlex_cnn::CrossEntropyLossOp<Dtype> *>(cel_s.get())->setOpParam(CELParam);
+		
 		std::vector<std::shared_ptr<dlex_cnn::Op<Dtype>>> sm;
 		sm.push_back(sm_s);
-
+		sm.push_back(cel_s);
 		std::vector<std::string> inNodeNames;
 		inNodeNames.push_back(inNode);
 
 		network.addNode(name, sm, inNodeNames);
+
 		return 0;
 	}
 	template <typename Dtype>
@@ -268,5 +329,16 @@ namespace dlex_cnn
 		network.addNode(name, out, inNodeNames);
 		return 0;
 	}
+
+	/////////////// Optimizer /////////////////
+	template <typename Dtype>
+	int NetCreator<Dtype>::createOptimizer(std::string opt_type, NetWork<Dtype> &network)
+	{
+		std::shared_ptr<dlex_cnn::Optimizer<Dtype>> optimizer;
+		dlex_cnn::Optimizer<Dtype>::getOptimizerByStr(opt_type, optimizer);
+		network.setOptimizer(optimizer);
+		return 0;
+	}
+
 	INSTANTIATE_CLASS(NetCreator);
 }

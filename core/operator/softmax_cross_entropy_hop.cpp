@@ -80,9 +80,6 @@ namespace dlex_cnn
 			return -1;
 		}
 
-		//data.clear();
-		//data.push_back(std::make_shared<Tensor<Dtype>>(inShape));
-
 		diff_.clear();
 		diff_.push_back(std::make_shared<Tensor<Dtype>>(inShape));
 

@@ -3,7 +3,7 @@
 namespace dlex_cnn
 {
 	template <typename Dtype>
-	int TypicalNet<Dtype>::lenet(const int num, const int channels, const int height, const int width, NetWork<Dtype> &network)
+	int TypicalNet<Dtype>::mix(const int num, const int channels, const int height, const int width, NetWork<Dtype> &network)
 	{
 		printf("start building net\n");
 		NetCreator<Dtype> creator;
@@ -24,13 +24,13 @@ namespace dlex_cnn
 		std::string pool1_name = "pool1";
 		creator.createPoolNode(conv1_name, pool1_name, pool1_params, network);
 
-		std::string conv2_params = "blas_enable:1, kernel_num:50,  kernel_h:5, kernel_w:5, stride_h:1, stride_w:1,  pad_h:0, pad_w:0, dilation_h:1, dilation_w:1,";
-		std::string conv2_name = "conv2";
-		creator.createConvNode(pool1_name, conv2_name, conv2_params, network);
+		std::string deconv2_params = "blas_enable:1, kernel_channels:6, kernel_h:3,kernel_w:3, stride_h:1,stride_w:1, pad_h:1,pad_w:1, dilation_h:1,dilation_w:1,";
+		std::string deconv2_name = "deconv2";
+		creator.createDeconvNode(pool1_name, deconv2_name, deconv2_params, network);
 
 		std::string pool2_params = "poolingType:0,kernel_h:2,kernel_w:2,stride_h:2,stride_w:2,pad_h:0,pad_w:0,global_pooling:0,";
 		std::string pool2_name = "pool2";
-		creator.createPoolNode(conv2_name, pool2_name, pool2_params, network);
+		creator.createPoolNode(deconv2_name, pool2_name, pool2_params, network);
 
 		std::string fc1_params = "blas_enable:1, num_hidden:500,";
 		std::string fc1_name = "fc1";

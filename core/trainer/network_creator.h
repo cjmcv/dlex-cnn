@@ -47,6 +47,10 @@ namespace dlex_cnn
 		int createConvNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network);
 		int createConvNode(std::string inNode, std::string name, ConvolutionOpParam param, NetWork<Dtype> &network);
 
+		// Deconvolution
+		int createDeconvNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network);
+		int createDeconvNode(std::string inNode, std::string name, DeconvolutionOpParam param, NetWork<Dtype> &network);
+
 		// Activation
 		int createActivationNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network);
 		int createActivationNode(std::string inNode, std::string name, ActivationOpParam param, NetWork<Dtype> &network);
@@ -62,6 +66,9 @@ namespace dlex_cnn
 		// Output
 		int createOutputNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network);
 		int createOutputNode(std::string inNode, std::string name, OutputOpParam param, NetWork<Dtype> &network);
+
+		// Optimizer
+		int createOptimizer(std::string opt_type, NetWork<Dtype> &network);
 	};
 }
 

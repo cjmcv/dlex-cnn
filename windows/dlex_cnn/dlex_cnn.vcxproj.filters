@@ -117,6 +117,9 @@
     <ClCompile Include="..\..\core\trainer\typical_network\lenet.cpp">
       <Filter>源文件\trainer\typical_network</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\core\trainer\typical_network\mix.cpp">
+      <Filter>源文件\trainer\typical_network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\core\configure.h">

@@ -42,6 +42,7 @@
     <ClCompile Include="..\..\core\optimizer\optimizer.cpp" />
     <ClCompile Include="..\..\core\tensor.cpp" />
     <ClCompile Include="..\..\core\trainer\network_creator.cpp" />
+    <ClCompile Include="..\..\core\trainer\typical_network\mix.cpp" />
     <ClCompile Include="..\..\core\trainer\typical_network\lenet.cpp" />
     <ClCompile Include="..\..\core\trainer\typical_network\mlp.cpp" />
     <ClCompile Include="..\..\core\util\math_functions.cpp" />

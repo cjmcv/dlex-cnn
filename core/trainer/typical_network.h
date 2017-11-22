@@ -23,7 +23,7 @@ namespace dlex_cnn
 	public:
 		int mlp(const int num, const int channels, const int height, const int width, NetWork<Dtype> &network);
 		int lenet(const int num, const int channels, const int height, const int width, NetWork<Dtype> &network);
-
+		int mix(const int num, const int channels, const int height, const int width, NetWork<Dtype> &network);
 	};
 
 	template int TypicalNet<float>::mlp(const int num, const int channels, const int height, const int width, NetWork<float> &network);
@@ -31,6 +31,9 @@ namespace dlex_cnn
 
 	template int TypicalNet<float>::lenet(const int num, const int channels, const int height, const int width, NetWork<float> &network);
 	template int TypicalNet<double>::lenet(const int num, const int channels, const int height, const int width, NetWork<double> &network);
+
+	template int TypicalNet<float>::mix(const int num, const int channels, const int height, const int width, NetWork<float> &network);
+	template int TypicalNet<double>::mix(const int num, const int channels, const int height, const int width, NetWork<double> &network);
 }
 
 #endif
