@@ -24,9 +24,9 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	int Graph<Dtype>::getNodeIndex(const std::string &nodeName, int &index)
+	int Graph<Dtype>::getNodeIndex(const std::string &node_name, int &index)
 	{
-		std::map<std::string, int>::iterator it = nodes_index_map_.find(nodeName);
+		std::map<std::string, int>::iterator it = nodes_index_map_.find(node_name);
 		if (it == nodes_index_map_.end())
 			return -1;
 
@@ -35,9 +35,9 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	void Graph<Dtype>::addNode(const std::string &nodeName,
+	void Graph<Dtype>::addNode(const std::string &node_name,
 		std::vector<std::shared_ptr<Op<Dtype>>> &op,
-		std::vector<std::string> &inNodeNames = std::vector<std::string>())
+		std::vector<std::string> &in_node_names = std::vector<std::string>())
 	{
 		//const auto layer_type = layer->getLayerType();
 		//printf("NetWork addayer begin , type : %s\n", layer_type.c_str());
@@ -45,10 +45,10 @@ namespace dlex_cnn
 		//node->inputs_index_.clear();
 		//node->outputs_index_.clear();
 		
-		const int nodeIdx = nodes_.size();
-		node->setIndex(nodeIdx);
-		node->setName(nodeName);
-		nodes_index_map_[nodeName] = nodeIdx;
+		const int node_idx = nodes_.size();
+		node->setIndex(node_idx);
+		node->setName(node_name);
+		nodes_index_map_[node_name] = node_idx;
 
 		for (int i = 0; i < op.size(); i++)
 			node->addSubOps(op[i]);
@@ -60,28 +60,28 @@ namespace dlex_cnn
 		const std::shared_ptr<Op<Dtype>> inteOp = node->getInteOp();
 		if (inteOp->getOpType() == "Input")
 		{
-			in_nodes_map_[nodeName] = nodeIdx;
+			in_nodes_map_[node_name] = node_idx;
 		}
 		else
 		{
-			for (int idx = 0; idx < inNodeNames.size(); idx++)
+			for (int idx = 0; idx < in_node_names.size(); idx++)
 			{
 				int index = -1;
-				int ret = getNodeIndex(inNodeNames[idx], index);
+				int ret = getNodeIndex(in_node_names[idx], index);
 				if (ret != 0)
 				{
-					DLOG_ERR("[ Graph::addNode ]: Can not get node with name %s \n", inNodeNames[idx].c_str());
+					DLOG_ERR("[ Graph::addNode ]: Can not get node with name %s \n", in_node_names[idx].c_str());
 					continue;
 				}
-				node->addInputName(inNodeNames[idx]); // Create link from current node to previous node
+				node->addInputName(in_node_names[idx]); // Create link from current node to previous node
 				node->addInputIdx(index);	
 				nodes_[index]->addOutputName(node->getName()); // Create link from previous node to current node 
-				nodes_[index]->addOutputIdx(nodeIdx);  
+				nodes_[index]->addOutputIdx(node_idx);  
 			}
 			//node->input_shape_ = nodes_[node->inputs_index_[0]]->output_shape_;
 			node->setInputShape(nodes_[node->getInputIdx()[0]]->getOutputShape());
 			if (inteOp->getOpType() == "Output")
-				out_nodes_map_[nodeName] = nodeIdx;
+				out_nodes_map_[node_name] = node_idx;
 		}
 		node->inferOutShape();
 		node->initOp();
@@ -92,81 +92,81 @@ namespace dlex_cnn
 
 	// fill the input data in innode->cpu_data_[0]
 	template <typename Dtype>
-	int Graph<Dtype>::setInNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> inputData, const std::vector<std::string> nodeNames)
+	int Graph<Dtype>::setInNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> input_data, const std::vector<std::string> node_names)
 	{
-		if (inputData.size() != nodeNames.size())
+		if (input_data.size() != node_names.size())
 		{ 
-			DLOG_ERR("[ Graph::setInNode ]: inputData should have the same size with nodeNames\n");
+			DLOG_ERR("[ Graph::setInNode ]: input_data should have the same size with node_names\n");
 			return -1;
 		}
-		if (inputData.size() <= 0)
+		if (input_data.size() <= 0)
 		{
-			DLOG_ERR("[ Graph::setInNode ]: inputData is invalid\n");
+			DLOG_ERR("[ Graph::setInNode ]: input_data is invalid\n");
 			return -1;
 		}
 
-		const int data_num = inputData[0]->getShape()[0];
-		for (int i = 0; i < inputData.size(); i++)
+		const int data_num = input_data[0]->getShape()[0];
+		for (int i = 0; i < input_data.size(); i++)
 		{
-			if (data_num != inputData[i]->getShape()[0])
+			if (data_num != input_data[i]->getShape()[0])
 			{
 				DLOG_ERR("[ Graph::setInNode ]: Each block of data should has the same num\n");
 				return -1;
 			}
 		}
 
-		for (int i = 0; i < inputData.size(); i++)
+		for (int i = 0; i < input_data.size(); i++)
 		{
 			int index = -1;
-			int ret = getNodeIndex(nodeNames[i], index);
+			int ret = getNodeIndex(node_names[i], index);
 			if (ret != 0)
 			{
-				DLOG_ERR("[ Graph::setInNode ]: Can not get node with name %s \n", nodeNames[i].c_str());
+				DLOG_ERR("[ Graph::setInNode ]: Can not get node with name %s \n", node_names[i].c_str());
 				return -1;
 			}
 
-			if (nodes_[index]->getDataVec()[0]->getSize()[tind::e4D] != inputData[i]->getSize()[tind::e4D])
+			if (nodes_[index]->getDataVec()[0]->getSize()[tind::e4D] != input_data[i]->getSize()[tind::e4D])
 			{
-				nodes_[index]->setInputShape(inputData[i]->getShape());
-				nodes_[index]->resetDataSize(0, inputData[i]->getShape());
+				nodes_[index]->setInputShape(input_data[i]->getShape());
+				nodes_[index]->resetDataSize(0, input_data[i]->getShape());
 				//nodes_[index]->inferOutShape();
-				//cpu_data[0].reset(new Tensor<Dtype>(inputData[i]->getShape()));
+				//cpu_data[0].reset(new Tensor<Dtype>(input_data[i]->getShape()));
 			}
-			inputData[i]->copyDataTo(*nodes_[index]->getDataVec()[0]);
+			input_data[i]->copyDataTo(*nodes_[index]->getDataVec()[0]);
 		}
 		return 0;
 	}
 
 	//fill the label data in outnode->cpu_data_[1]
 	template <typename Dtype>
-	int Graph<Dtype>::setOutNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> labelData, const std::vector<std::string> nodeNames)
+	int Graph<Dtype>::setOutNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> label_data, const std::vector<std::string> node_names)
 	{
-		if (labelData.size() != nodeNames.size())
+		if (label_data.size() != node_names.size())
 		{
-			DLOG_ERR("[ Graph::setOutNode ]: labelData should have the same size with nodeNames\n");
+			DLOG_ERR("[ Graph::setOutNode ]: label_data should have the same size with node_names\n");
 			return -1;
 		}
-		if (labelData.size() <= 0)
+		if (label_data.size() <= 0)
 		{
-			DLOG_ERR("[ Graph::setOutNode ]: labelData is invalid\n");
+			DLOG_ERR("[ Graph::setOutNode ]: label_data is invalid\n");
 			return -1;
 		}
 
 		//printf("s0 set out node\n");
-		for (int i = 0; i < labelData.size(); i++)
+		for (int i = 0; i < label_data.size(); i++)
 		{
 			int index = -1;
-			int ret = getNodeIndex(nodeNames[i], index);
+			int ret = getNodeIndex(node_names[i], index);
 			//printf("s1 set out node\n");
 			if (ret != 0)
 			{
-				DLOG_ERR("[ Graph::setOutNode ]: Can not get node with name %s. \n", nodeNames[i].c_str());
+				DLOG_ERR("[ Graph::setOutNode ]: Can not get node with name %s. \n", node_names[i].c_str());
 				return -1;
 			}
 			
 			// The format of output node is ( output[0], label[1], loss[2] )
-			const int vecSize = nodes_[index]->getDataVec().size();
-			if (vecSize != 3)
+			const int vec_size = nodes_[index]->getDataVec().size();
+			if (vec_size != 3)
 			{
 				DLOG_ERR("[ Graph::setOutNode ]: Output node is not contains 3 tenosr. \n");
 				return - 1;
@@ -175,12 +175,12 @@ namespace dlex_cnn
 				nodes_[i]->inte_ops_->getOpDiff()[0].reset(new Tensor<Dtype>(nodes_[i]->cpu_data_[0]->shape_));*/
 
 			//printf("s set out node\n");
-			if (nodes_[index]->getDataVec()[1]->getSize()[tind::e4D] != labelData[i]->getSize()[tind::e4D])
-				nodes_[index]->resetDataSize(1, labelData[i]->getShape());
+			if (nodes_[index]->getDataVec()[1]->getSize()[tind::e4D] != label_data[i]->getSize()[tind::e4D])
+				nodes_[index]->resetDataSize(1, label_data[i]->getShape());
 
 			const std::vector<std::shared_ptr<Tensor<Dtype>>> cpu_data = nodes_[index]->getDataVec();
 
-			labelData[i]->copyDataTo(*cpu_data[1]);
+			label_data[i]->copyDataTo(*cpu_data[1]);
 
 			//printf("finish set out node\n");
 		}
@@ -222,35 +222,35 @@ namespace dlex_cnn
 			int idx = nodes_idx_stack_.top();
 			nodes_idx_stack_.pop();
 
-			const std::shared_ptr<Op<Dtype>> inteOp_idx = nodes_[idx]->getInteOp();
-			if (inteOp_idx->getOpType() == "Output")
+			const std::shared_ptr<Op<Dtype>> inte_op_idx = nodes_[idx]->getInteOp();
+			if (inte_op_idx->getOpType() == "Output")
 				continue ;
 			
 			// recheck batch size
-			const std::vector<int> idxOutShape = nodes_[idx]->getOutputShape();
-			const std::vector<int> outputIdx  = nodes_[idx]->getOutputIdx();
-			const std::vector<int> idxNextInShape = nodes_[outputIdx[0]]->getInputShape();
-			if (idxOutShape != idxNextInShape)
+			const std::vector<int> idx_out_shape = nodes_[idx]->getOutputShape();
+			const std::vector<int> output_idx  = nodes_[idx]->getOutputIdx();
+			const std::vector<int> idx_next_in_shape = nodes_[output_idx[0]]->getInputShape();
+			if (idx_out_shape != idx_next_in_shape)
 			{
-				nodes_[outputIdx[0]]->setInputShape(idxOutShape);
-				//nodes_[outputIdx[0]]->inferOutShape();
-				nodes_[outputIdx[0]]->resetDataSize(0, idxOutShape);	// it will call inferOutShape
-				//nodes_[outputIdx[0]]->initOp();	// no, 前向和反向过程中，只有在用到时发现某块数据维度不对，才修改要用的那块内存大小。
+				nodes_[output_idx[0]]->setInputShape(idx_out_shape);
+				//nodes_[output_idx[0]]->inferOutShape();
+				nodes_[output_idx[0]]->resetDataSize(0, idx_out_shape);	// it will call inferOutShape
+				//nodes_[output_idx[0]]->initOp();	// no, 前向和反向过程中，只有在用到时发现某块数据维度不对，才修改要用的那块内存大小。
 			}
 
 			// The bottom data of forward is saved in the node that executing forward operation. 
-			nodes_[outputIdx[0]]->getDataVec()[0]->setZero();
-			inteOp_idx->forward(nodes_[idx]->getDataVec(), nodes_[outputIdx[0]]->getDataVec());
+			nodes_[output_idx[0]]->getDataVec()[0]->setZero();
+			inte_op_idx->forward(nodes_[idx]->getDataVec(), nodes_[output_idx[0]]->getDataVec());
 
 			//float *outdata0 = (float *)nodes_[idx]->getDataVec()[1]->getData();
 			//for (int j = 0; j < nodes_[idx]->getDataVec()[1]->getSize()[3]; j++)
 			//	printf("%f,", outdata0[j]);
 			//printf("\n");
 
-			for (int i = 0; i < outputIdx.size(); i++)
+			for (int i = 0; i < output_idx.size(); i++)
 			{
 				//printf("push %d\n", nodes_[idx]->outputs_index_[i]);
-				nodes_idx_stack_.push(outputIdx[i]);
+				nodes_idx_stack_.push(output_idx[i]);
 			}
 		}
 
@@ -291,28 +291,28 @@ namespace dlex_cnn
 			//printf("backward idx = %d, input_idx = %d\n", idx, nodes_[idx]->inputs_index_.size());
 			nodes_idx_stack_.pop();
 
-			const std::vector<int> inputIdx = nodes_[idx]->getInputIdx();
-			for (int i = 0; i < inputIdx.size(); i++)
+			const std::vector<int> input_idx = nodes_[idx]->getInputIdx();
+			for (int i = 0; i < input_idx.size(); i++)
 			{
 				//printf("push %d\n", nodes_[idx]->inputs_index_[i]);
-				nodes_idx_stack_.push(inputIdx[i]);
+				nodes_idx_stack_.push(input_idx[i]);
 			}
 
-			const std::shared_ptr<Op<Dtype>> inteOp_idx = nodes_[idx]->getInteOp();
+			const std::shared_ptr<Op<Dtype>> inte_op_idx = nodes_[idx]->getInteOp();
 			const std::vector<std::shared_ptr<Tensor<Dtype>>> data_idx = nodes_[idx]->getDataVec();
 		
 			// recheck batch size : diff_
-			if (inteOp_idx->getOpDiff()[0]->getSize()[tind::e4D] != data_idx[0]->getSize()[tind::e4D])
-				inteOp_idx->getOpDiff()[0].reset(new Tensor<Dtype>(data_idx[0]->getShape()));
+			if (inte_op_idx->getOpDiff()[0]->getSize()[tind::e4D] != data_idx[0]->getSize()[tind::e4D])
+				inte_op_idx->getOpDiff()[0].reset(new Tensor<Dtype>(data_idx[0]->getShape()));
 
-			if (inteOp_idx->getOpType() == "Output")
+			if (inte_op_idx->getOpType() == "Output")
 				continue;
 
 			// The bottom data of backward is saved in the node that executing backward operation. 
-			const std::vector<int> outputIdx = nodes_[idx]->getOutputIdx();
-			inteOp_idx->getOpDiff()[0]->setZero();
-			inteOp_idx->backward(data_idx, nodes_[outputIdx[0]]->getDataVec(),
-				inteOp_idx->getOpDiff(), nodes_[outputIdx[0]]->getInteOp()->getOpDiff());
+			const std::vector<int> output_idx = nodes_[idx]->getOutputIdx();
+			inte_op_idx->getOpDiff()[0]->setZero();
+			inte_op_idx->backward(data_idx, nodes_[output_idx[0]]->getDataVec(),
+				inte_op_idx->getOpDiff(), nodes_[output_idx[0]]->getInteOp()->getOpDiff());
 		}
 
 		//// 注意 当前为取[0]号输出，后面支持多输出（兼容前向？或在计算图模型中处理？）！！！
@@ -331,20 +331,20 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	int Graph<Dtype>::getLoss(const std::string &nodeName, Dtype &loss)
+	int Graph<Dtype>::getLoss(const std::string &node_name, Dtype &loss)
 	{
 		loss = 100.0;
 
 		int index = -1;
-		int ret = getNodeIndex(nodeName, index);
+		int ret = getNodeIndex(node_name, index);
 		if (ret != 0)
 		{
-			DLOG_ERR("[ Graph::getLoss ]: Can not get node with name < %s >.\n", nodeName.c_str());
+			DLOG_ERR("[ Graph::getLoss ]: Can not get node with name < %s >.\n", node_name.c_str());
 			return -1;
 		}
 		if (nodes_[index]->getInteOp()->getOpType() != "Output")
 		{
-			DLOG_ERR("[ Graph::getLoss ]: The node with name < %s >, is not an output node.\n", nodeName.c_str());
+			DLOG_ERR("[ Graph::getLoss ]: The node with name < %s >, is not an output node.\n", node_name.c_str());
 			return -1;
 		}
 		loss = *(Dtype *)(nodes_[index]->getDataVec()[2]->getData());
@@ -353,13 +353,13 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	int Graph<Dtype>::getNodeData(const std::string &nodeName, std::shared_ptr<Tensor<Dtype>> &cpuData)
+	int Graph<Dtype>::getNodeData(const std::string &node_name, std::shared_ptr<Tensor<Dtype>> &cpuData)
 	{
 		int index = -1;
-		int ret = getNodeIndex(nodeName, index);
+		int ret = getNodeIndex(node_name, index);
 		if (ret != 0)
 		{
-			DLOG_ERR("[ Graph::getNodeData ]: Can not get node with name < %s >.\n", nodeName.c_str());
+			DLOG_ERR("[ Graph::getNodeData ]: Can not get node with name < %s >.\n", node_name.c_str());
 			return -1;
 		}
 		cpuData = nodes_[index]->getDataVec()[0];
@@ -394,23 +394,23 @@ namespace dlex_cnn
 			printf("================================================(%d)== \n", idx);
 			nodes_idx_stack_.pop();
 			
-			const std::string curNodeName = nodes_[idx]->getName();
-			const std::shared_ptr<Op<Dtype>> inteOp_idx = nodes_[idx]->getInteOp();
-			printf("*  node name: <%s> , op type: <%s>.\n", curNodeName.c_str(), inteOp_idx->getOpType().c_str());
+			const std::string cur_node_name = nodes_[idx]->getName();
+			const std::shared_ptr<Op<Dtype>> inte_op_idx = nodes_[idx]->getInteOp();
+			printf("*  node name: <%s> , op type: <%s>.\n", cur_node_name.c_str(), inte_op_idx->getOpType().c_str());
 
 			// weight / blas
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> dataVec = nodes_[idx]->getDataVec();
-			const std::vector<int> dataShape = dataVec[0]->getShape();
-			printf("*  data: (%d, %d, %d, %d). \n", dataShape[tind::eNum], dataShape[tind::eChannels], dataShape[tind::eHeight], dataShape[tind::eWidth]);
-			if (dataVec.size() >= 2)
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> data_vec = nodes_[idx]->getDataVec();
+			const std::vector<int> data_shape = data_vec[0]->getShape();
+			printf("*  data: (%d, %d, %d, %d). \n", data_shape[tind::eNum], data_shape[tind::eChannels], data_shape[tind::eHeight], data_shape[tind::eWidth]);
+			if (data_vec.size() >= 2)
 			{
-				const std::vector<int> weightShape = dataVec[1]->getShape();
-				printf("*  weight: (%d, %d, %d, %d). \n", weightShape[tind::eNum], weightShape[tind::eChannels], weightShape[tind::eHeight], weightShape[tind::eWidth]);
+				const std::vector<int> weight_shape = data_vec[1]->getShape();
+				printf("*  weight: (%d, %d, %d, %d). \n", weight_shape[tind::eNum], weight_shape[tind::eChannels], weight_shape[tind::eHeight], weight_shape[tind::eWidth]);
 				
-				if (dataVec.size() >= 3)
+				if (data_vec.size() >= 3)
 				{
-					const std::vector<int> blasShape = dataVec[2]->getShape();
-					printf("*  blas: (%d, %d, %d, %d). \n", blasShape[tind::eNum], blasShape[tind::eChannels], blasShape[tind::eHeight], blasShape[tind::eWidth]);
+					const std::vector<int> blas_shape = data_vec[2]->getShape();
+					printf("*  blas: (%d, %d, %d, %d). \n", blas_shape[tind::eNum], blas_shape[tind::eChannels], blas_shape[tind::eHeight], blas_shape[tind::eWidth]);
 				}
 				else
 					printf("*  blas: None. \n");
@@ -422,46 +422,46 @@ namespace dlex_cnn
 			}	
 
 			// gradient / diff
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> gradientVec = inteOp_idx->getOpGradient();
-			if (gradientVec.size() != 0)
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> gradient_vec = inte_op_idx->getOpGradient();
+			if (gradient_vec.size() != 0)
 			{
-				const std::vector<int> shape = gradientVec[0]->getShape();
+				const std::vector<int> shape = gradient_vec[0]->getShape();
 				printf("*  gradient: (%d, %d, %d, %d). \n", shape[tind::eNum], shape[tind::eChannels], shape[tind::eHeight], shape[tind::eWidth]);
 			}
 			else
 				printf("*  gradient: None. \n");
 
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> diffVec = inteOp_idx->getOpDiff();
-			if (diffVec.size() != 0)
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> diff_vec = inte_op_idx->getOpDiff();
+			if (diff_vec.size() != 0)
 			{
-				const std::vector<int> shape = diffVec[0]->getShape();
+				const std::vector<int> shape = diff_vec[0]->getShape();
 				printf("*  diff: (%d, %d, %d, %d). \n", shape[tind::eNum], shape[tind::eChannels], shape[tind::eHeight], shape[tind::eWidth]);
 			}
 			else
 				printf("*  diff: None. \n");
 
 			// input / output
-			const std::vector<int> inputIdx = nodes_[idx]->getInputIdx();
-			const std::vector<int> outputIdx = nodes_[idx]->getOutputIdx();
-			for (int i = 0; i < inputIdx.size(); i++)
+			const std::vector<int> input_idx = nodes_[idx]->getInputIdx();
+			const std::vector<int> output_idx = nodes_[idx]->getOutputIdx();
+			for (int i = 0; i < input_idx.size(); i++)
 			{
-				const std::vector<int> shape = nodes_[inputIdx[i]]->getOutputShape(); // getDataVec()[0]->getShape();
-				printf("*  %s <%s> (%d, %d, %d, %d) -> %s. \n", nodes_[inputIdx[i]]->getName().c_str(),
-					nodes_[inputIdx[i]]->getInteOp()->getOpType().c_str(),
+				const std::vector<int> shape = nodes_[input_idx[i]]->getOutputShape(); // getDataVec()[0]->getShape();
+				printf("*  %s <%s> (%d, %d, %d, %d) -> %s. \n", nodes_[input_idx[i]]->getName().c_str(),
+					nodes_[input_idx[i]]->getInteOp()->getOpType().c_str(),
 					shape[tind::eNum], shape[tind::eChannels], shape[tind::eHeight], shape[tind::eWidth],
-					curNodeName.c_str());
+					cur_node_name.c_str());
 			}
-			for (int i = 0; i < outputIdx.size(); i++)
+			for (int i = 0; i < output_idx.size(); i++)
 			{
-				const std::vector<int> shape = nodes_[outputIdx[i]]->getInputShape(); // getDataVec()[0]->getShape();
-				printf("*  %s -> %s <%s> (%d, %d, %d, %d). \n", curNodeName.c_str(),
-					nodes_[outputIdx[i]]->getName().c_str(),
-					nodes_[outputIdx[i]]->getInteOp()->getOpType().c_str(),
+				const std::vector<int> shape = nodes_[output_idx[i]]->getInputShape(); // getDataVec()[0]->getShape();
+				printf("*  %s -> %s <%s> (%d, %d, %d, %d). \n", cur_node_name.c_str(),
+					nodes_[output_idx[i]]->getName().c_str(),
+					nodes_[output_idx[i]]->getInteOp()->getOpType().c_str(),
 					shape[tind::eNum], shape[tind::eChannels], shape[tind::eHeight], shape[tind::eWidth]);
 			}
 
-			for (int i = 0; i < outputIdx.size(); i++)
-				nodes_idx_stack_.push(outputIdx[i]);
+			for (int i = 0; i < output_idx.size(); i++)
+				nodes_idx_stack_.push(output_idx[i]);
 		}
 		return 0;
 	}
@@ -470,7 +470,7 @@ namespace dlex_cnn
 	int Graph<Dtype>::writeGraph2Text(FILE *fp)
 	{
 		std::stringstream optss;
-		optss << "graphSize:" << nodes_.size() << ";";
+		optss << "graph_size:" << nodes_.size() << ";";
 		fprintf(fp, "%s\n", optss.str().c_str());
 
 		for (int i = 0; i < nodes_.size(); i++)
@@ -478,7 +478,7 @@ namespace dlex_cnn
 			//nodes_[i]->writeNode2Text(fp);
 			////name, in_idx（save name）
 			std::stringstream ss;
-			ss << "nodeName:" << nodes_[i]->getName() << ",opType:" << nodes_[i]->getInteOp()->getOpType() << "," << "inNodesName:";
+			ss << "node_name:" << nodes_[i]->getName() << ",op_type:" << nodes_[i]->getInteOp()->getOpType() << "," << "inNodesName:";
 
 			const std::vector<std::string> input_names = nodes_[i]->getInputName();
 			ss << "(";
@@ -490,8 +490,8 @@ namespace dlex_cnn
 			}
 			ss << ");" << std::endl;
 
-			std::string opParam = nodes_[i]->getOpParamBufStr();
-			ss << opParam;
+			std::string op_param = nodes_[i]->getOpParamBufStr();
+			ss << op_param;
 
 			fprintf(fp, "%s\n", ss.str().c_str());
 		}
@@ -505,52 +505,52 @@ namespace dlex_cnn
 
 		char cc[1000];
 
-		int graphSize = 0;
+		int graph_size = 0;
 		if (EOF != fscanf(fp, "%s", cc))	// Fetch the first line to get the graph size.
 		{
 			std::string cstr(cc);
 			printf("read0: %s\n", cstr.c_str());
-			graphSize = atoi(fetchSubStr(cstr, "graphSize:", ";").c_str());
-			printf("read0: %d\n", graphSize);
+			graph_size = atoi(fetchSubStr(cstr, "graph_size:", ";").c_str());
+			printf("read0: %d\n", graph_size);
 		}
-		std::string nodeName, opType;
-		std::vector<std::string> inNodeNames;
-		int lineCount = 0;
-		while (lineCount < graphSize * 2)
+		std::string node_name, op_type;
+		std::vector<std::string> in_node_names;
+		int line_count = 0;
+		while (line_count < graph_size * 2)
 		{
 			if (EOF == fscanf(fp, "%s", cc))
 				return -1;
-			lineCount++;
+			line_count++;
 
 			// Fetch each node's parameters
 			std::string cstr(cc);
-			if (lineCount % 2 == 1)          // Current and input nodes' name 
+			if (line_count % 2 == 1)          // Current and input nodes' name 
 			{
 				printf("read1: %s\n", cstr.c_str());
 
 				// Fetch node name
-				nodeName = fetchSubStr(cstr, "nodeName:", ",");
+				node_name = fetchSubStr(cstr, "node_name:", ",");
 
 				// Fetch operator's name in this node
-				opType = fetchSubStr(cstr, "opType:", ",");
-				printf("read11_0: %s, %s\n", nodeName.c_str(), opType.c_str());
+				op_type = fetchSubStr(cstr, "op_type:", ",");
+				printf("read11_0: %s, %s\n", node_name.c_str(), op_type.c_str());
 
-				if (opType == "Input")
+				if (op_type == "Input")
 					continue;
 
 				// Fetch input nodes' name of this node
 				std::string inNamesStr = fetchSubStr(cstr, "inNodesName:(", ")");
-				int commaFlag;
-				inNodeNames.clear();
-				while ((commaFlag = inNamesStr.find(",")) != -1)
+				int comma_flag;
+				in_node_names.clear();
+				while ((comma_flag = inNamesStr.find(",")) != -1)
 				{
-					std::string name = inNamesStr.substr(0, commaFlag);
-					inNodeNames.push_back(name);
-					inNamesStr = inNamesStr.substr(commaFlag + 1, inNamesStr.length());
+					std::string name = inNamesStr.substr(0, comma_flag);
+					in_node_names.push_back(name);
+					inNamesStr = inNamesStr.substr(comma_flag + 1, inNamesStr.length());
 				}
-				inNodeNames.push_back(inNamesStr);
-				for (int i = 0; i < inNodeNames.size(); i++)
-					printf("inNodeNames[%d]: %s\n", i, inNodeNames[i].c_str());
+				in_node_names.push_back(inNamesStr);
+				for (int i = 0; i < in_node_names.size(); i++)
+					printf("in_node_names[%d]: %s\n", i, in_node_names[i].c_str());
 
 			}
 			else
@@ -559,19 +559,19 @@ namespace dlex_cnn
 				printf("read2: %s\n", cstr.c_str());
 
 				// Create node here according to previous information.
-				std::shared_ptr<dlex_cnn::Op<Dtype>> nodeOp = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType(opType);
-				if (nodeOp == NULL)
-					DLOG_ERR("[ Graph<Dtype>::readText2Graph ]: Can not create Op by type (%s) \n", opType.c_str());
-				nodeOp->setOpParam(cstr);
-				std::vector < std::shared_ptr<dlex_cnn::Op<Dtype>> > nodeOps;
-				nodeOps.push_back(nodeOp);
+				std::shared_ptr<dlex_cnn::Op<Dtype>> node_op = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType(op_type);
+				if (node_op == NULL)
+					DLOG_ERR("[ Graph<Dtype>::readText2Graph ]: Can not create Op by type (%s) \n", op_type.c_str());
+				node_op->setOpParam(cstr);
+				std::vector < std::shared_ptr<dlex_cnn::Op<Dtype>> > node_ops;
+				node_ops.push_back(node_op);
 
-				this->addNode(nodeName, nodeOps, inNodeNames);
+				this->addNode(node_name, node_ops, in_node_names);
 			}
 
 		}
 		//std::stringstream optss;
-		//optss << "graphSize:" << nodes_.size() << ";";
+		//optss << "graph_size:" << nodes_.size() << ";";
 		//fprintf(fp, "%s\n", optss.str().c_str());
 
 		//for (int i = 0; i < nodes_.size(); i++)
@@ -584,24 +584,24 @@ namespace dlex_cnn
 	template <typename Dtype>
 	int Graph<Dtype>::writeGraphParam2Bin(FILE *fp)
 	{
-		int nodeSize = nodes_.size();
-		fwrite(&nodeSize, sizeof(int), 1, fp);
+		int node_size = nodes_.size();
+		fwrite(&node_size, sizeof(int), 1, fp);
 
 		for (int i = 0; i < nodes_.size(); i++)
 		{
 			// Use node name to verify
-			const std::string nodeName = nodes_[i]->getName();
-			int nameLen = nodeName.length() + 1;
-			fwrite(&nameLen, sizeof(int), 1, fp);
-			fwrite(nodeName.c_str(), sizeof(char), nameLen, fp);
+			const std::string node_name = nodes_[i]->getName();
+			int name_len = node_name.length() + 1;
+			fwrite(&name_len, sizeof(int), 1, fp);
+			fwrite(node_name.c_str(), sizeof(char), name_len, fp);
 			//fwrite(&index_, sizeof(int), 1, fp);
 
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> dataVec = nodes_[i]->getDataVec();
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> data_vec = nodes_[i]->getDataVec();
 
-			int size = dataVec.size();
+			int size = data_vec.size();
 			fwrite(&size, sizeof(int), 1, fp);
 
-			// dataVec[0] contains the cpu_data that should not be saved.
+			// data_vec[0] contains the cpu_data that should not be saved.
 			if (size <= 1)
 				continue ;
 
@@ -609,12 +609,12 @@ namespace dlex_cnn
 			//memset(testData, 1, sizeof(Dtype) * 12345);
 			for (int j = 1; j < size; j++)
 			{
-				int len = dataVec[j]->getSize()[tind::e4D];
+				int len = data_vec[j]->getSize()[tind::e4D];
 				fwrite(&len, sizeof(int), 1, fp);
 				//printf("w-len:%d\n", len);
-				fwrite(dataVec[j]->getData(), sizeof(Dtype), len, fp);	//
+				fwrite(data_vec[j]->getData(), sizeof(Dtype), len, fp);	//
 
-				//float *tdata = (float *)dataVec[j]->getData();
+				//float *tdata = (float *)data_vec[j]->getData();
 				//for (int jj = 0; jj < len; jj++)
 				//	printf("%f, ", *(tdata + jj));
 			}
@@ -624,17 +624,17 @@ namespace dlex_cnn
 	template <typename Dtype>
 	int Graph<Dtype>::readBin2GraphParam(FILE *fp)
 	{
-		// the variable nodeSize can shows how many nodes have been wrote there.
-		int nodeSize = 0;
-		fread(&nodeSize, sizeof(int), 1, fp);	
+		// the variable node_size can shows how many nodes have been wrote there.
+		int node_size = 0;
+		fread(&node_size, sizeof(int), 1, fp);	
 
-		for (int i = 0; i < nodeSize; i++)
+		for (int i = 0; i < node_size; i++)
 		{
-			int nameLen = 0;
-			fread(&nameLen, sizeof(int), 1, fp);
+			int name_len = 0;
+			fread(&name_len, sizeof(int), 1, fp);
 
-			char *name = (char *)malloc(sizeof(char) * nameLen);
-			fread(name, sizeof(char), nameLen, fp);
+			char *name = (char *)malloc(sizeof(char) * name_len);
+			fread(name, sizeof(char), name_len, fp);
 			printf("params name: %s\n", name);
 
 			// Search all of the nodes in graph for finding the node that has the same name.
@@ -651,14 +651,14 @@ namespace dlex_cnn
 					if (size <= 1)
 						break; 
 
-					const std::vector<std::shared_ptr<Tensor<Dtype>>> dataVec = nodes_[j]->getDataVec();
+					const std::vector<std::shared_ptr<Tensor<Dtype>>> data_vec = nodes_[j]->getDataVec();
 					for (int k = 1; k < size; k++)
 					{
 						int len = 0;
 						fread(&len, sizeof(int), 1, fp);
-						fread(dataVec[k]->getData(), sizeof(Dtype), len, fp);
+						fread(data_vec[k]->getData(), sizeof(Dtype), len, fp);
 
-						//float *tdata = (float *)dataVec[k]->getData();
+						//float *tdata = (float *)data_vec[k]->getData();
 						//for (int jj = 0; jj < len; jj++)
 						//	printf("%f, ", *(tdata + jj));
 					}

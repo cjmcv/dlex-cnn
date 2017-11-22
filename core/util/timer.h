@@ -14,8 +14,8 @@
 // DLOG_ERR("Convolution load_param failed\n");添加误差判断，不加日志，在linux训练可加重定向。重定向时用stderr仍会显示在终端，而不会去文件中
 // 成员命名规范（函数大小写，变量_小写）, train/test需要可共存
 // 添加graph 的node size打印,graph_.reset(new Graph<Dtype>())不要放在构造中-->已放至init
-// 添加opParam的映射和字串化，需要由字符串得到opParam -> 
-// 在node留一个字符串用于表示对应opParam，
+// 添加op_param的映射和字串化，需要由字符串得到op_param -> 
+// 在node留一个字符串用于表示对应op_param，
 // 模型读写：1、二进制模型（不可视，结构+blob，不含optimizer等，用于输出使用）；-- 延后
 //			 2、输出可视结构 + 可视超参数 + 二进制blob等， 用于存储阶段训练模型。  --  完成
 // 字符串if else，分支声明对应对象返回

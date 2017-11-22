@@ -84,38 +84,38 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	void Tensor<Dtype>::copyDataTo(Tensor<Dtype> &dstTensor)
+	void Tensor<Dtype>::copyDataTo(Tensor<Dtype> &dst_tensor)
 	{
-		if (dstTensor.shape_ != this->shape_ || dstTensor.size_ != this->size_)
+		if (dst_tensor.shape_ != this->shape_ || dst_tensor.size_ != this->size_)
 		{
 			DLOG_ERR("[ Tensor::copyDataTo ]: src tensor and dst tensor should have the same size.\n");
 			return;
 		}
-		if (dstTensor.data_ == NULL || this->data_ == NULL)
+		if (dst_tensor.data_ == NULL || this->data_ == NULL)
 		{
-			DLOG_ERR("[ Tensor::copyDataTo ]: dstTensor.data_ == NULL || this->data_ == NULL.\n");
+			DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.data_ == NULL || this->data_ == NULL.\n");
 			return;
 		}
-		memcpy(dstTensor.data_, this->data_, sizeof(Dtype) * dstTensor.size_[tind::e4D]);
+		memcpy(dst_tensor.data_, this->data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D]);
 	}
 
 	template <typename Dtype>
-	void Tensor<Dtype>::cloneTo(Tensor<Dtype> &dstTensor)
+	void Tensor<Dtype>::cloneTo(Tensor<Dtype> &dst_tensor)
 	{
-		dstTensor.shape_ = this->shape_;
-		dstTensor.size_ = this->size_;
+		dst_tensor.shape_ = this->shape_;
+		dst_tensor.size_ = this->size_;
 
-		if (dstTensor.data_ != NULL)
+		if (dst_tensor.data_ != NULL)
 		{
-			free(dstTensor.data_);
-			dstTensor.data_ = NULL;
+			free(dst_tensor.data_);
+			dst_tensor.data_ = NULL;
 		}
 
-		dstTensor.data_ = (void *)malloc(sizeof(Dtype) * this->size_[tind::e4D]);
-		if (dstTensor.data_ == NULL)
-			DLOG_ERR("[ Tensor::cloneTo ]: Can not malloc for dstTensor.data_.\n");
+		dst_tensor.data_ = (void *)malloc(sizeof(Dtype) * this->size_[tind::e4D]);
+		if (dst_tensor.data_ == NULL)
+			DLOG_ERR("[ Tensor::cloneTo ]: Can not malloc for dst_tensor.data_.\n");
 
-		memcpy(dstTensor.data_, this->data_, sizeof(Dtype) * dstTensor.size_[tind::e4D]);
+		memcpy(dst_tensor.data_, this->data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D]);
 	}
 
 	INSTANTIATE_CLASS_NOR(Tensor);

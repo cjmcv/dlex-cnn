@@ -24,8 +24,8 @@ namespace dlex_cnn
 #define GET_OP_CLASS(type, Dtype)                                             \
     std::shared_ptr< dlex_cnn::Op<Dtype> >(new dlex_cnn::##type##Op<Dtype>());
 
-#define GET_OP_PARAM_CLASS(type, paramStr)                                    \
-    std::shared_ptr< dlex_cnn::Op<Dtype> >(new dlex_cnn::##type##OpParam(paramStr));
+#define GET_OP_PARAM_CLASS(type, param_str)                                    \
+    std::shared_ptr< dlex_cnn::Op<Dtype> >(new dlex_cnn::##type##OpParam(param_str));
 
 template <typename Dtype>
 class OpFactory
@@ -35,9 +35,9 @@ public:
 	~OpFactory() {};
 
 	// Create operator instance according to the name that has been registered.
-	std::shared_ptr< dlex_cnn::Op<Dtype> > createOpByType(std::string typeName)
+	std::shared_ptr< dlex_cnn::Op<Dtype> > createOpByType(std::string type)
 	{
-		std::map<std::string, opCreator>::iterator it = op_creator_map_.find(typeName);
+		std::map<std::string, opCreator>::iterator it = op_creator_map_.find(type);
 		if (it == op_creator_map_.end())
 			return NULL;
 
@@ -48,9 +48,9 @@ public:
 		return getOpFunc();
 	}
 
-	std::shared_ptr< dlex_cnn::Op<Dtype> > createOpByType(std::string typeName, std::string paramStr)
+	std::shared_ptr< dlex_cnn::Op<Dtype> > createOpByType(std::string type, std::string param_str)
 	{
-		std::map<std::string, opCreator>::iterator it = op_creator_map_.find(typeName);
+		std::map<std::string, opCreator>::iterator it = op_creator_map_.find(type);
 		if (it == op_creator_map_.end())
 			return NULL;
 
@@ -58,7 +58,7 @@ public:
 		if (!getOpFunc)
 			return NULL;
 
-		return getOpFunc(paramStr);
+		return getOpFunc(param_str);
 	}
 
 	// Registerer, set the mapping relation between operator class name and it's specific pointer function.

@@ -29,30 +29,30 @@ namespace dlex_cnn
 	public:
 		int netWorkInit(std::string name);
 
-		int saveBinModel(const std::string &modelFile);
-		int loadBinModel(const std::string &modelFile);
+		int saveBinModel(const std::string &model_file);
+		int loadBinModel(const std::string &model_file);
 		
 		int saveStageModel(const std::string &path, const int stage);	
 		int readHyperParams(FILE *fp);
 		int loadStageModel(const std::string &path, const int stage);
 
-		std::shared_ptr<Tensor<Dtype>> testBatch(const std::shared_ptr<Tensor<Dtype>> inputDataTensor, const std::shared_ptr<Tensor<Dtype>> labelDataTensor = NULL);
+		std::shared_ptr<Tensor<Dtype>> testBatch(const std::shared_ptr<Tensor<Dtype>> input_data_tensor, const std::shared_ptr<Tensor<Dtype>> label_data_tensor = NULL);
 	
 		void setOptimizer(std::shared_ptr<Optimizer<Dtype>> optimizer);
 		void setLearningRate(const float lr);
 
-		float trainBatch(const std::shared_ptr<Tensor<Dtype>> inputDataTensor,
-			const std::shared_ptr<Tensor<Dtype>> labelDataTensor);
-		int getNodeData(const std::string &nodeName, std::shared_ptr<Tensor<Dtype>> &cpuData);
+		float trainBatch(const std::shared_ptr<Tensor<Dtype>> input_data_tensor,
+			const std::shared_ptr<Tensor<Dtype>> label_data_tensor);
+		int getNodeData(const std::string &node_name, std::shared_ptr<Tensor<Dtype>> &cpuData);
 		inline const std::shared_ptr<Graph<Dtype>> getGraph() { return graph_; };
 
-		void addNode(std::string &nodeName, 
+		void addNode(std::string &node_name, 
 			std::vector<std::shared_ptr<Op<Dtype>>> &op, 
-			std::vector<std::string> &inNodeNames = std::vector<std::string>());
+			std::vector<std::string> &in_node_names = std::vector<std::string>());
 		int switchPhase(int phase);
 
 		// fill the input data and label date (during training), then compute graph forward
-		int forward(const std::shared_ptr<Tensor<Dtype>> inputDataTensor, const std::shared_ptr<Tensor<Dtype>> labelDataTensor = NULL);
+		int forward(const std::shared_ptr<Tensor<Dtype>> input_data_tensor, const std::shared_ptr<Tensor<Dtype>> label_data_tensor = NULL);
 		// compute graph backward and update nodes'paramaters
 		int backward();
 

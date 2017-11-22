@@ -10,9 +10,9 @@
 namespace dlex_cnn
 {
 	template <typename Dtype>
-	int Optimizer<Dtype>::getOptimizerByStr(std::string &optName, std::shared_ptr<Optimizer<Dtype>> &opt)
+	int Optimizer<Dtype>::getOptimizerByStr(std::string &type, std::shared_ptr<Optimizer<Dtype>> &opt)
 	{
-		if (optName == "SGD")
+		if (type == "SGD")
 			opt = std::shared_ptr< dlex_cnn::Optimizer<Dtype> >(new dlex_cnn::SGD<Dtype>());
 		else
 			return -1;
@@ -24,25 +24,25 @@ namespace dlex_cnn
 	template <typename Dtype>
 	void SGD<Dtype>::update(std::shared_ptr<Node<Dtype>> node)
 	{
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> nodeData = node->getDataVec();
-		if (nodeData.size() == 1)
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> node_data = node->getDataVec();
+		if (node_data.size() == 1)
 			return;
 
 		const std::shared_ptr<Op<Dtype>> inteOp = node->getInteOp();
 
-		Dtype* weightData = (Dtype *)nodeData[1]->getData();
-		const std::vector<int> weightDataSize = nodeData[1]->getSize();
-		const Dtype* wGradientData = (Dtype *)(inteOp->getOpGradient())[0]->getData();
-		for (int i = 0; i < weightDataSize[tind::e4D]; i++)
-			weightData[i] -= lr_*wGradientData[i];
+		Dtype* weight_data = (Dtype *)node_data[1]->getData();
+		const std::vector<int> weight_data_size = node_data[1]->getSize();
+		const Dtype* w_gradient_data = (Dtype *)(inteOp->getOpGradient())[0]->getData();
+		for (int i = 0; i < weight_data_size[tind::e4D]; i++)
+			weight_data[i] -= lr_*w_gradient_data[i];
 
-		if (nodeData.size() >= 2 && inteOp->getOpGradient().size() >= 2)
+		if (node_data.size() >= 2 && inteOp->getOpGradient().size() >= 2)
 		{
-			Dtype* blasData = (Dtype *)nodeData[2]->getData();
-			const std::vector<int> blasDataSize = nodeData[2]->getSize();
-			const Dtype* bGradientData = (Dtype *)(inteOp->getOpGradient())[1]->getData();
-			for (int i = 0; i < blasDataSize[tind::e4D]; i++)
-				blasData[i] -= lr_*bGradientData[i];
+			Dtype* blas_data = (Dtype *)node_data[2]->getData();
+			const std::vector<int> blas_data_size = node_data[2]->getSize();
+			const Dtype* b_gradient_data = (Dtype *)(inteOp->getOpGradient())[1]->getData();
+			for (int i = 0; i < blas_data_size[tind::e4D]; i++)
+				blas_data[i] -= lr_*b_gradient_data[i];
 		}
 	}
 

@@ -28,62 +28,62 @@ namespace dlex_cnn
 
 	}
 	template <typename Dtype>
-	int SoftmaxOp<Dtype>::setOpParam(const std::string &opParamStr)
+	int SoftmaxOp<Dtype>::setOpParam(const std::string &op_param_str)
 	{
 		return 0;
 	}
 	template <typename Dtype>
 	std::string SoftmaxOp<Dtype>::genOpParamStr() const
 	{
-		std::stringstream paramStr;
-		paramStr << ",";
-		return paramStr.str();
+		std::stringstream param_str;
+		param_str << ",";
+		return param_str.str();
 	}
 	template <typename Dtype>
-	int SoftmaxOp<Dtype>::inferOutShape(std::vector<int> &inShape, std::vector<int> &outShape)
+	int SoftmaxOp<Dtype>::inferOutShape(std::vector<int> &in_shape, std::vector<int> &out_shape)
 	{
-		outShape = inShape;
+		out_shape = in_shape;
 		return 0;
 	}
 	template <typename Dtype>
-	int SoftmaxOp<Dtype>::allocBuf4Node(const std::vector<int> &inShape,
-		const std::vector<int> &outShape,
+	int SoftmaxOp<Dtype>::allocBuf4Node(const std::vector<int> &in_shape,
+		const std::vector<int> &out_shape,
 		std::vector<std::shared_ptr<Tensor<Dtype>>> &data) const
 	{
-		if (inShape[tind::eNum] <= 0 || inShape[tind::eChannels] <= 0 ||
-			inShape[tind::eHeight] <= 0 || inShape[tind::eWidth] <= 0 ||
-			inShape[tind::eNum] > 5000 || inShape[tind::eChannels] > 5000 ||
-			inShape[tind::eHeight] > 5000 || inShape[tind::eWidth] > 5000)
+		if (in_shape[tind::eNum] <= 0 || in_shape[tind::eChannels] <= 0 ||
+			in_shape[tind::eHeight] <= 0 || in_shape[tind::eWidth] <= 0 ||
+			in_shape[tind::eNum] > 5000 || in_shape[tind::eChannels] > 5000 ||
+			in_shape[tind::eHeight] > 5000 || in_shape[tind::eWidth] > 5000)
 		{
-			DLOG_ERR("[ SoftmaxOp::allocBuf4Node ]: inShape is invalid -> (%d, %d, %d, %d) \n",
-				inShape[tind::eNum], inShape[tind::eChannels], inShape[tind::eHeight], inShape[tind::eWidth]);
+			DLOG_ERR("[ SoftmaxOp::allocBuf4Node ]: in_shape is invalid -> (%d, %d, %d, %d) \n",
+				in_shape[tind::eNum], in_shape[tind::eChannels], in_shape[tind::eHeight], in_shape[tind::eWidth]);
 			return -1;
 		}
 
 		data.clear();
-		data.push_back(std::make_shared<Tensor<Dtype>>(inShape));
+		data.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
 
 		return 0;
 	}
 
 	template <typename Dtype>
-	int SoftmaxOp<Dtype>::allocOpBuf4Train(const std::vector<int> &inShape, const std::vector<int> &outShape)
+	int SoftmaxOp<Dtype>::allocOpBuf4Train(const std::vector<int> &in_shape, const std::vector<int> &out_shape)
 	{
-		if (inShape[tind::eNum] <= 0 || inShape[tind::eChannels] <= 0 ||
-			inShape[tind::eHeight] <= 0 || inShape[tind::eWidth] <= 0 ||
-			inShape[tind::eNum] > 5000 || inShape[tind::eChannels] > 5000 ||
-			inShape[tind::eHeight] > 5000 || inShape[tind::eWidth] > 5000)
+		if (in_shape[tind::eNum] <= 0 || in_shape[tind::eChannels] <= 0 ||
+			in_shape[tind::eHeight] <= 0 || in_shape[tind::eWidth] <= 0 ||
+			in_shape[tind::eNum] > 5000 || in_shape[tind::eChannels] > 5000 ||
+			in_shape[tind::eHeight] > 5000 || in_shape[tind::eWidth] > 5000)
 		{
-			DLOG_ERR("[ SoftmaxOp::allocOpBuf4Train ]: inShape is invalid -> (%d, %d, %d, %d) \n",
-				inShape[tind::eNum], inShape[tind::eChannels], inShape[tind::eHeight], inShape[tind::eWidth]);
+			DLOG_ERR("[ SoftmaxOp::allocOpBuf4Train ]: in_shape is invalid -> (%d, %d, %d, %d) \n",
+				in_shape[tind::eNum], in_shape[tind::eChannels], in_shape[tind::eHeight], in_shape[tind::eWidth]);
 			return -1;
 		}
 
 		//data.clear();
-		//data.push_back(std::make_shared<Tensor<Dtype>>(inShape));
+		//data.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
 
 		diff_.clear();
-		diff_.push_back(std::make_shared<Tensor<Dtype>>(inShape));
+		diff_.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
 
 		return 0;
 	}
@@ -91,101 +91,101 @@ namespace dlex_cnn
 	template <typename Dtype>
 	void SoftmaxOp<Dtype>::forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
 	{
-		const std::vector<int> prevDataSize = prev[0]->getSize();
-		const std::vector<int> nextDataSize = next[0]->getSize();
-		//const std::vector<int> prevDataShape = prev[0]->getShape();
-		const std::vector<int> nextDataShape = next[0]->getShape();
+		const std::vector<int> prev_data_size = prev[0]->getSize();
+		const std::vector<int> next_data_size = next[0]->getSize();
+		//const std::vector<int> prev_data_shape = prev[0]->getShape();
+		const std::vector<int> next_data_shape = next[0]->getShape();
 
 		Dtype *prevDataBase = (Dtype *)prev[0]->getData();
 		Dtype *nextDataBase = (Dtype *)next[0]->getData();
 
-		const int nextDataNum = nextDataShape[tind::eNum];
-		const int prevDataSize3D = prevDataSize[tind::e3D];
-		const int nextDataSize3D = nextDataSize[tind::e3D];
+		const int nextDataNum = next_data_shape[tind::eNum];
+		const int prevDataSize3D = prev_data_size[tind::e3D];
+		const int nextDataSize3D = next_data_size[tind::e3D];
 		for (int nn = 0; nn < nextDataNum; nn++)
 		{
-			const Dtype* prevData = prevDataBase + nn * prevDataSize3D;// *sizeof(float);
-			Dtype* nextData = nextDataBase + nn * nextDataSize3D;// *sizeof(float);
+			const Dtype* prev_data = prevDataBase + nn * prevDataSize3D;// *sizeof(float);
+			Dtype* next_data = nextDataBase + nn * nextDataSize3D;// *sizeof(float);
 
 			//step1 : find max value
-			Dtype maxVal = prevData[0];
+			Dtype maxVal = prev_data[0];
 			for (int prevDataIdx = 0; prevDataIdx < prevDataSize3D; prevDataIdx++)
 			{
-				maxVal = std::max(maxVal, prevData[prevDataIdx]);
+				maxVal = std::max(maxVal, prev_data[prevDataIdx]);
 			}
 			//step2 : sum
 			Dtype sum = 0;
 			for (int prevDataIdx = 0; prevDataIdx < prevDataSize3D; prevDataIdx++)
 			{
-				nextData[prevDataIdx] = std::exp(prevData[prevDataIdx] - maxVal);
-				sum += nextData[prevDataIdx];
+				next_data[prevDataIdx] = std::exp(prev_data[prevDataIdx] - maxVal);
+				sum += next_data[prevDataIdx];
 			}
 			//step3 : div
 			for (int prevDataIdx = 0; prevDataIdx < prevDataSize3D; prevDataIdx++)
 			{
-				nextData[prevDataIdx] = nextData[prevDataIdx] / sum;
+				next_data[prevDataIdx] = next_data[prevDataIdx] / sum;
 			}
 		}
 	}
 
 	template <typename Dtype>
 	void SoftmaxOp<Dtype>::backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prevDiff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &nextDiff)
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
 	{
-		const std::vector<int> prevDataSize = prev[0]->getSize();
-		const std::vector<int> nextDataSize = next[0]->getSize();
-		const std::vector<int> prevDiffSize = prevDiff[0]->getSize();
-		const std::vector<int> nextDiffSize = nextDiff[0]->getSize();
+		const std::vector<int> prev_data_size = prev[0]->getSize();
+		const std::vector<int> next_data_size = next[0]->getSize();
+		const std::vector<int> prev_diff_size = prev_diff[0]->getSize();
+		const std::vector<int> next_diff_size = next_diff[0]->getSize();
 
-		const std::vector<int> prevDataShape = prev[0]->getShape();
-		const std::vector<int> nextDataShape = next[0]->getShape();
-		const std::vector<int> prevDiffShape = prevDiff[0]->getShape();
-		const std::vector<int> nextDiffShape = nextDiff[0]->getShape();
+		const std::vector<int> prev_data_shape = prev[0]->getShape();
+		const std::vector<int> next_data_shape = next[0]->getShape();
+		const std::vector<int> prev_diff_shape = prev_diff[0]->getShape();
+		const std::vector<int> next_diff_shape = next_diff[0]->getShape();
 
 		Dtype *prevDataBase = (Dtype *)prev[0]->getData();
 		Dtype *nextDataBase = (Dtype *)next[0]->getData();
-		Dtype *prevDiffBase = (Dtype *)prevDiff[0]->getData();
-		Dtype *nextDiffBase = (Dtype *)nextDiff[0]->getData();
+		Dtype *prevDiffBase = (Dtype *)prev_diff[0]->getData();
+		Dtype *nextDiffBase = (Dtype *)next_diff[0]->getData();
 
-		if (prevDataSize[tind::e4D] != nextDataSize[tind::e4D])
+		if (prev_data_size[tind::e4D] != next_data_size[tind::e4D])
 		{
 			DLOG_ERR("[ SoftmaxOp::backward ]: the size of input and output data must be equal \n");
 			return;
 		}
-		if (prevDiffSize[tind::e4D] != nextDiffSize[tind::e4D])
+		if (prev_diff_size[tind::e4D] != next_diff_size[tind::e4D])
 		{
 			DLOG_ERR("[ SoftmaxOp::backward ]: the size of input diff and output diff must be equal \n");
 			return;
 		}
-		if (prevDiffSize[tind::e4D] != prevDataSize[tind::e4D])
+		if (prev_diff_size[tind::e4D] != prev_data_size[tind::e4D])
 		{
 			DLOG_ERR("[ SoftmaxOp::backward ]: the size of input diff and output data must be equal \n");
 			return;
 		}
 
-		//update prevDiff
-		prevDiff[0]->setZero();
-		const int prevDataSize3D = prevDataSize[tind::e3D];
-		const int nextDataSize3D = nextDataSize[tind::e3D];
-		const int prevDiffSize3D = prevDiffSize[tind::e3D];
-		const int nextDiffSize3D = nextDiffSize[tind::e3D];
-		for (int pn = 0; pn < prevDataShape[tind::eNum]; pn++)
+		//update prev_diff
+		prev_diff[0]->setZero();
+		const int prevDataSize3D = prev_data_size[tind::e3D];
+		const int nextDataSize3D = next_data_size[tind::e3D];
+		const int prev_diff_size3D = prev_diff_size[tind::e3D];
+		const int next_diff_size3D = next_diff_size[tind::e3D];
+		for (int pn = 0; pn < prev_data_shape[tind::eNum]; pn++)
 		{
-			const Dtype* prevData = prevDataBase + pn * prevDataSize3D;
-			const Dtype* nextData = nextDataBase + pn * nextDataSize3D;
-			const Dtype* nextDiffData = nextDiffBase + pn * nextDiffSize3D;
-			Dtype* prevDiffData = prevDiffBase + pn * prevDiffSize3D;
-			for (int prevDiffIdx = 0; prevDiffIdx < prevDiffSize3D; prevDiffIdx++)
+			const Dtype* prev_data = prevDataBase + pn * prevDataSize3D;
+			const Dtype* next_data = nextDataBase + pn * nextDataSize3D;
+			const Dtype* next_diff_data = nextDiffBase + pn * next_diff_size3D;
+			Dtype* prev_diff_data = prevDiffBase + pn * prev_diff_size3D;
+			for (int prevDiffIdx = 0; prevDiffIdx < prev_diff_size3D; prevDiffIdx++)
 			{
-				for (int nextDiffIdx = 0; nextDiffIdx < nextDiffSize3D; nextDiffIdx++)
+				for (int next_diff_idx = 0; next_diff_idx < next_diff_size3D; next_diff_idx++)
 				{
-					if (nextDiffIdx == prevDiffIdx)
+					if (next_diff_idx == prevDiffIdx)
 					{
-						prevDiffData[prevDiffIdx] += nextData[prevDiffIdx] * (1.0f - nextData[prevDiffIdx]) * nextDiffData[nextDiffIdx];
+						prev_diff_data[prevDiffIdx] += next_data[prevDiffIdx] * (1.0f - next_data[prevDiffIdx]) * next_diff_data[next_diff_idx];
 					}
 					else
 					{
-						prevDiffData[prevDiffIdx] -= nextData[prevDiffIdx] * nextData[nextDiffIdx] * nextDiffData[nextDiffIdx];
+						prev_diff_data[prevDiffIdx] -= next_data[prevDiffIdx] * next_data[next_diff_idx] * next_diff_data[next_diff_idx];
 					}
 				}
 			}

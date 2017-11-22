@@ -33,9 +33,9 @@ int test_threadPool(int argc, char* argv[])
 	}
 	printf("sizeof(int *) = %d, sizeof(int) = %d\n", sizeof(int *), sizeof(int));
 
-	int threadNum = 13;
+	int thread_num = 13;
 	dlex_cnn::ThreadPool pool;
-	pool.createThreads(threadNum);
+	pool.createThreads(thread_num);
 	auto func = [&](const int start, const int end)
 	{
 		printf("s(%d),e(%d)\n", start, end);

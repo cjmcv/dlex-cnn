@@ -148,22 +148,22 @@ namespace dlex_cnn
 	template void add_bias<double>(const int num, const int ch_size, const int len, const double* bias, double* dst);
 
 	template <typename Dtype>
-	void backward_bias(const int num, const int len, const Dtype* nextDiff, Dtype* biasGradient)
+	void backward_bias(const int num, const int len, const Dtype* next_diff, Dtype* bias_gradient)
 	{
 		int n, i;
 		for (n = 0; n < num; n++)
 		{
 			for (i = 0; i < len; i++)
 			{
-				biasGradient[i] += 1.0f*nextDiff[n * len + i]; //1.0f*nextDiffData[n * len + i];
+				bias_gradient[i] += 1.0f*next_diff[n * len + i]; //1.0f*next_diff_data[n * len + i];
 			}
 		}
 	}
-	template void backward_bias<float>(const int num, const int len, const float* nextDiff, float* biasGradient);
-	template void backward_bias<double>(const int num, const int len, const double* nextDiff, double* biasGradient);
+	template void backward_bias<float>(const int num, const int len, const float* next_diff, float* bias_gradient);
+	template void backward_bias<double>(const int num, const int len, const double* next_diff, double* bias_gradient);
 
 	template <typename Dtype>
-	void backward_bias(const int num, const int ch_size, const int len, const Dtype* nextDiff, Dtype* biasGradient)
+	void backward_bias(const int num, const int ch_size, const int len, const Dtype* next_diff, Dtype* bias_gradient)
 	{
 		int n,c,k;
 		for (n = 0; n < num; n++)
@@ -173,14 +173,14 @@ namespace dlex_cnn
 				Dtype b = 0;
 				for (k = 0; k < len; k++)
 				{
-					b += 1.0f*nextDiff[n*ch_size*len + c*len + k];
+					b += 1.0f*next_diff[n*ch_size*len + c*len + k];
 				}
-				biasGradient[c] += b;
+				bias_gradient[c] += b;
 			}
 		}
 	}
-	template void backward_bias<float>(const int num, const int ch_size, const int len, const float* nextDiff, float* biasGradient);
-	template void backward_bias<double>(const int num, const int ch_size, const int len, const double* nextDiff, double* biasGradient);
+	template void backward_bias<float>(const int num, const int ch_size, const int len, const float* next_diff, float* bias_gradient);
+	template void backward_bias<double>(const int num, const int ch_size, const int len, const double* next_diff, double* bias_gradient);
 
 	// Refer to Caffe
 	// Function uses casting from int to unsigned to compare if value of

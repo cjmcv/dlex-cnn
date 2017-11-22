@@ -1,3 +1,10 @@
+////////////////////////////////////////////////////////////////
+// > Copyright (c) 2017 by Contributors. 
+// > https://github.com/cjmcv
+// > brief  
+// > author Jianming Chen
+////////////////////////////////////////////////////////////////
+
 #include "trainer/typical_network.h"
 
 namespace dlex_cnn
@@ -20,7 +27,7 @@ namespace dlex_cnn
 		std::string conv1_name = "conv1";
 		creator.createConvNode(input_name, conv1_name, conv1_params, network);
 
-		std::string pool1_params = "poolingType:0,kernel_h:2,kernel_w:2,stride_h:2,stride_w:2,pad_h:0,pad_w:0,global_pooling:0,";
+		std::string pool1_params = "pooling_type:0,kernel_h:2,kernel_w:2,stride_h:2,stride_w:2,pad_h:0,pad_w:0,global_pooling:0,";
 		std::string pool1_name = "pool1";
 		creator.createPoolNode(conv1_name, pool1_name, pool1_params, network);
 
@@ -28,7 +35,7 @@ namespace dlex_cnn
 		std::string deconv2_name = "deconv2";
 		creator.createDeconvNode(pool1_name, deconv2_name, deconv2_params, network);
 
-		std::string pool2_params = "poolingType:0,kernel_h:2,kernel_w:2,stride_h:2,stride_w:2,pad_h:0,pad_w:0,global_pooling:0,";
+		std::string pool2_params = "pooling_type:0,kernel_h:2,kernel_w:2,stride_h:2,stride_w:2,pad_h:0,pad_w:0,global_pooling:0,";
 		std::string pool2_name = "pool2";
 		creator.createPoolNode(deconv2_name, pool2_name, pool2_params, network);
 
@@ -36,7 +43,7 @@ namespace dlex_cnn
 		std::string fc1_name = "fc1";
 		creator.createInnerProductNode(pool2_name, fc1_name, fc1_params, network);
 
-		std::string act1_params = "activationType:0, negative_slope:0, ";
+		std::string act1_params = "activation_type:0, negative_slope:0, ";
 		std::string act1_name = "act1";
 		creator.createActivationNode(fc1_name, act1_name, act1_params, network);
 

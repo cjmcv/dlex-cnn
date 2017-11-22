@@ -26,7 +26,7 @@ namespace dlex_cnn
 	}
 	struct PoolingOpParam : public OpParam
 	{
-		tind::PoolingType poolingType = tind::eAVE;
+		tind::PoolingType pooling_type = tind::eAVE;
 		int kernel_h = 3, kernel_w = 3;
 		int stride_h = 1, stride_w = 1;
 		int pad_h = 0, pad_w = 0;
@@ -47,8 +47,8 @@ namespace dlex_cnn
 		PoolingOp();
 		PoolingOp(PoolingOpParam param);
 		virtual ~PoolingOp();
-		inline virtual int setOpParam(PoolingOpParam opParam) { param_ = opParam; return 0; };
-		virtual int setOpParam(const std::string &opParamStr) override;
+		inline virtual int setOpParam(PoolingOpParam op_param) { param_ = op_param; return 0; };
+		virtual int setOpParam(const std::string &op_param_str) override;
 
 	private:
 		inline virtual const std::string &getOpType() const override { return op_type_; };
@@ -56,12 +56,12 @@ namespace dlex_cnn
 		inline virtual std::vector<std::shared_ptr<Tensor<Dtype>>> &getOpDiff() override { return diff_; };
 
 		virtual std::string genOpParamStr() const override;
-		virtual int inferOutShape(std::vector<int> &inShape, std::vector<int> &outShape) override;
+		virtual int inferOutShape(std::vector<int> &in_shape, std::vector<int> &out_shape) override;
 
-		virtual int allocBuf4Node(const std::vector<int> &inShape,
-			const std::vector<int> &outShape,
+		virtual int allocBuf4Node(const std::vector<int> &in_shape,
+			const std::vector<int> &out_shape,
 			std::vector<std::shared_ptr<Tensor<Dtype>>> &data) const override;
-		virtual int allocOpBuf4Train(const std::vector<int> &inShape, const std::vector<int> &outShape) override;
+		virtual int allocOpBuf4Train(const std::vector<int> &in_shape, const std::vector<int> &out_shape) override;
 
 		// Refer to Caffe
 		// In max pooling, it should mark the location(index) of max number in each sliding window.
@@ -71,7 +71,7 @@ namespace dlex_cnn
 		// In average pooling, each next value will be divided by kernel size, and fill the relevant sliding window with the quotient;
 		// If sliding windows are overlap, the output will be accumulated.
 		virtual void backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prevDiff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &nextDiff) override;
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
 
 	private:
 		std::string op_type_;

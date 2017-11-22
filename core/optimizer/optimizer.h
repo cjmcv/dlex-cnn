@@ -24,7 +24,7 @@ namespace dlex_cnn
 		inline float getLearningRate() { return lr_; };
 		virtual void update(std::shared_ptr<Node<Dtype>> node) = 0;
 		virtual inline const std::string &getOptName() { return ""; };
-		static int getOptimizerByStr(std::string &optName, std::shared_ptr<Optimizer<Dtype>> &opt);
+		static int getOptimizerByStr(std::string &type, std::shared_ptr<Optimizer<Dtype>> &opt);
 	protected:
 		float lr_ = 0.1f;
 	};

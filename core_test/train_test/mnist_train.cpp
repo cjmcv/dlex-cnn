@@ -12,11 +12,11 @@ namespace dlex_cnn
 	MnistTrainTest::MnistTrainTest()
 	{
 		class_num_ = 10;
-		train_images_file_ = "../../res/mnist_data/train-images.idx3-ubyte";
-		train_labels_file_ = "../../res/mnist_data/train-labels.idx1-ubyte";
+		train_images_file_ = "../../../res/mnist_data/train-images.idx3-ubyte";
+		train_labels_file_ = "../../../res/mnist_data/train-labels.idx1-ubyte";
 
-		test_images_file_ = "../../res/mnist_data/t10k-images.idx3-ubyte";
-		test_labels_file_ = "../../res/mnist_data/t10k-labels.idx1-ubyte";
+		test_images_file_ = "../../../res/mnist_data/t10k-images.idx3-ubyte";
+		test_labels_file_ = "../../../res/mnist_data/t10k-labels.idx1-ubyte";
 
 		printf("MnistTrainTest constructed.\n");
 	}
@@ -80,50 +80,50 @@ namespace dlex_cnn
 	}
 
 	bool MnistTrainTest::fetchBatchData(const std::vector<std::pair<dlex_cnn::IMAGE_DATUM, char>> &train_data_,
-		std::shared_ptr<dlex_cnn::Tensor<float>> inputDataTensor,
-		std::shared_ptr<dlex_cnn::Tensor<float>> labelDataTensor,
+		std::shared_ptr<dlex_cnn::Tensor<float>> input_data_tensor,
+		std::shared_ptr<dlex_cnn::Tensor<float>> label_data_tensor,
 		const int offset, const int length)
 	{
-		assert(inputDataTensor->getShape()[0] == labelDataTensor->getShape()[0]);
+		assert(input_data_tensor->getShape()[0] == label_data_tensor->getShape()[0]);
 		if (offset >= train_data_.size())
 		{
 			return false;
 		}
-		int actualEndPos = offset + length;
-		if (actualEndPos > train_data_.size())
+		int actual_end_pos = offset + length;
+		if (actual_end_pos > train_data_.size())
 		{
 			//image data
-			//auto inputDataSize = inputDataTensor->getSize();
-			inputDataTensor->getShape()[0] = train_data_.size() - offset;
-			actualEndPos = offset + inputDataTensor->getShape()[0];
-			inputDataTensor.reset(new dlex_cnn::Tensor<float>(inputDataTensor->getShape()));
+			//auto inputDataSize = input_data_tensor->getSize();
+			input_data_tensor->getShape()[0] = train_data_.size() - offset;
+			actual_end_pos = offset + input_data_tensor->getShape()[0];
+			input_data_tensor.reset(new dlex_cnn::Tensor<float>(input_data_tensor->getShape()));
 			//label data
-			//auto labelDataSize = labelDataTensor->getSize();
-			labelDataTensor->getShape()[0] = inputDataTensor->getShape()[0];
-			labelDataTensor.reset(new dlex_cnn::Tensor<float>(labelDataTensor->getShape()));
+			//auto labelDataSize = label_data_tensor->getSize();
+			label_data_tensor->getShape()[0] = input_data_tensor->getShape()[0];
+			label_data_tensor.reset(new dlex_cnn::Tensor<float>(label_data_tensor->getShape()));
 		}
 		//printf("ready to copy\n");
 		//copy
-		const int sizePerImage = inputDataTensor->getSize()[dlex_cnn::tind::e3D];
-		const int sizePerLabel = labelDataTensor->getSize()[dlex_cnn::tind::e3D];
-		assert(sizePerImage == train_data_[0].first.channels*train_data_[0].first.width*train_data_[0].first.height);
+		const int size_per_image = input_data_tensor->getSize()[dlex_cnn::tind::e3D];
+		const int size_per_label = label_data_tensor->getSize()[dlex_cnn::tind::e3D];
+		assert(size_per_image == train_data_[0].first.channels*train_data_[0].first.width*train_data_[0].first.height);
 		//scale to 0.0f~1.0f
-		const float scaleRate = 1.0f / 255.0f;
-		for (int i = offset; i < actualEndPos; i++)
+		const float scale_rate = 1.0f / 255.0f;
+		for (int i = offset; i < actual_end_pos; i++)
 		{
 			//image data
-			float* inputData = (float *)inputDataTensor->getData() + (i - offset)*sizePerImage;//*sizeof(float)
-			const uint8_t* imageData = train_data_[i].first.pdata;
-			for (int j = 0; j < sizePerImage; j++)
+			float* input_data = (float *)input_data_tensor->getData() + (i - offset)*size_per_image;//*sizeof(float)
+			const uint8_t* image_data = train_data_[i].first.pdata;
+			for (int j = 0; j < size_per_image; j++)
 			{
-				inputData[j] = (float)imageData[j] * scaleRate;
+				input_data[j] = (float)image_data[j] * scale_rate;
 			}
 			//label data
-			float* labelData = (float *)labelDataTensor->getData() + (i - offset)*sizePerLabel;//*sizeof(float)
+			float* label_data = (float *)label_data_tensor->getData() + (i - offset)*size_per_label;//*sizeof(float)
 			const uint8_t label = train_data_[i].second;
-			for (int j = 0; j < sizePerLabel; j++)
+			for (int j = 0; j < size_per_label; j++)
 			{
-				labelData[j] = label;
+				label_data[j] = label;
 			}
 		}
 		//printf("finish fetch\n");
@@ -134,16 +134,16 @@ namespace dlex_cnn
 	{
 		assert(test_data.size() > 0);
 		const int number = len;
-		const int sizePerLabel = 1;
+		const int size_per_label = 1;
 
-		std::shared_ptr<dlex_cnn::Tensor<float>> result(new dlex_cnn::Tensor<float>(number, sizePerLabel, 1, 1));
+		std::shared_ptr<dlex_cnn::Tensor<float>> result(new dlex_cnn::Tensor<float>(number, size_per_label, 1, 1));
 		for (int i = start; i < start + len; i++)
 		{
-			float* labelData = (float *)result->getData() + (i - start)*sizePerLabel;//*sizeof(float)
+			float* label_data = (float *)result->getData() + (i - start)*size_per_label;//*sizeof(float)
 			const uint8_t label = test_data[i].second;
-			for (int j = 0; j < sizePerLabel; j++)
+			for (int j = 0; j < size_per_label; j++)
 			{
-				labelData[j] = label;
+				label_data[j] = label;
 			}
 		}
 		return result;
@@ -156,18 +156,18 @@ namespace dlex_cnn
 		const int channel = test_data[0].first.channels;
 		const int width = test_data[0].first.width;
 		const int height = test_data[0].first.height;
-		const int sizePerImage = channel*width*height;
-		const float scaleRate = 1.0f / 255.0f;
+		const int size_per_image = channel*width*height;
+		const float scale_rate = 1.0f / 255.0f;
 		//std::shared_ptr<dlex_cnn::DataTensor> result(new dlex_cnn::DataTensor(dlex_cnn::DataSize(number, channel, width, height)));
 		std::shared_ptr<dlex_cnn::Tensor<float>> result(new dlex_cnn::Tensor<float>(number, channel, height, width));
 		for (int i = start; i < start + len; i++)
 		{
 			//image data
-			float* inputData = (float *)result->getData() + (i - start)*sizePerImage;
-			const uint8_t* imageData = test_data[i].first.pdata;
-			for (int j = 0; j < sizePerImage; j++)
+			float* input_data = (float *)result->getData() + (i - start)*size_per_image;
+			const uint8_t* image_data = test_data[i].first.pdata;
+			for (int j = 0; j < size_per_image; j++)
 			{
-				inputData[j] = (float)imageData[j] * scaleRate;
+				input_data[j] = (float)image_data[j] * scale_rate;
 			}
 		}
 		return result;
@@ -185,23 +185,23 @@ namespace dlex_cnn
 		return (uint8_t)result;
 	}
 
-	std::pair<float, float> MnistTrainTest::test_in_train(dlex_cnn::NetWork<float>& network, const int batch, const std::vector< std::pair<dlex_cnn::IMAGE_DATUM, char> > &test_data)
+	std::pair<float, float> MnistTrainTest::testInTrain(dlex_cnn::NetWork<float>& network, const int batch, const std::vector< std::pair<dlex_cnn::IMAGE_DATUM, char> > &test_data)
 	{
 		//printf("into test: batch = %d, %d, %d\n", batch, test_labels.size(), test_images.size());
 		assert(test_data.size()>0);
-		int correctCount = 0;
+		int correct_count = 0;
 		float loss = 0.0f;
 		int batchs = 0;
 		for (int i = 0; i < test_data.size(); i += batch, batchs++)//test_data.size()
 		{
 			const int start = i;
-			int tlabelSize = test_data.size();
-			const int len = std::min(tlabelSize - start, batch);
+			int t_label_size = test_data.size();
+			const int len = std::min(t_label_size - start, batch);
 			//printf("len = %d\n", len);
-			const std::shared_ptr<dlex_cnn::Tensor<float>> inputDataTensor = convertVectorToTensor(test_data, start, len);	//data -> test_data.first
-			const std::shared_ptr<dlex_cnn::Tensor<float>> labelDataTensor = convertLabelToTensor(test_data, start, len);	//label -> test_data.second
+			const std::shared_ptr<dlex_cnn::Tensor<float>> input_data_tensor = convertVectorToTensor(test_data, start, len);	//data -> test_data.first
+			const std::shared_ptr<dlex_cnn::Tensor<float>> label_data_tensor = convertLabelToTensor(test_data, start, len);	//label -> test_data.second
 
-			network.testBatch(inputDataTensor, labelDataTensor);//
+			network.testBatch(input_data_tensor, label_data_tensor);//
 			std::shared_ptr<dlex_cnn::Tensor<float>> probDataTensor;
 			network.getNodeData("output", probDataTensor);
 
@@ -214,291 +214,64 @@ namespace dlex_cnn
 
 			//printf("ready to get loss\n");
 			////get loss
-			//const float batch_loss = 0; // network.getLoss(labelDataTensor, probDataTensor);
+			//const float batch_loss = 0; // network.getLoss(label_data_tensor, probDataTensor);
 			//loss = dlex_cnn::moving_average(loss, batchs + 1, batch_loss);
 			//printf("loss = %f\n", loss);
 			////printf("loss: %f, %f\n", batch_loss, loss);
 
 			//printf("ready to get acc\n");
-			const int labelSize = probDataTensor->getSize()[dlex_cnn::tind::e3D];
-			const float* probData = (float *)probDataTensor->getData();
+			const int label_size = probDataTensor->getSize()[dlex_cnn::tind::e3D];
+			const float* prob_data = (float *)probDataTensor->getData();
 			for (int j = 0; j < len; j++)
 			{
-				const uint8_t stdProb = test_data[i + j].second;
-				const uint8_t testProb = getMaxIdxInArray(probData + j*labelSize, probData + (j + 1) * labelSize);
-				if (stdProb == testProb)
+				const uint8_t real_prob = test_data[i + j].second;
+				const uint8_t test_prob = getMaxIdxInArray(prob_data + j*label_size, prob_data + (j + 1) * label_size);
+				if (real_prob == test_prob)
 				{
-					correctCount++;
+					correct_count++;
 				}
 			}
 			//printf("finish\n");
 		}
 
-		const float accuracy = (float)correctCount / (float)test_data.size();
+		const float accuracy = (float)correct_count / (float)test_data.size();
 		return std::pair<float, float>(accuracy, 0);	//loss
-	}
-
-	dlex_cnn::NetWork<float> MnistTrainTest::buildConvNet(const int batch, const int channels, const int height, const int width)
-	{
-		printf("start building net\n");
-		//registerOpClass();
-
-		dlex_cnn::NetWork<float> network;
-		network.netWorkInit("netA");
-		//network.setInputSize(batch, channels, height, width);
-
-		//input data layer
-		//add_input_layer2(network);
-
-		//////std::string nodeName = "input";
-		//////dlex_cnn::InputParam inputParam;
-		//////std::shared_ptr<dlex_cnn::Op<float>> input = std::make_shared<dlex_cnn::InputOp<float>>(*(dlex_cnn::CreateOp<float>(inputParam)));
-		//////network.addNode(nodeName, input);
-	
-		std::shared_ptr<dlex_cnn::Op<float>> input_s = dlex_cnn::OpFactory<float>::getInstance().createOpByType("Input");
-		assert(input_s != NULL);
-		dlex_cnn::InputOpParam *inputParam = new dlex_cnn::InputOpParam(batch, channels, height, width);
-		dynamic_cast<dlex_cnn::InputOp<float> *>(input_s.get())->setOpParam(*inputParam);
-		std::vector < std::shared_ptr<dlex_cnn::Op<float>> > input;
-
-		input.push_back(input_s);
-		std::string nodeName_input = "input";
-		network.addNode(nodeName_input, input);
-
-		///////////////////////////////////////////////////
-		// conv1
-		std::shared_ptr<dlex_cnn::Op<float>> conv1_s = dlex_cnn::OpFactory<float>::getInstance().createOpByType("Convolution");
-		dlex_cnn::ConvolutionOpParam ConvolutionParam;
-		ConvolutionParam.blas_enable = true;
-		ConvolutionParam.kernel_num = 6;
-		ConvolutionParam.kernel_h = 3;
-		ConvolutionParam.kernel_w = 3;
-		ConvolutionParam.pad_h = 1;
-		ConvolutionParam.pad_w = 1;
-		ConvolutionParam.stride_h = 1;
-		ConvolutionParam.stride_w = 1;
-		ConvolutionParam.dilation_h = 1;
-		ConvolutionParam.dilation_w = 1;
-
-		dynamic_cast<dlex_cnn::ConvolutionOp<float> *>(conv1_s.get())->setOpParam(ConvolutionParam);
-		std::string nodeName_conv1 = "conv1";
-		std::vector<std::shared_ptr<dlex_cnn::Op<float>>> conv1;
-		conv1.push_back(conv1_s);
-		std::vector<std::string> inNodeName_conv1;
-		inNodeName_conv1.push_back(nodeName_input);
-		network.addNode(nodeName_conv1, conv1, inNodeName_conv1);
-
-		///////////////////////////////////////////////////
-		// deconv1
-		std::shared_ptr<dlex_cnn::Op<float>> deconv1_s = dlex_cnn::OpFactory<float>::getInstance().createOpByType("Deconvolution");
-		dlex_cnn::DeconvolutionOpParam DeconvolutionParam;
-		DeconvolutionParam.blas_enable = true;
-		DeconvolutionParam.kernel_channels = 6;
-		DeconvolutionParam.kernel_h = 3;
-		DeconvolutionParam.kernel_w = 3;
-		DeconvolutionParam.pad_h = 1;
-		DeconvolutionParam.pad_w = 1;
-		DeconvolutionParam.stride_h = 1;
-		DeconvolutionParam.stride_w = 1;
-		DeconvolutionParam.dilation_h = 1;
-		DeconvolutionParam.dilation_w = 1;
-
-		dynamic_cast<dlex_cnn::DeconvolutionOp<float> *>(deconv1_s.get())->setOpParam(DeconvolutionParam);
-		std::string nodeName_deconv1 = "deconv1";
-		std::vector<std::shared_ptr<dlex_cnn::Op<float>>> deconv1;
-		deconv1.push_back(deconv1_s);
-		std::vector<std::string> inNodeName_deconv1;
-		inNodeName_deconv1.push_back(nodeName_conv1);
-		network.addNode(nodeName_deconv1, deconv1, inNodeName_deconv1);
-
-		////////////////////////////////////////////
-		// activation 1
-		std::shared_ptr<dlex_cnn::Op<float>> relu1_s = dlex_cnn::OpFactory<float>::getInstance().createOpByType("Activation");
-		dlex_cnn::ActivationOpParam ReLUParam1;
-		ReLUParam1.activationType = dlex_cnn::tind::Activation::eReLU;
-
-		dynamic_cast<dlex_cnn::ActivationOp<float> *>(relu1_s.get())->setOpParam(ReLUParam1);
-		std::string nodeName_relu1 = "relu1";
-		std::vector<std::shared_ptr<dlex_cnn::Op<float>>> relu1;
-		relu1.push_back(relu1_s);
-		std::vector<std::string> inNodeName_relu1;
-		inNodeName_relu1.push_back(nodeName_deconv1);
-		network.addNode(nodeName_relu1, relu1, inNodeName_relu1);
-
-
-		////////////////////////////////////////////
-		// pool 1
-		std::shared_ptr<dlex_cnn::Op<float>> pool_s = dlex_cnn::OpFactory<float>::getInstance().createOpByType("Pooling");
-		dlex_cnn::PoolingOpParam PoolingParam;
-		PoolingParam.global_pooling = false;
-		PoolingParam.kernel_h = 3;
-		PoolingParam.kernel_w = 3;
-		PoolingParam.pad_h = 1;
-		PoolingParam.pad_w = 1;
-		PoolingParam.stride_h = 1;
-		PoolingParam.stride_w = 1;
-		PoolingParam.poolingType = dlex_cnn::tind::eMAX;
-		dynamic_cast<dlex_cnn::PoolingOp<float> *>(pool_s.get())->setOpParam(PoolingParam);
-
-		std::string nodeName_pool = "pool1";
-		std::vector<std::shared_ptr<dlex_cnn::Op<float>>> pool;
-		pool.push_back(pool_s);
-		std::vector<std::string> inNodeName_pool;
-		inNodeName_pool.push_back(nodeName_relu1);
-		network.addNode(nodeName_pool, pool, inNodeName_pool);
-		/////////////////////////////////////////////////////
-		//// conv2
-		//std::shared_ptr<dlex_cnn::Op<float>> conv2_s = dlex_cnn::OpFactory<float>::getInstance().createOpByType("Convolution");
-		//dlex_cnn::ConvolutionOpParam ConvolutionParam2;
-		//ConvolutionParam2.blas_enable = true;
-		//ConvolutionParam2.kernel_num = 6;
-		//ConvolutionParam2.kernel_h = 3;
-		//ConvolutionParam2.kernel_w = 3;
-		//ConvolutionParam2.pad_h = 1;
-		//ConvolutionParam2.pad_w = 1;
-		//ConvolutionParam2.stride_h = 1;
-		//ConvolutionParam2.stride_w = 1;
-		//ConvolutionParam2.dilation_h = 1;
-		//ConvolutionParam2.dilation_w = 1;
-
-		//dynamic_cast<dlex_cnn::ConvolutionOp<float> *>(conv2_s.get())->setOpParam(ConvolutionParam2);
-		//std::string nodeName_conv2 = "conv2";
-		//std::vector<std::shared_ptr<dlex_cnn::Op<float>>> conv2;
-		//conv2.push_back(conv2_s);
-		//std::vector<std::string> inNodeName_conv2;
-		//inNodeName_conv2.push_back(nodeName_relu1);
-		//network.addNode(nodeName_conv2, conv2, inNodeName_conv2);
-
-		//////////////////////////////////////////////
-		//// activation2
-		//std::shared_ptr<dlex_cnn::Op<float>> relu2_s = dlex_cnn::OpFactory<float>::getInstance().createOpByType("Activation");
-		//dlex_cnn::ActivationOpParam ReLUParam2;
-		//ReLUParam2.activationType = dlex_cnn::tind::Activation::eReLU;
-
-		//dynamic_cast<dlex_cnn::ActivationOp<float> *>(relu2_s.get())->setOpParam(ReLUParam2);
-		//std::string nodeName_relu2 = "relu2";
-		//std::vector<std::shared_ptr<dlex_cnn::Op<float>>> relu2;
-		//relu2.push_back(relu2_s);
-		//std::vector<std::string> inNodeName_relu2;
-		//inNodeName_relu2.push_back(nodeName_conv2);
-		//network.addNode(nodeName_relu2, relu2, inNodeName_relu2);
-
-		//////convolution layer
-		////add_conv_layer(network, 6 ,1);
-		////add_active_layer(network);
-		//////pooling layer
-		////add_pool_layer(network, 6);
-
-		//////convolution layer
-		////add_conv_layer(network, 12, 6);
-		////add_active_layer(network);
-		//////pooling layer
-		////add_pool_layer(network, 12);
-
-		//add_fc_layer(network, 256);
-	
-		//// fc1 - 256
-		//std::shared_ptr<dlex_cnn::Op<float>> fc1_s = dlex_cnn::OpFactory<float>::getInstance().createOpByType("InnerProduct");
-		//dlex_cnn::InnerProductOpParam innerProductParam;
-		//innerProductParam.blas_enable = true;
-		//innerProductParam.num_hidden = 256;
-		//dynamic_cast<dlex_cnn::InnerProductOp<float> *>(fc1_s.get())->setOpParam(innerProductParam);
-		//std::string nodeName_fc1 = "fc1";
-		//std::vector<std::shared_ptr<dlex_cnn::Op<float>>> fc1;
-		//fc1.push_back(fc1_s);
-		//std::vector<std::string> inNodeName_fc1;
-		//inNodeName_fc1.push_back(nodeName_relu1);
-		//network.addNode(nodeName_fc1, fc1, inNodeName_fc1);
-
-		// fc2 - 512
-		std::shared_ptr<dlex_cnn::Op<float>> fc2_s = dlex_cnn::OpFactory<float>::getInstance().createOpByType("InnerProduct");
-		dlex_cnn::InnerProductOpParam innerProductParam2;
-		innerProductParam2.blas_enable = true;
-		innerProductParam2.num_hidden = class_num_;
-		dynamic_cast<dlex_cnn::InnerProductOp<float> *>(fc2_s.get())->setOpParam(innerProductParam2);
-		std::string nodeName_fc2 = "fc2";
-		std::vector<std::shared_ptr<dlex_cnn::Op<float>>> fc2;
-		fc2.push_back(fc2_s);
-		std::vector<std::string> inNodeName_fc2;
-		inNodeName_fc2.push_back(nodeName_pool);
-		network.addNode(nodeName_fc2, fc2, inNodeName_fc2);
-
-		// softmax1
-		//std::shared_ptr<dlex_cnn::Op<float>> sm_s = dlex_cnn::OpFactory<float>::getInstance().createOpByType("Softmax");
-		//dlex_cnn::SoftmaxOpParam softmaxParam;
-		//dynamic_cast<dlex_cnn::SoftmaxOp<float> *>(sm_s.get())->setOpParam(softmaxParam);
-
-		//std::shared_ptr<dlex_cnn::Op<float>> cel_s = dlex_cnn::OpFactory<float>::getInstance().createOpByType("CrossEntropyLoss");
-		//dlex_cnn::CrossEntropyLossOpParam CELParam;
-		//dynamic_cast<dlex_cnn::CrossEntropyLossOp<float> *>(cel_s.get())->setOpParam(CELParam);
-		//
-		//std::string nodeName_softmax = "softmaxz";
-		//std::vector<std::shared_ptr<dlex_cnn::Op<float>>> sm;
-		//sm.push_back(sm_s);
-		//sm.push_back(cel_s);
-		//std::vector<std::string> inNodeName_softmax;
-		//inNodeName_softmax.push_back(nodeName_fc2);
-		//network.addNode(nodeName_softmax, sm, inNodeName_softmax);
-
-		// softmax2
-		std::shared_ptr<dlex_cnn::Op<float>> sm_s = dlex_cnn::OpFactory<float>::getInstance().createOpByType("SoftmaxCrossEntropyLossH");
-		dlex_cnn::SoftmaxCrossEntropyLossHOpParam softmaxParam;
-		dynamic_cast<dlex_cnn::SoftmaxCrossEntropyLossHOp<float> *>(sm_s.get())->setOpParam(softmaxParam);
-
-		std::string nodeName_softmax = "softmaxz";
-		std::vector<std::shared_ptr<dlex_cnn::Op<float>>> sm;
-		sm.push_back(sm_s);
-		std::vector<std::string> inNodeName_softmax;
-		inNodeName_softmax.push_back(nodeName_fc2);
-		network.addNode(nodeName_softmax, sm, inNodeName_softmax);
-
-		// output node
-		std::shared_ptr<dlex_cnn::Op<float>> output_s = dlex_cnn::OpFactory<float>::getInstance().createOpByType("Output");
-		dlex_cnn::OutputOpParam outNodeParam;
-		outNodeParam.label_dim = 1;
-		dynamic_cast<dlex_cnn::OutputOp<float> *>(output_s.get())->setOpParam(outNodeParam);
-		std::vector < std::shared_ptr<dlex_cnn::Op<float>> > output;
-		output.push_back(output_s);
-		std::string nodeName_output = "output";
-		std::vector<std::string> inNodeName_output;
-		inNodeName_output.push_back(nodeName_softmax);
-		network.addNode(nodeName_output, output, inNodeName_output);
-
-		printf("finish building net\n");
-
-		return network;
 	}
 
 	void MnistTrainTest::train()
 	{
-		loadMnistData(tind::Train);
+		if (!loadMnistData(tind::Train))
+		{
+			printf("error loadMnistData\n");
+			return;
+		}
 
-		float learningRate = 0.1f;
-		const float decayRate = 0.8f;
-		const float minLearningRate = 0.001f;
-		const int testAfterBatches = 10;
-		const int maxBatches = 10000;
-		int batchSize = 128;
+		float learning_rate = 0.1f;
+		const float decay_rate = 0.8f;
+		const float min_learning_rate = 0.001f;
+		const int test_after_batches = 60;
+		const int max_batches = 10000;
+		int batch_size = 128;
 		const int channels = train_data_[0].first.channels;
 		const int width = train_data_[0].first.width;
 		const int height = train_data_[0].first.height;
-		printf("testAfterBatches:%d\n", testAfterBatches);
-		printf("learningRate:%f ,decayRate:%f , minLearningRate:%f\n", learningRate, decayRate, minLearningRate);
+		printf("test_after_batches:%d\n", test_after_batches);
+		printf("learning_rate:%f ,decay_rate:%f , min_learning_rate:%f\n", learning_rate, decay_rate, min_learning_rate);
 		printf("channels:%d , width:%d , height:%d\n", channels, width, height);
 
 		printf("construct network begin...\n");
 		registerOpClass();
 
-		dlex_cnn::NetWork<float> network(buildConvNet(batchSize, channels, height, width));
-		std::string optName = "SGD";
-		std::shared_ptr<dlex_cnn::Optimizer<float>> optimizer;
-		dlex_cnn::Optimizer<float>::getOptimizerByStr(optName, optimizer);
-		network.setOptimizer(optimizer);
-		network.setLearningRate(learningRate);
-
-		//dlex_cnn::NetWork<float> network;
+		//NetWork<float> network;
 		//network.netWorkInit("netA");
-		//network.loadStageModel("./", 1);
+		//TypicalNet<float> typicalNet;
+		//typicalNet.mix(batch_size, channels, height, width, network);
+
+		//network.setLearningRate(learning_rate);
+
+		dlex_cnn::NetWork<float> network;
+		network.netWorkInit("netA");
+		network.loadStageModel("./", 1);
 
 		printf("construct network done.\n");
 
@@ -509,76 +282,75 @@ namespace dlex_cnn
 
 		//train
 		printf("begin training...\n");
-		std::shared_ptr<dlex_cnn::Tensor<float>> inputDataTensor = std::make_shared<dlex_cnn::Tensor<float>>(batchSize, channels, height, width);	//shoule be moved
-		std::shared_ptr<dlex_cnn::Tensor<float>> labelDataTensor = std::make_shared<dlex_cnn::Tensor<float>>(batchSize, 1, 1, 1);//class_num_
+		std::shared_ptr<dlex_cnn::Tensor<float>> input_data_tensor = std::make_shared<dlex_cnn::Tensor<float>>(batch_size, channels, height, width);	//shoule be moved
+		std::shared_ptr<dlex_cnn::Tensor<float>> label_data_tensor = std::make_shared<dlex_cnn::Tensor<float>>(batch_size, 1, 1, 1);//class_num_
 	
-		int savedIter = 59;
-		std::string modelSavedPath = "./";
+		int save_iter = 19;
+		std::string model_saved_path = "./";
 
-		int lrSetp = 20;
-		int epochIdx = 0;
+		int lr_setp = 200;
+		int epoch_idx = 0;
 
 		//before epoch start, shuffle all train data first
-		batchSize = 128;	//shoule be changed
-		int fetchOffSet = 0;
-		for (int batchIdx = 0; batchIdx < maxBatches; batchIdx++)
+		batch_size = 128;	//shoule be changed
+		int fetch_off_set = 0;
+		for (int batch_idx = 0; batch_idx < max_batches; batch_idx++)
 		{
-			//batchSize++;
-			printf("batch size = %d\n", batchSize);
-			if (inputDataTensor->getShape()[tind::eNum] != batchSize)
+			//batch_size++;
+			printf("batch size = %d\n", batch_size);
+			if (input_data_tensor->getShape()[tind::eNum] != batch_size)
 			{
-				inputDataTensor.reset(new dlex_cnn::Tensor<float>(batchSize, channels, height, width));
-				labelDataTensor.reset(new dlex_cnn::Tensor<float>(batchSize, 1, 1, 1));
+				input_data_tensor.reset(new dlex_cnn::Tensor<float>(batch_size, channels, height, width));
+				label_data_tensor.reset(new dlex_cnn::Tensor<float>(batch_size, 1, 1, 1));
 			}
-			printf("start train batch : %d\n", batchIdx);
-			if (!fetchBatchData(train_data_, inputDataTensor, labelDataTensor, fetchOffSet*batchSize, batchSize))
+			printf("start train batch : %d\n", batch_idx);
+			if (!fetchBatchData(train_data_, input_data_tensor, label_data_tensor, fetch_off_set*batch_size, batch_size))
 			{
-				fetchOffSet = 0;
+				fetch_off_set = 0;
 				std::random_shuffle(train_data_.begin(), train_data_.end());
-				epochIdx++;
+				epoch_idx++;
 				continue;
 			}
 			else
-				fetchOffSet++;
+				fetch_off_set++;
 
 			printf("finish fetchBatchData\n");
 
 			//network.netWorkShow();
 
-
-			const float batch_loss = network.trainBatch(inputDataTensor, labelDataTensor);
+			const float batch_loss = network.trainBatch(input_data_tensor, label_data_tensor);
 
 			train_batches++;
 			train_total_loss += batch_loss;
-			printf("batch[%d]->train_batch_loss: %f\n", batchIdx, batch_loss);
-			if (batchIdx && batchIdx % testAfterBatches == 0)
+			printf("batch[%d]->train_batch_loss: %f, learning_rate: %f\n", batch_idx, batch_loss, learning_rate);
+			if (batch_idx && batch_idx % test_after_batches == 0)
 			{
 				network.switchPhase(dlex_cnn::tind::Phase::Test);
-				std::tie(val_accuracy, val_loss) = test_in_train(network, 128, validate_data_);	// 要注意最后一个batch为112，会修改掉所有节点的num维度，在下一轮训练过程中修改回来。
-				printf("sample : %d/%d , learningRate : %f , train_avg_loss : %f , val_loss : %f , val_accuracy : %.4f%%\n",
-					batchIdx*batchSize, train_data_.size(), learningRate, train_total_loss / train_batches, val_loss, val_accuracy*100.0f);
+				std::tie(val_accuracy, val_loss) = testInTrain(network, 128, validate_data_);	// 要注意最后一个batch为112，会修改掉所有节点的num维度，在下一轮训练过程中修改回来。
+				printf("sample : %d/%d , learning_rate : %f , train_avg_loss : %f , val_loss : %f , val_accuracy : %.4f%%\n",
+					batch_idx*batch_size, train_data_.size(), learning_rate, train_total_loss / train_batches, val_loss, val_accuracy*100.0f);
 
 				train_total_loss = 0.0f;
 				train_batches = 0;
 				network.switchPhase(dlex_cnn::tind::Phase::Train);
 			}
-			if (batchIdx && batchIdx % savedIter == 0)
-				network.saveStageModel(modelSavedPath, 1);
+			if (batch_idx && batch_idx % save_iter == 0)
+				network.saveStageModel(model_saved_path, 1);
 
-			if (batchIdx && batchIdx % lrSetp == 0)
+			if (batch_idx && batch_idx % lr_setp == 0)
 			{
 				//network.switchPhase(dlex_cnn::tind::Phase::Test);
-				//std::tie(val_accuracy, val_loss) = test_in_train(network, 128, validate_data_);
+				//std::tie(val_accuracy, val_loss) = testInTrain(network, 128, validate_data_);
 				//network.switchPhase(dlex_cnn::tind::Phase::Train);
 
 				//update learning rate
-				learningRate = std::max(learningRate*decayRate, minLearningRate);
-				network.setLearningRate(learningRate);
-				//printf("epoch[%d] val_loss : %f , val_accuracy : %.4f%%\n", epochIdx++, val_loss, val_accuracy*100.0f);
+				learning_rate = std::max(learning_rate*decay_rate, min_learning_rate);
+				network.setLearningRate(learning_rate);
+				//printf("epoch[%d] val_loss : %f , val_accuracy : %.4f%%\n", epoch_idx++, val_loss, val_accuracy*100.0f);
 			}
 		}
 
-		std::tie(val_accuracy, val_loss) = test_in_train(network, 128, validate_data_);
+		std::tie(val_accuracy, val_loss) = testInTrain(network, 128, validate_data_);
 		printf("final val_loss : %f , final val_accuracy : %.4f%%\n", val_loss, val_accuracy*100.0f);
 		//success = network.saveModel(modelFilePath);
 		//assert(success);
@@ -607,7 +379,7 @@ namespace dlex_cnn
 		//test
 		printf("begin test...\n");
 		float accuracy = 0.0f, loss = std::numeric_limits<float>::max();
-		std::tie(accuracy, loss) = test_in_train(network, batch, validate_data_);
+		std::tie(accuracy, loss) = testInTrain(network, batch, validate_data_);
 		printf("accuracy : %.4f%%\n", accuracy*100.0f);
 		printf("finished test.\n");
 

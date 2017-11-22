@@ -25,25 +25,25 @@ namespace dlex_cnn
 
 	}
 	template <typename Dtype>
-	int Node<Dtype>::hybridOpMap(std::string &inteOpType)
+	int Node<Dtype>::hybridOpMap(std::string &inte_op_type)
 	{
-		int opSize = sub_ops_.size();
-		if (opSize <= 0)
+		int op_size = sub_ops_.size();
+		if (op_size <= 0)
 			return -1;
-		if (opSize == 2)
+		if (op_size == 2)
 		{
-			std::string opType0 = sub_ops_[0]->getOpType();
-			std::string opType1 = sub_ops_[1]->getOpType();
+			std::string op_type_0 = sub_ops_[0]->getOpType();
+			std::string op_type_1 = sub_ops_[1]->getOpType();
 			for (int i = 0; i < OP_DOUBLE_NUM; i++)
 			{
-				if ((opType0 == opListDouble[i][1] && opType1 == opListDouble[i][2]) ||
-					(opType1 == opListDouble[i][1] && opType0 == opListDouble[i][2]))
+				if ((op_type_0 == opListDouble[i][1] && op_type_1 == opListDouble[i][2]) ||
+					(op_type_1 == opListDouble[i][1] && op_type_0 == opListDouble[i][2]))
 				{
-					inteOpType = opListDouble[i][0];
+					inte_op_type = opListDouble[i][0];
 				}
 			}
 		}
-		else if (opSize == 3)
+		else if (op_size == 3)
 		{
 			//fill
 		}
@@ -74,25 +74,25 @@ namespace dlex_cnn
 		}
 		else
 		{
-			std::string inteOpStr;
-			hybridOpMap(inteOpStr);
-			printf("inteOp = %s\n", inteOpStr.c_str());
+			std::string inte_op_str;
+			hybridOpMap(inte_op_str);
+			printf("inteOp = %s\n", inte_op_str.c_str());
 			
-			int sIndex = -1;
+			int s_index = -1;
 			for (int i = 0; i < HOP_PHASEMAP_NUM; i++)
 			{
-				if (sIndex != -1)
+				if (s_index != -1)
 					break;
-				if (inteOpStr == hopPhaseMap[i][0])
-					sIndex = i;
+				if (inte_op_str == hopPhaseMap[i][0])
+					s_index = i;
 			}
-			if (sIndex == -1)
+			if (s_index == -1)
 			{
-				DLOG_ERR("[ Node::inferInteOp ]: Can not find the hop with name < %s > in hopPhaseMap.\n", inteOpStr);
+				DLOG_ERR("[ Node::inferInteOp ]: Can not find the hop with name < %s > in hopPhaseMap.\n", inte_op_str);
 				return -1;
 			}
-			//printf("inte_ops = %s\n", hopPhaseMap[sIndex][phase_ + 1].c_str());
-			inte_ops_ = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType(hopPhaseMap[sIndex][phase_+1].c_str());
+			//printf("inte_ops = %s\n", hopPhaseMap[s_index][phase_ + 1].c_str());
+			inte_ops_ = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType(hopPhaseMap[s_index][phase_+1].c_str());
 			if (inte_ops_->getOpCategory() == tind::eHybridOp)
 			{
 				//printf("into inte_ops_->getOpCategory() == tind::eHybridOp\n");
@@ -115,116 +115,5 @@ namespace dlex_cnn
 		return ret;
 	};
 	
-	template <typename Dtype>
-	int Node<Dtype>::writeNode2Text(FILE *fp)	//“∆÷¡graph
-	{
-		////name, in_idx_count, in_idx£®save name£©
-		//std::stringstream ss;
-		//ss << name_ << "," << index_;
-		//for (int i = 0; i < inputs_index_.size(); i++)
-		//	ss << "," << inputs_index_[i];
-		//ss << ";" << std::endl;
-
-		//std::string opParam = getOpParamBufStr();
-		//ss << opParam;
-
-		//fprintf(fp, "%s\n", ss.str().c_str());
-
-		return 0;
-	}
-
-	// no fixed
-	template <typename Dtype>
-	int Node<Dtype>::writeNode2Bin(FILE *fp)
-	{
-		//name, index, in_idx_count, in_idx
-		int nameLen = name_.length();
-		fwrite(&nameLen, sizeof(int), 1, fp);
-		fwrite(name_.c_str(), sizeof(char), nameLen, fp);
-		fwrite(&index_, sizeof(int), 1, fp);
-
-		int inIdxSize = inputs_index_.size();
-		fwrite(&inIdxSize, sizeof(int), 1, fp);
-		for (int i = 0; i < inIdxSize; i++)
-			fwrite(&inputs_index_[i], sizeof(int), 1, fp);
-
-		std::string opParam = getOpParamBufStr();
-		int opParamLen = opParam.length();
-		fwrite(&opParamLen, sizeof(int), 1, fp);
-		fwrite(opParam.c_str(), sizeof(char), opParamLen, fp);
-
-		return 0;
-	}
-
-	template <typename Dtype>
-	int Node<Dtype>::writeWB2Bin(FILE *fp)
-	{
-		//// use node name and index to verify
-		//int nameLen = name_.length();
-		//fwrite(&nameLen, sizeof(int), 1, fp);
-		//fwrite(name_.c_str(), sizeof(char), nameLen, fp);
-		//fwrite(&index_, sizeof(int), 1, fp);
-
-		//int size = (cpu_data_.size() - 1) > 0 ? (cpu_data_.size() - 1) : 0;
-		//fwrite(&size, sizeof(int), 1, fp);
-		//
-		//if (size == 0)
-		//	return 0;
-
-		//for (int i = 0; i < size; i++)
-		//{
-		//	int len = cpu_data_[i + 1]->getSize()[tind::e4D];
-		//	fwrite(&len, sizeof(int), 1, fp);
-		//	fwrite(cpu_data_[i + 1]->getData(), sizeof(Dtype), len, fp);
-		//}
-		return 0;
-	}
-
-	template <typename Dtype>
-	int Node<Dtype>::readBin2WB(FILE *fp)	//“∆÷¡graph
-	{
-		//// use node name and index to verify
-		//int nameLen = name_.length();
-		//fwrite(&nameLen, sizeof(int), 1, fp);
-		//fwrite(name_.c_str(), sizeof(char), nameLen, fp);
-		//fwrite(&index_, sizeof(int), 1, fp);
-
-		//int size = (cpu_data_.size() - 1) > 0 ? (cpu_data_.size() - 1) : 0;
-		//fwrite(&size, sizeof(int), 1, fp);
-
-		//if (size == 0)
-		//	return 0;
-
-		//for (int i = 0; i < size; i++)
-		//{
-		//	int len = cpu_data_[i + 1]->getSize()[tind::e4D];
-		//	fwrite(&len, sizeof(int), 1, fp);
-		//	fwrite(cpu_data_[i + 1]->getData(), sizeof(Dtype), len, fp);
-		//}
-		return 0;
-	}
-
-	template <typename Dtype>
-	void Node<Dtype>::serializeFromString(const std::string content)
-	{
-		//std::string layerType;
-		//int number = 1;
-		//int channels = 0;
-		//int width = 0;
-		//int height = 0;
-		//std::stringstream ss(content);
-		//ss >> name_ >> layerType >> channels >> height >> width;
-		//if (layerType != sub_ops_[0]->getOpType())	//œ»push_back OP
-		//{
-		//	printf("layer type is invalidate.\n");
-		//	return;
-		//}
-
-		//input_shape_.push_back(number);
-		//input_shape_.push_back(channels);
-		//input_shape_.push_back(height);
-		//input_shape_.push_back(width);
-		//sub_ops_[0]->inferOutShape(input_shape_, output_shape_);
-	}
 	INSTANTIATE_CLASS(Node);
 }

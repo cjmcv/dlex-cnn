@@ -50,8 +50,8 @@ namespace dlex_cnn
 	void add_bias(const int num, const int ch_size, const int len, const Dtype* bias, Dtype* dst);
 
 	template <typename Dtype>
-	void backward_bias(const int num, const int len, const Dtype* nextDiff, Dtype* biasGradient);
+	void backward_bias(const int num, const int len, const Dtype* next_diff, Dtype* bias_gradient);
 	template <typename Dtype>
-	void backward_bias(const int num, const int ch_size, const int len, const Dtype* nextDiff, Dtype* biasGradient);
+	void backward_bias(const int num, const int ch_size, const int len, const Dtype* next_diff, Dtype* bias_gradient);
 };
 #endif

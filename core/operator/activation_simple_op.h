@@ -24,7 +24,7 @@ namespace dlex_cnn
 
 	struct ActivationOpParam : public OpParam
 	{
-		tind::Activation activationType = tind::eReLU;
+		tind::Activation activation_type = tind::eReLU;
 
 		// relu
 		float negative_slope = 0;
@@ -41,12 +41,12 @@ namespace dlex_cnn
 		ActivationOp();
 		ActivationOp(ActivationOpParam param);
 		virtual ~ActivationOp();
-		inline virtual int setOpParam(ActivationOpParam opParam) { param_ = opParam; setOpFunc(); return 0; };
-		virtual int setOpParam(const std::string &opParamStr) override;
+		inline virtual int setOpParam(ActivationOpParam op_param) { param_ = op_param; setOpFunc(); return 0; };
+		virtual int setOpParam(const std::string &op_param_str) override;
 
 	private:
-		std::function<Dtype(Dtype)> pAct;
-		std::function<Dtype(Dtype, Dtype)> pRevAct;
+		std::function<Dtype(Dtype)> p_act;
+		std::function<Dtype(Dtype, Dtype)> p_rev_act;
 
 		inline Dtype relu(Dtype x) { return std::max(x, Dtype(0)) + param_.negative_slope * std::min(x, Dtype(0)); }
 		inline Dtype rev_relu(Dtype px, Dtype diff_next) { return diff_next * ((px > 0) + param_.negative_slope * (px <= 0)); }
@@ -65,15 +65,15 @@ namespace dlex_cnn
 		inline virtual std::vector<std::shared_ptr<Tensor<Dtype>>> &getOpDiff() override { return diff_; };
 
 		virtual std::string genOpParamStr() const override;
-		virtual int inferOutShape(std::vector<int> &inShape, std::vector<int> &outShape) override;
-		virtual int allocBuf4Node(const std::vector<int> &inShape,
-			const std::vector<int> &outShape,
+		virtual int inferOutShape(std::vector<int> &in_shape, std::vector<int> &out_shape) override;
+		virtual int allocBuf4Node(const std::vector<int> &in_shape,
+			const std::vector<int> &out_shape,
 			std::vector<std::shared_ptr<Tensor<Dtype>>> &data) const override;
-		virtual int allocOpBuf4Train(const std::vector<int> &inShape, const std::vector<int> &outShape) override;
+		virtual int allocOpBuf4Train(const std::vector<int> &in_shape, const std::vector<int> &out_shape) override;
 
 		virtual void forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
 		virtual void backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prevDiff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &nextDiff) override;
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
 
 	private:
 		std::string op_type_;

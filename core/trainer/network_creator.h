@@ -36,36 +36,36 @@ namespace dlex_cnn
 
 	public:
 		// Input
-		int createInputNode(std::string nodeName, std::string paramStr, NetWork<Dtype> &network);
-		int createInputNode(std::string nodeName, InputOpParam param, NetWork<Dtype> &network);
+		int createInputNode(std::string node_name, std::string param, NetWork<Dtype> &network);
+		int createInputNode(std::string node_name, InputOpParam param, NetWork<Dtype> &network);
 		
 		// Inner Product
-		int createInnerProductNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network);
-		int createInnerProductNode(std::string inNode, std::string name, InnerProductOpParam param, NetWork<Dtype> &network);
+		int createInnerProductNode(std::string in_node, std::string name, std::string param, NetWork<Dtype> &network);
+		int createInnerProductNode(std::string in_node, std::string name, InnerProductOpParam param, NetWork<Dtype> &network);
 		
 		// Convolution
-		int createConvNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network);
-		int createConvNode(std::string inNode, std::string name, ConvolutionOpParam param, NetWork<Dtype> &network);
+		int createConvNode(std::string in_node, std::string name, std::string param, NetWork<Dtype> &network);
+		int createConvNode(std::string in_node, std::string name, ConvolutionOpParam param, NetWork<Dtype> &network);
 
 		// Deconvolution
-		int createDeconvNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network);
-		int createDeconvNode(std::string inNode, std::string name, DeconvolutionOpParam param, NetWork<Dtype> &network);
+		int createDeconvNode(std::string in_node, std::string name, std::string param, NetWork<Dtype> &network);
+		int createDeconvNode(std::string in_node, std::string name, DeconvolutionOpParam param, NetWork<Dtype> &network);
 
 		// Activation
-		int createActivationNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network);
-		int createActivationNode(std::string inNode, std::string name, ActivationOpParam param, NetWork<Dtype> &network);
+		int createActivationNode(std::string in_node, std::string name, std::string param, NetWork<Dtype> &network);
+		int createActivationNode(std::string in_node, std::string name, ActivationOpParam param, NetWork<Dtype> &network);
 
 		// Pooling
-		int createPoolNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network);
-		int createPoolNode(std::string inNode, std::string name, PoolingOpParam param, NetWork<Dtype> &network);
+		int createPoolNode(std::string in_node, std::string name, std::string param, NetWork<Dtype> &network);
+		int createPoolNode(std::string in_node, std::string name, PoolingOpParam param, NetWork<Dtype> &network);
 
 		// Softamx Cross Entropy Loss
-		int createSoftmaxLossNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network);
-		int createSoftmaxLossNode(std::string inNode, std::string name, SoftmaxCrossEntropyLossHOpParam param, NetWork<Dtype> &network);
+		int createSoftmaxLossNode(std::string in_node, std::string name, std::string param, NetWork<Dtype> &network);
+		int createSoftmaxLossNode(std::string in_node, std::string name, SoftmaxCrossEntropyLossHOpParam param, NetWork<Dtype> &network);
 
 		// Output
-		int createOutputNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network);
-		int createOutputNode(std::string inNode, std::string name, OutputOpParam param, NetWork<Dtype> &network);
+		int createOutputNode(std::string in_node, std::string name, std::string param, NetWork<Dtype> &network);
+		int createOutputNode(std::string in_node, std::string name, OutputOpParam param, NetWork<Dtype> &network);
 
 		// Optimizer
 		int createOptimizer(std::string opt_type, NetWork<Dtype> &network);

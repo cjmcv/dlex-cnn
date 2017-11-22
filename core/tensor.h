@@ -45,9 +45,9 @@ namespace dlex_cnn
 			}
 		};
 		// Just copy data, without changing their size
-		void copyDataTo(Tensor<Dtype> &dstTensor);
+		void copyDataTo(Tensor<Dtype> &dst_tensor);
 		// Copy the whole tensor, includes their size and data.
-		void cloneTo(Tensor<Dtype> &dstTensor);
+		void cloneTo(Tensor<Dtype> &dst_tensor);
 
 	private:
 		void *data_;

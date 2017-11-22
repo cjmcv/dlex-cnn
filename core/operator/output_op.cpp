@@ -28,68 +28,68 @@ namespace dlex_cnn
 
 	}
 	template <typename Dtype>
-	int OutputOp<Dtype>::setOpParam(const std::string &opParamStr)
+	int OutputOp<Dtype>::setOpParam(const std::string &op_param_str)
 	{
-		std::string optStr = opParamStr;
-		param_.label_dim = atoi(fetchSubStr(optStr, "label_dim:", ",").c_str());
+		std::string opt_str = op_param_str;
+		param_.label_dim = atoi(fetchSubStr(opt_str, "label_dim:", ",").c_str());
 
 		return 0;
 	}
 	template <typename Dtype>
 	std::string OutputOp<Dtype>::genOpParamStr() const
 	{
-		std::stringstream paramStr;
-		paramStr << "label_dim:" << param_.label_dim << ",";
-		return paramStr.str();
+		std::stringstream param_str;
+		param_str << "label_dim:" << param_.label_dim << ",";
+		return param_str.str();
 	}
 	template <typename Dtype>
-	int OutputOp<Dtype>::inferOutShape(std::vector<int> &inShape, std::vector<int> &outShape)
+	int OutputOp<Dtype>::inferOutShape(std::vector<int> &in_shape, std::vector<int> &out_shape)
 	{
-		outShape = inShape;
+		out_shape = in_shape;
 		return 0;
 	}
 	template <typename Dtype>
-	int OutputOp<Dtype>::allocBuf4Node(const std::vector<int> &inShape,
-		const std::vector<int> &outShape,
+	int OutputOp<Dtype>::allocBuf4Node(const std::vector<int> &in_shape,
+		const std::vector<int> &out_shape,
 		std::vector<std::shared_ptr<Tensor<Dtype>>> &data) const
 	{
-		if (inShape[tind::eNum] <= 0 || inShape[tind::eChannels] <= 0 ||
-			inShape[tind::eHeight] <= 0 || inShape[tind::eWidth] <= 0 ||
-			inShape[tind::eNum] > 5000 || inShape[tind::eChannels] > 5000 ||
-			inShape[tind::eHeight] > 5000 || inShape[tind::eWidth] > 5000)
+		if (in_shape[tind::eNum] <= 0 || in_shape[tind::eChannels] <= 0 ||
+			in_shape[tind::eHeight] <= 0 || in_shape[tind::eWidth] <= 0 ||
+			in_shape[tind::eNum] > 5000 || in_shape[tind::eChannels] > 5000 ||
+			in_shape[tind::eHeight] > 5000 || in_shape[tind::eWidth] > 5000)
 		{
-			DLOG_ERR("[ OutputOp::allocBuf4Node ]: inShape is invalid -> (%d, %d, %d, %d) \n",
-				inShape[tind::eNum], inShape[tind::eChannels], inShape[tind::eHeight], inShape[tind::eWidth]);
+			DLOG_ERR("[ OutputOp::allocBuf4Node ]: in_shape is invalid -> (%d, %d, %d, %d) \n",
+				in_shape[tind::eNum], in_shape[tind::eChannels], in_shape[tind::eHeight], in_shape[tind::eWidth]);
 
 			return -1;
 		}
 
 		data.clear();
-		data.push_back(std::make_shared<Tensor<Dtype>>(inShape));	// output data
-		data.push_back(std::make_shared<Tensor<Dtype>>(inShape[0], param_.label_dim, 1, 1));	// label
+		data.push_back(std::make_shared<Tensor<Dtype>>(in_shape));	// output data
+		data.push_back(std::make_shared<Tensor<Dtype>>(in_shape[0], param_.label_dim, 1, 1));	// label
 		data.push_back(std::make_shared<Tensor<Dtype>>(1, 1, 1, 1)); //loss
 
 		return 0;
 	}
 
 	template <typename Dtype>
-	int OutputOp<Dtype>::allocOpBuf4Train(const std::vector<int> &inShape, const std::vector<int> &outShape)
+	int OutputOp<Dtype>::allocOpBuf4Train(const std::vector<int> &in_shape, const std::vector<int> &out_shape)
 	{
-		if (inShape[tind::eNum] <= 0 || inShape[tind::eChannels] <= 0 ||
-			inShape[tind::eHeight] <= 0 || inShape[tind::eWidth] <= 0 ||
-			inShape[tind::eNum] > 5000 || inShape[tind::eChannels] > 5000 ||
-			inShape[tind::eHeight] > 5000 || inShape[tind::eWidth] > 5000)
+		if (in_shape[tind::eNum] <= 0 || in_shape[tind::eChannels] <= 0 ||
+			in_shape[tind::eHeight] <= 0 || in_shape[tind::eWidth] <= 0 ||
+			in_shape[tind::eNum] > 5000 || in_shape[tind::eChannels] > 5000 ||
+			in_shape[tind::eHeight] > 5000 || in_shape[tind::eWidth] > 5000)
 		{
-			DLOG_ERR("[ OutputOp::allocOpBuf4Train ]: inShape is invalid -> (%d, %d, %d, %d) \n",
-				inShape[tind::eNum], inShape[tind::eChannels], inShape[tind::eHeight], inShape[tind::eWidth]);
+			DLOG_ERR("[ OutputOp::allocOpBuf4Train ]: in_shape is invalid -> (%d, %d, %d, %d) \n",
+				in_shape[tind::eNum], in_shape[tind::eChannels], in_shape[tind::eHeight], in_shape[tind::eWidth]);
 			return -1;
 		}
 
 		//data.clear();
-		//data.push_back(std::make_shared<Tensor<Dtype>>(inShape));
+		//data.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
 
 		diff_.clear();
-		diff_.push_back(std::make_shared<Tensor<Dtype>>(inShape));
+		diff_.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
 
 		return 0;
 	}
@@ -102,7 +102,7 @@ namespace dlex_cnn
 
 	template <typename Dtype>
 	void OutputOp<Dtype>::backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prevDiff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &nextDiff)
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
 	{
 		// the backward operation in output node should not be called
 	}

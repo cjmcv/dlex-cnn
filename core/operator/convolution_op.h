@@ -42,8 +42,8 @@ namespace dlex_cnn
 		ConvolutionOp();
 		ConvolutionOp(ConvolutionOpParam param);
 		virtual ~ConvolutionOp();
-		inline virtual int setOpParam(ConvolutionOpParam opParam) { param_ = opParam; return 0; };
-		virtual int setOpParam(const std::string &opParamStr) override;
+		inline virtual int setOpParam(ConvolutionOpParam op_param) { param_ = op_param; return 0; };
+		virtual int setOpParam(const std::string &op_param_str) override;
 
 	private:
 		inline virtual const std::string &getOpType() const override { return op_type_; };
@@ -52,11 +52,11 @@ namespace dlex_cnn
 		inline virtual std::vector<std::shared_ptr<Tensor<Dtype>>> &getOpDiff() override { return diff_; };
 
 		virtual std::string genOpParamStr() const override;
-		virtual int inferOutShape(std::vector<int> &inShape, std::vector<int> &outShape) override;
-		virtual int allocBuf4Node(const std::vector<int> &inShape,
-			const std::vector<int> &outShape,
+		virtual int inferOutShape(std::vector<int> &in_shape, std::vector<int> &out_shape) override;
+		virtual int allocBuf4Node(const std::vector<int> &in_shape,
+			const std::vector<int> &out_shape,
 			std::vector<std::shared_ptr<Tensor<Dtype>>> &data) const override;
-		virtual int allocOpBuf4Train(const std::vector<int> &inShape, const std::vector<int> &outShape) override;
+		virtual int allocOpBuf4Train(const std::vector<int> &in_shape, const std::vector<int> &out_shape) override;
 
 		// Refer to the paper "High Performance Convolutional Neural Networks for Document Processing"
 		///////// origin convolution /////////
@@ -85,16 +85,16 @@ namespace dlex_cnn
 		//                                           12 24 17 26
 		virtual void forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
 
-		// 1, update prevDiff
-		//    prevDiff_img() = prevDiff_col(kc*kh*kw, nh*nw) = kernel'(kc*kh*kw, kn) * nextDiff(nc, nh*nw)
+		// 1, update prev_diff
+		//    prevDiff_img() = prevDiff_col(kc*kh*kw, nh*nw) = kernel'(kc*kh*kw, kn) * next_diff(nc, nh*nw)
 		//                     -> the num of kernels is equal to the channels of output. (ps: pc == kc, kn == nc)
 		//    As to im2col, col_h = (img_h + 2 * pad_h - (dilation_h * (kernel_h - 1) + 1)) / stride_h + 1, and col_w is similar.
 		//
 		// 2, update weight Diff
-		//    weightGradient(kn, kc*kh*kw) = nextDiff(nc=kn, nh*nw) * prevData_col'(nh*nw, kc*kh*kw)
+		//    weightGradient(kn, kc*kh*kw) = next_diff(nc=kn, nh*nw) * prevData_col'(nh*nw, kc*kh*kw)
 		//
 		virtual void backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prevDiff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &nextDiff) override;
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
 
 	private:
 		std::string op_type_;

@@ -29,7 +29,7 @@ namespace dlex_cnn
 	{
 	}
 	template <typename Dtype>
-	int CrossEntropyLossOp<Dtype>::setOpParam(const std::string &opParamStr)
+	int CrossEntropyLossOp<Dtype>::setOpParam(const std::string &op_param_str)
 	{
 		return 0;
 	}
@@ -39,20 +39,20 @@ namespace dlex_cnn
 		return "";
 	}
 	template <typename Dtype>
-	int CrossEntropyLossOp<Dtype>::inferOutShape(std::vector<int> &inShape, std::vector<int> &outShape)
+	int CrossEntropyLossOp<Dtype>::inferOutShape(std::vector<int> &in_shape, std::vector<int> &out_shape)
 	{
 
 		return 0;
 	}
 	template <typename Dtype>
-	int CrossEntropyLossOp<Dtype>::allocBuf4Node(const std::vector<int> &inShape,
-		const std::vector<int> &outShape,
+	int CrossEntropyLossOp<Dtype>::allocBuf4Node(const std::vector<int> &in_shape,
+		const std::vector<int> &out_shape,
 		std::vector<std::shared_ptr<Tensor<Dtype>>> &data) const
 	{
 		return 0;
 	}
 	template <typename Dtype>
-	int CrossEntropyLossOp<Dtype>::allocOpBuf4Train(const std::vector<int> &inShape, const std::vector<int> &outShape)
+	int CrossEntropyLossOp<Dtype>::allocOpBuf4Train(const std::vector<int> &in_shape, const std::vector<int> &out_shape)
 	{
 		
 		return 0;
@@ -66,80 +66,80 @@ namespace dlex_cnn
 			return;
 		}
 
-		const int outputSize4D = prev[0]->getSize()[tind::e4D];
-		const int outputSize3D = prev[0]->getSize()[tind::e3D];
-		const std::vector<int> outputShape = prev[0]->getShape();
+		const int output_size4D = prev[0]->getSize()[tind::e4D];
+		const int output_size3D = prev[0]->getSize()[tind::e3D];
+		const std::vector<int> output_shape = prev[0]->getShape();
 
 		// recheck member labels_
-		if (labels_ == NULL || labels_->getSize()[tind::e4D] != outputSize4D)
+		if (labels_ == NULL || labels_->getSize()[tind::e4D] != output_size4D)
 			labels_.reset(new Tensor<Dtype>(prev[0]->getShape()));
 
 		// convert orgLabel format for classification task, save result in labels_
-		const Dtype* orgLabelData = (Dtype *)next[1]->getData();
+		const Dtype* org_label_data = (Dtype *)next[1]->getData();
 		//for (int j = 0; j < next[1]->getSize()[tind::e4D]; j++)
-		//	printf("%f, ", orgLabelData[j]);
+		//	printf("%f, ", org_label_data[j]);
 
-		Dtype* labelData = (Dtype *)labels_->getData();
-		memset(labelData, 0, sizeof(Dtype)*outputSize4D);
+		Dtype* label_data = (Dtype *)labels_->getData();
+		memset(label_data, 0, sizeof(Dtype)*output_size4D);
 
-		//printf("%f, %d\n", orgLabelData[0], next.size());
-		const int classNum = labels_->getShape()[1];	//channels = class num
+		//printf("%f, %d\n", org_label_data[0], next.size());
+		const int class_num = labels_->getShape()[1];	//channels = class num
 		for (int i = 0; i < labels_->getShape()[0]; i++)
-			labelData[i * classNum + (int)orgLabelData[i]] = 1;
+			label_data[i * class_num + (int)org_label_data[i]] = 1;
 
 		// Pay attention: In caffe, CrossEntropyLoss in SigmoidCrossEntropyLossLayer 
 		//                is not similar with the origin formula. Please refer to
 		//				  http://blog.csdn.net/u012235274/article/details/51361290
 		// compute loss (for softmax)
-		const Dtype* outputData = (Dtype *)prev[0]->getData();
+		const Dtype* output_data = (Dtype *)prev[0]->getData();
 		Dtype loss = 0.0f;
 
-		//for (int batchId = 0; batchId < outputShape[tind::eNum]; batchId++)	// original type
-		//	for (int i = 0; i < outputSize3D; i++)
-		//			loss -= labelData[batchId*outputSize3D + i] * std::log(std::max(outputData[batchId*outputSize3D + i], Dtype(FLT_MIN)));
+		//for (int batchId = 0; batchId < output_shape[tind::eNum]; batchId++)	// original type
+		//	for (int i = 0; i < output_size3D; i++)
+		//			loss -= label_data[batchId*output_size3D + i] * std::log(std::max(output_data[batchId*output_size3D + i], Dtype(FLT_MIN)));
 
-		for (int i = 0; i < outputSize4D; i++)
-			if (labelData[i] != 0)
-				loss -= labelData[i] * std::log(std::max(outputData[i], Dtype(FLT_MIN)));
+		for (int i = 0; i < output_size4D; i++)
+			if (label_data[i] != 0)
+				loss -= label_data[i] * std::log(std::max(output_data[i], Dtype(FLT_MIN)));
 
-		*(Dtype *)next[2]->getData() = loss / outputShape[tind::eNum];
+		*(Dtype *)next[2]->getData() = loss / output_shape[tind::eNum];
 	}
 
 	template <typename Dtype>
 	void CrossEntropyLossOp<Dtype>::backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
 		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prevDiff,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &nextDiff)
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
 	{
 		// get diff: input(lastOutput/label), output(lastDiff)
-		//printf("start CrossEntropyLossOp backward:(%d, %d, %d, %d)\n", prev.size(), next.size(), prevDiff.size(), nextDiff.size());
-		prevDiff[0]->setZero();
+		//printf("start CrossEntropyLossOp backward:(%d, %d, %d, %d)\n", prev.size(), next.size(), prev_diff.size(), next_diff.size());
+		prev_diff[0]->setZero();
 
 		// labels_ should be setted in forward operation, and in backward, it needn't to be converted again
-		const int outputSize4D = next[0]->getSize()[tind::e4D];
-		if (labels_ == NULL || labels_->getSize()[tind::e4D] != outputSize4D)
+		const int output_size4D = next[0]->getSize()[tind::e4D];
+		if (labels_ == NULL || labels_->getSize()[tind::e4D] != output_size4D)
 		{
 			DLOG_ERR("[ CrossEntropyLossOp::backward ]: labels_ is invalid \n");
 			return ;
 		}
 
-		Dtype* labelData = (Dtype *)labels_->getData();
+		Dtype* label_data = (Dtype *)labels_->getData();
 		
-		const int labelsSize3D = labels_->getSize()[tind::e3D];
-		const int outputSize3D = next[0]->getSize()[tind::e3D];
-		const int diffSize3D = prevDiff[0]->getSize()[tind::e3D];
+		const int labels_size3D = labels_->getSize()[tind::e3D];
+		const int output_size3D = next[0]->getSize()[tind::e3D];
+		const int diff_size3D = prev_diff[0]->getSize()[tind::e3D];
 
-		Dtype* labelDataBase = (Dtype *)labels_->getData();
-		Dtype* outputDataBase = (Dtype *)next[0]->getData();
+		Dtype* label_data_base = (Dtype *)labels_->getData();
+		Dtype* output_data_base = (Dtype *)next[0]->getData();
 		for (int on = 0; on < next[0]->getShape()[0]; on++)
 		{
-			const Dtype* labelData = labelDataBase + on * labelsSize3D;
-			const Dtype* outputData = outputDataBase + on * outputSize3D;
-			Dtype* diffData = (Dtype *)prevDiff[0]->getData() + on * diffSize3D;
-			for (int nextDiffIdx = 0; nextDiffIdx < diffSize3D; nextDiffIdx++)
+			const Dtype* label_data = label_data_base + on * labels_size3D;
+			const Dtype* output_data = output_data_base + on * output_size3D;
+			Dtype* diff_data = (Dtype *)prev_diff[0]->getData() + on * diff_size3D;
+			for (int next_diff_idx = 0; next_diff_idx < diff_size3D; next_diff_idx++)
 			{
-				const int dataIdx = nextDiffIdx;
-				diffData[nextDiffIdx] -= ((labelData[dataIdx] / (outputData[dataIdx])));
+				const int data_idx = next_diff_idx;
+				diff_data[next_diff_idx] -= ((label_data[data_idx] / (output_data[data_idx])));
 			}
 		}
 	}

@@ -29,85 +29,85 @@ namespace dlex_cnn
 
 	}
 	template <typename Dtype>
-	int PoolingOp<Dtype>::setOpParam(const std::string &opParamStr)
+	int PoolingOp<Dtype>::setOpParam(const std::string &op_param_str)
 	{
-		std::string optStr = opParamStr;
-		param_.poolingType = (tind::PoolingType)atoi(fetchSubStr(optStr, "poolingType:", ",").c_str());
-		param_.kernel_h = atoi(fetchSubStr(optStr, "kernel_h:", ",").c_str());
-		param_.kernel_w = atoi(fetchSubStr(optStr, "kernel_w:", ",").c_str());
-		param_.stride_h = atoi(fetchSubStr(optStr, "stride_h:", ",").c_str());
-		param_.stride_w = atoi(fetchSubStr(optStr, "stride_w:", ",").c_str());
-		param_.pad_h = atoi(fetchSubStr(optStr, "pad_h:", ",").c_str());
-		param_.pad_w = atoi(fetchSubStr(optStr, "pad_w:", ",").c_str());
-		param_.global_pooling = atoi(fetchSubStr(optStr, "global_pooling:", ",").c_str());
+		std::string opt_str = op_param_str;
+		param_.pooling_type = (tind::PoolingType)atoi(fetchSubStr(opt_str, "pooling_type:", ",").c_str());
+		param_.kernel_h = atoi(fetchSubStr(opt_str, "kernel_h:", ",").c_str());
+		param_.kernel_w = atoi(fetchSubStr(opt_str, "kernel_w:", ",").c_str());
+		param_.stride_h = atoi(fetchSubStr(opt_str, "stride_h:", ",").c_str());
+		param_.stride_w = atoi(fetchSubStr(opt_str, "stride_w:", ",").c_str());
+		param_.pad_h = atoi(fetchSubStr(opt_str, "pad_h:", ",").c_str());
+		param_.pad_w = atoi(fetchSubStr(opt_str, "pad_w:", ",").c_str());
+		param_.global_pooling = atoi(fetchSubStr(opt_str, "global_pooling:", ",").c_str());
 
 		return 0;
 	}
 	template <typename Dtype>
 	std::string PoolingOp<Dtype>::genOpParamStr() const
 	{
-		std::stringstream paramStr;
-		paramStr << "poolingType:" << param_.poolingType 
+		std::stringstream param_str;
+		param_str << "pooling_type:" << param_.pooling_type 
 			<< ",kernel_h:" << param_.kernel_h << ",kernel_w:" << param_.kernel_w 
 			<< ",stride_h:" << param_.stride_h << ",stride_w:" << param_.stride_w
 			<< ",pad_h:" << param_.pad_h << ",pad_w:" << param_.pad_w
 			<< ",global_pooling:" << param_.global_pooling << ",";
-		return paramStr.str();
+		return param_str.str();
 	}
 	template <typename Dtype>
-	int PoolingOp<Dtype>::inferOutShape(std::vector<int> &inShape, std::vector<int> &outShape)
+	int PoolingOp<Dtype>::inferOutShape(std::vector<int> &in_shape, std::vector<int> &out_shape)
 	{
 		if (param_.global_pooling)
 		{
-			param_.kernel_h = inShape[tind::eHeight];
-			param_.kernel_w = inShape[tind::eWidth];
+			param_.kernel_h = in_shape[tind::eHeight];
+			param_.kernel_w = in_shape[tind::eWidth];
 		}
 
-		outShape.clear();
+		out_shape.clear();
 
-		outShape.push_back(inShape[tind::eNum]);
-		outShape.push_back(inShape[tind::eChannels]);
+		out_shape.push_back(in_shape[tind::eNum]);
+		out_shape.push_back(in_shape[tind::eChannels]);
 
-		outShape.push_back(static_cast<int>(ceil(static_cast<float>(inShape[tind::eHeight] + 2 * param_.pad_h - param_.kernel_h) / param_.stride_h)) + 1);
-		outShape.push_back(static_cast<int>(ceil(static_cast<float>(inShape[tind::eWidth] + 2 * param_.pad_w - param_.kernel_w) / param_.stride_w)) + 1);
+		out_shape.push_back(static_cast<int>(ceil(static_cast<float>(in_shape[tind::eHeight] + 2 * param_.pad_h - param_.kernel_h) / param_.stride_h)) + 1);
+		out_shape.push_back(static_cast<int>(ceil(static_cast<float>(in_shape[tind::eWidth] + 2 * param_.pad_w - param_.kernel_w) / param_.stride_w)) + 1);
 
 		return 0;
 	}
 	template <typename Dtype>
-	int PoolingOp<Dtype>::allocBuf4Node(const std::vector<int> &inShape,
-		const std::vector<int> &outShape,
+	int PoolingOp<Dtype>::allocBuf4Node(const std::vector<int> &in_shape,
+		const std::vector<int> &out_shape,
 		std::vector<std::shared_ptr<Tensor<Dtype>>> &data) const
 	{
 		data.clear();
-		data.push_back(std::make_shared<Tensor<Dtype>>(inShape));
+		data.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
 		return 0;
 	}
 	template <typename Dtype>
-	int PoolingOp<Dtype>::allocOpBuf4Train(const std::vector<int> &inShape, const std::vector<int> &outShape)
+	int PoolingOp<Dtype>::allocOpBuf4Train(const std::vector<int> &in_shape, const std::vector<int> &out_shape)
 	{
-		if (inShape[tind::eNum] <= 0 || inShape[tind::eChannels] <= 0 ||
-			inShape[tind::eHeight] <= 0 || inShape[tind::eWidth] <= 0 ||
-			inShape[tind::eNum] > 5000 || inShape[tind::eChannels] > 5000 ||
-			inShape[tind::eHeight] > 5000 || inShape[tind::eWidth] > 5000)
+		if (in_shape[tind::eNum] <= 0 || in_shape[tind::eChannels] <= 0 ||
+			in_shape[tind::eHeight] <= 0 || in_shape[tind::eWidth] <= 0 ||
+			in_shape[tind::eNum] > 5000 || in_shape[tind::eChannels] > 5000 ||
+			in_shape[tind::eHeight] > 5000 || in_shape[tind::eWidth] > 5000)
 		{
-			DLOG_ERR("[ InnerProductOp::allocOpBuf4Train ]: inShape is invalid -> (%d, %d, %d, %d) \n",
-				inShape[tind::eNum], inShape[tind::eChannels], inShape[tind::eHeight], inShape[tind::eWidth]);
+			DLOG_ERR("[ PoolingOp::allocOpBuf4Train ]: in_shape is invalid -> (%d, %d, %d, %d) \n",
+				in_shape[tind::eNum], in_shape[tind::eChannels], in_shape[tind::eHeight], in_shape[tind::eWidth]);
 			return -1;
 		}
-		if (outShape[tind::eNum] <= 0 || outShape[tind::eChannels] <= 0 ||
-			outShape[tind::eHeight] <= 0 || outShape[tind::eWidth] <= 1 ||
-			outShape[tind::eNum] > 50000 || outShape[tind::eChannels] > 50000)
+		if (out_shape[tind::eNum] <= 0 || out_shape[tind::eChannels] <= 0 ||
+			out_shape[tind::eHeight] <= 0 || out_shape[tind::eWidth] <= 0 ||
+			out_shape[tind::eNum] > 50000 || out_shape[tind::eChannels] > 50000)
 		{
-			DLOG_ERR("[ InnerProductOp::allocOpBuf4Train ]: outShape is invalid -> (%d, %d, %d, %d) \n",
-				outShape[tind::eNum], outShape[tind::eChannels], outShape[tind::eHeight], outShape[tind::eWidth]);
+			DLOG_ERR("[ PoolingOp::allocOpBuf4Train ]: out_shape is invalid -> (%d, %d, %d, %d) \n",
+				out_shape[tind::eNum], out_shape[tind::eChannels], out_shape[tind::eHeight], out_shape[tind::eWidth]);
 			return -1;
 		}
 
 		diff_.clear();
-		diff_.push_back(std::make_shared<Tensor<Dtype>>(inShape));
+		diff_.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
 
-		if (param_.poolingType == tind::eMAX)
-			max_idx_map_.reset(new Tensor<int>(outShape));
+		if (param_.pooling_type == tind::eMAX)
+			max_idx_map_.reset(new Tensor<int>(out_shape));
 
 		return 0;
 	}
@@ -115,48 +115,48 @@ namespace dlex_cnn
 	template <typename Dtype>
 	void PoolingOp<Dtype>::forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
 	{
-		const std::vector<int> prevSize = prev[0]->getSize();
-		const std::vector<int> prevShape = prev[0]->getShape();
-		const std::vector<int> nextShape = next[0]->getShape();
+		const std::vector<int> prev_size = prev[0]->getSize();
+		const std::vector<int> prev_shape = prev[0]->getShape();
+		const std::vector<int> next_shape = next[0]->getShape();
 
-		Dtype* prevData = (Dtype *)prev[0]->getData();	//bottom_data
-		Dtype* nextData = (Dtype *)next[0]->getData();	//top_data
+		Dtype* prev_data = (Dtype *)prev[0]->getData();	//bottom_data
+		Dtype* next_data = (Dtype *)next[0]->getData();	//top_data
 
-		const std::vector<int> nextSize = next[0]->getSize(); // 4d = top_count
+		const std::vector<int> next_size = next[0]->getSize(); // 4d = top_count
 		const bool use_top_mask = next.size() > 1;
 
 		int* mask = NULL;
 		bool mflag = true;
-		switch (this->param_.poolingType) 
+		switch (this->param_.pooling_type) 
 		{
 		case tind::eMAX:
 			// Initialize
 			if (max_idx_map_ == NULL)
 				mflag = false;
-			else if (max_idx_map_->getSize()[tind::e4D] != nextSize[tind::e4D])
-				max_idx_map_.reset(new Tensor<int>(nextShape));
+			else if (max_idx_map_->getSize()[tind::e4D] != next_size[tind::e4D])
+				max_idx_map_.reset(new Tensor<int>(next_shape));
 				
 			mask = (int *)max_idx_map_->getData();
 			max_idx_map_->setValue(Dtype(-1));
 
 			next[0]->setZero();
 			// The main loop
-			for (int n = 0; n < prevShape[tind::eNum]; ++n) {
-				for (int c = 0; c < prevShape[tind::eChannels]; ++c) {
-					for (int ph = 0; ph < nextShape[tind::eHeight]; ++ph) {
-						for (int pw = 0; pw < nextShape[tind::eWidth]; ++pw) {
+			for (int n = 0; n < prev_shape[tind::eNum]; ++n) {
+				for (int c = 0; c < prev_shape[tind::eChannels]; ++c) {
+					for (int ph = 0; ph < next_shape[tind::eHeight]; ++ph) {
+						for (int pw = 0; pw < next_shape[tind::eWidth]; ++pw) {
 							int hstart = ph * param_.stride_h - param_.pad_h;
 							int wstart = pw * param_.stride_w - param_.pad_w;
-							int hend = std::min(hstart + param_.kernel_h, prevShape[tind::eHeight]);
-							int wend = std::min(wstart + param_.kernel_w, prevShape[tind::eWidth]);
+							int hend = std::min(hstart + param_.kernel_h, prev_shape[tind::eHeight]);
+							int wend = std::min(wstart + param_.kernel_w, prev_shape[tind::eWidth]);
 							hstart = std::max(hstart, 0);
 							wstart = std::max(wstart, 0);
-							const int pool_index = ph * nextShape[tind::eWidth] + pw;
+							const int pool_index = ph * next_shape[tind::eWidth] + pw;
 							for (int h = hstart; h < hend; ++h) {
 								for (int w = wstart; w < wend; ++w) {
-									const int index = h * prevShape[tind::eWidth] + w;
-									if (prevData[index] > nextData[pool_index]) {
-										nextData[pool_index] = prevData[index];
+									const int index = h * prev_shape[tind::eWidth] + w;
+									if (prev_data[index] > next_data[pool_index]) {
+										next_data[pool_index] = prev_data[index];
 										if (mflag)
 											mask[pool_index] = index;
 									}
@@ -165,41 +165,41 @@ namespace dlex_cnn
 						}
 					}
 					// compute offset
-					prevData += prevSize[tind::e2D];
-					nextData += nextSize[tind::e2D];
+					prev_data += prev_size[tind::e2D];
+					next_data += next_size[tind::e2D];
 					if (mflag)
-						mask += nextSize[tind::e2D];
+						mask += next_size[tind::e2D];
 				}
 			}
 			break;
 		case tind::eAVE:
 			next[0]->setZero();
 			// The main loop
-			for (int n = 0; n < prevShape[tind::eNum]; ++n) {
-				for (int c = 0; c < prevShape[tind::eChannels]; ++c) {
-					for (int ph = 0; ph < nextShape[tind::eHeight]; ++ph) {
-						for (int pw = 0; pw < nextShape[tind::eWidth]; ++pw) {
+			for (int n = 0; n < prev_shape[tind::eNum]; ++n) {
+				for (int c = 0; c < prev_shape[tind::eChannels]; ++c) {
+					for (int ph = 0; ph < next_shape[tind::eHeight]; ++ph) {
+						for (int pw = 0; pw < next_shape[tind::eWidth]; ++pw) {
 							int hstart = ph * param_.stride_h - param_.pad_h;
 							int wstart = pw * param_.stride_w - param_.pad_w;
-							int hend = std::min(hstart + param_.kernel_h, prevShape[tind::eHeight] + param_.pad_h);
-							int wend = std::min(wstart + param_.kernel_w, prevShape[tind::eWidth] + param_.pad_w);
+							int hend = std::min(hstart + param_.kernel_h, prev_shape[tind::eHeight] + param_.pad_h);
+							int wend = std::min(wstart + param_.kernel_w, prev_shape[tind::eWidth] + param_.pad_w);
 							int pool_size = (hend - hstart) * (wend - wstart);
 							hstart = std::max(hstart, 0);
 							wstart = std::max(wstart, 0);
-							hend = std::min(hend, prevShape[tind::eHeight]);
-							wend = std::min(wend, prevShape[tind::eWidth]);
+							hend = std::min(hend, prev_shape[tind::eHeight]);
+							wend = std::min(wend, prev_shape[tind::eWidth]);
 							for (int h = hstart; h < hend; ++h) {
 								for (int w = wstart; w < wend; ++w) {
-									nextData[ph * nextShape[tind::eWidth] + pw] +=
-										prevData[h * prevShape[tind::eWidth] + w];
+									next_data[ph * next_shape[tind::eWidth] + pw] +=
+										prev_data[h * prev_shape[tind::eWidth] + w];
 								}
 							}
-							nextData[ph * nextShape[tind::eWidth] + pw] /= pool_size;
+							next_data[ph * next_shape[tind::eWidth] + pw] /= pool_size;
 						}
 					}
 					// compute offset
-					prevData += prevSize[tind::e2D];
-					nextData += nextSize[tind::e2D];
+					prev_data += prev_size[tind::e2D];
+					next_data += next_size[tind::e2D];
 				}
 			}
 			break;
@@ -213,73 +213,73 @@ namespace dlex_cnn
 
 	template <typename Dtype>
 	void PoolingOp<Dtype>::backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prevDiff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &nextDiff)
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
 	{
 
-		const std::vector<int> prevDiffSize = prevDiff[0]->getSize();
-		const std::vector<int> nextDiffSize = nextDiff[0]->getSize();
-		const std::vector<int> prevDiffShape = prevDiff[0]->getShape();
-		const std::vector<int> nextDiffShape = nextDiff[0]->getShape();
+		const std::vector<int> prev_diff_size = prev_diff[0]->getSize();
+		const std::vector<int> next_diff_size = next_diff[0]->getSize();
+		const std::vector<int> prev_diff_shape = prev_diff[0]->getShape();
+		const std::vector<int> next_diff_shape = next_diff[0]->getShape();
 
-		const std::vector<int> prevSize = prev[0]->getSize();
-		const std::vector<int> nextSize = next[0]->getSize();
-		const std::vector<int> prevShape = prev[0]->getShape();
-		const std::vector<int> nextShape = next[0]->getShape();
+		const std::vector<int> prev_size = prev[0]->getSize();
+		const std::vector<int> next_size = next[0]->getSize();
+		const std::vector<int> prev_shape = prev[0]->getShape();
+		const std::vector<int> next_shape = next[0]->getShape();
 
-		Dtype* prevDiffData = (Dtype *)prevDiff[0]->getData();	//bottom_data
-		Dtype* nextDiffData = (Dtype *)nextDiff[0]->getData();	//top_data
+		Dtype* prev_diff_data = (Dtype *)prev_diff[0]->getData();	//bottom_data
+		Dtype* next_diff_data = (Dtype *)next_diff[0]->getData();	//top_data
 
-		prevDiff[0]->setZero();
+		prev_diff[0]->setZero();
 
 		const int* mask = NULL;  // suppress warnings about uninitialized variables
-		switch (this->param_.poolingType) {
+		switch (this->param_.pooling_type) {
 		case tind::eMAX:
 			// The main loop
 			mask = (int *)max_idx_map_->getData();
 			
-			for (int n = 0; n < nextShape[tind::eNum]; ++n) {
-				for (int c = 0; c < nextShape[tind::eChannels]; ++c) {
-					for (int ph = 0; ph < nextShape[tind::eHeight]; ++ph) {
-						for (int pw = 0; pw < nextShape[tind::eWidth]; ++pw) {
-							const int index = ph * nextShape[tind::eWidth] + pw;
+			for (int n = 0; n < next_shape[tind::eNum]; ++n) {
+				for (int c = 0; c < next_shape[tind::eChannels]; ++c) {
+					for (int ph = 0; ph < next_shape[tind::eHeight]; ++ph) {
+						for (int pw = 0; pw < next_shape[tind::eWidth]; ++pw) {
+							const int index = ph * next_shape[tind::eWidth] + pw;
 							const int bottom_index = mask[index];
 							if (bottom_index >= 0)
-								prevDiffData[bottom_index] += nextDiffData[index];
+								prev_diff_data[bottom_index] += next_diff_data[index];
 						}
 					}
-					prevDiffData += prevDiffSize[tind::e2D];
-					nextDiffData += nextDiffSize[tind::e2D];
+					prev_diff_data += prev_diff_size[tind::e2D];
+					next_diff_data += next_diff_size[tind::e2D];
 
-					mask += nextSize[tind::e2D];
+					mask += next_size[tind::e2D];
 				}
 			}
 			break;
 		case tind::eAVE:
 			// The main loop
-			for (int n = 0; n < nextShape[tind::eNum]; ++n) {
-				for (int c = 0; c < nextShape[tind::eChannels]; ++c) {
-					for (int ph = 0; ph < nextShape[tind::eHeight]; ++ph) {
-						for (int pw = 0; pw < nextShape[tind::eWidth]; ++pw) {
+			for (int n = 0; n < next_shape[tind::eNum]; ++n) {
+				for (int c = 0; c < next_shape[tind::eChannels]; ++c) {
+					for (int ph = 0; ph < next_shape[tind::eHeight]; ++ph) {
+						for (int pw = 0; pw < next_shape[tind::eWidth]; ++pw) {
 							int hstart = ph * param_.stride_h - param_.pad_h;
 							int wstart = pw * param_.stride_w - param_.pad_w;
-							int hend = std::min(hstart + param_.kernel_h, prevShape[tind::eHeight] + param_.pad_h);
-							int wend = std::min(wstart + param_.kernel_w, prevShape[tind::eWidth] + param_.pad_w);
+							int hend = std::min(hstart + param_.kernel_h, prev_shape[tind::eHeight] + param_.pad_h);
+							int wend = std::min(wstart + param_.kernel_w, prev_shape[tind::eWidth] + param_.pad_w);
 							int pool_size = (hend - hstart) * (wend - wstart);
 							hstart = std::max(hstart, 0);
 							wstart = std::max(wstart, 0);
-							hend = std::min(hend, prevShape[tind::eHeight]);
-							wend = std::min(wend, prevShape[tind::eWidth]);
+							hend = std::min(hend, prev_shape[tind::eHeight]);
+							wend = std::min(wend, prev_shape[tind::eWidth]);
 							for (int h = hstart; h < hend; ++h) {
 								for (int w = wstart; w < wend; ++w) {
-									prevDiffData[h * prevShape[tind::eWidth] + w] +=
-										nextDiffData[ph * nextShape[tind::eWidth] + pw] / pool_size;
+									prev_diff_data[h * prev_shape[tind::eWidth] + w] +=
+										next_diff_data[ph * next_shape[tind::eWidth] + pw] / pool_size;
 								}
 							}
 						}
 					}
 					// offset
-					prevDiffData += prevDiffSize[tind::e2D];
-					nextDiffData += nextDiffSize[tind::e2D];
+					prev_diff_data += prev_diff_size[tind::e2D];
+					next_diff_data += next_diff_size[tind::e2D];
 				}
 			}
 			break;

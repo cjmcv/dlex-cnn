@@ -18,64 +18,64 @@ namespace dlex_cnn {
 		registerOpClass();
 
 		std::shared_ptr<dlex_cnn::Op<float>> pool_s = dlex_cnn::OpFactory<float>::getInstance().createOpByType("Pooling");
-		dlex_cnn::PoolingOpParam PoolingParam;
-		PoolingParam.global_pooling = true;
-		PoolingParam.kernel_h = 3;
-		PoolingParam.kernel_w = 3;
-		PoolingParam.pad_h = 0;
-		PoolingParam.pad_w = 0;
-		PoolingParam.stride_h = 3;
-		PoolingParam.stride_w = 3;
-		PoolingParam.poolingType = dlex_cnn::tind::eAVE;
+		dlex_cnn::PoolingOpParam pooling_param;
+		pooling_param.global_pooling = true;
+		pooling_param.kernel_h = 3;
+		pooling_param.kernel_w = 3;
+		pooling_param.pad_h = 0;
+		pooling_param.pad_w = 0;
+		pooling_param.stride_h = 3;
+		pooling_param.stride_w = 3;
+		pooling_param.pooling_type = dlex_cnn::tind::eAVE;
 		dlex_cnn::PoolingOp<float>* pool = dynamic_cast<dlex_cnn::PoolingOp<float> *>(pool_s.get());
-		pool->setOpParam(PoolingParam);
+		pool->setOpParam(pooling_param);
 
 		int is[4] = { 1, 1, 10, 10 };
-		std::vector<int> inShape;
+		std::vector<int> in_shape;
 		for (int i = 0; i < 4; i++)
-			inShape.push_back(is[i]);
+			in_shape.push_back(is[i]);
 
-		std::vector<int> outShape;
-		pool->inferOutShape(inShape, outShape);
+		std::vector<int> out_shape;
+		pool->inferOutShape(in_shape, out_shape);
 
-		std::vector<std::shared_ptr<Tensor<float>>> inDataVec;
-		pool->allocBuf4Node(inShape, outShape, inDataVec);
+		std::vector<std::shared_ptr<Tensor<float>>> in_data_vec;
+		pool->allocBuf4Node(in_shape, out_shape, in_data_vec);
 
-		pool->allocOpBuf4Train(inShape, outShape);
+		pool->allocOpBuf4Train(in_shape, out_shape);
 
 		// input (ic3, ih3, iw3)
-		float *inData = (float *)inDataVec[0]->getData();
+		float *in_data = (float *)in_data_vec[0]->getData();
 		for (int i = 0; i < 1 * 1 * 10 * 10; i++)
-			inData[i] = i;
+			in_data[i] = i;
 
-		pool->allocOpBuf4Train(inShape, outShape);
+		pool->allocOpBuf4Train(in_shape, out_shape);
 
-		std::vector<std::shared_ptr<Tensor<float>>> outDataVec;
-		outDataVec.push_back(std::make_shared<Tensor<float>>(outShape));
+		std::vector<std::shared_ptr<Tensor<float>>> out_data_vec;
+		out_data_vec.push_back(std::make_shared<Tensor<float>>(out_shape));
 
-		pool->forward(inDataVec, outDataVec);
+		pool->forward(in_data_vec, out_data_vec);
 
-		matrixShow_float("A", (float *)inDataVec[0]->getData(), inDataVec[0]->getShape()[tind::eNum], inDataVec[0]->getShape()[tind::eChannels], inDataVec[0]->getShape()[tind::eHeight], inDataVec[0]->getShape()[tind::eWidth]);
-		matrixShow_float("B", (float *)outDataVec[0]->getData(), outDataVec[0]->getShape()[tind::eNum], outDataVec[0]->getShape()[tind::eChannels], outDataVec[0]->getShape()[tind::eHeight], outDataVec[0]->getShape()[tind::eWidth]);
-		if (PoolingParam.poolingType = dlex_cnn::tind::eMAX)
-			matrixShow_int("C", (int *)pool->max_idx_map_->getData(), outDataVec[0]->getShape()[tind::eNum], outDataVec[0]->getShape()[tind::eChannels], outDataVec[0]->getShape()[tind::eHeight], outDataVec[0]->getShape()[tind::eWidth]);
+		matrixShow_float("A", (float *)in_data_vec[0]->getData(), in_data_vec[0]->getShape()[tind::eNum], in_data_vec[0]->getShape()[tind::eChannels], in_data_vec[0]->getShape()[tind::eHeight], in_data_vec[0]->getShape()[tind::eWidth]);
+		matrixShow_float("B", (float *)out_data_vec[0]->getData(), out_data_vec[0]->getShape()[tind::eNum], out_data_vec[0]->getShape()[tind::eChannels], out_data_vec[0]->getShape()[tind::eHeight], out_data_vec[0]->getShape()[tind::eWidth]);
+		if (pooling_param.pooling_type = dlex_cnn::tind::eMAX)
+			matrixShow_int("C", (int *)pool->max_idx_map_->getData(), out_data_vec[0]->getShape()[tind::eNum], out_data_vec[0]->getShape()[tind::eChannels], out_data_vec[0]->getShape()[tind::eHeight], out_data_vec[0]->getShape()[tind::eWidth]);
 
 		//反向传播，对比，矩阵手动计算对比
-		std::vector<std::shared_ptr<Tensor<Dtype>>> inDiffVec;
-		inDiffVec.push_back(std::make_shared<Tensor<Dtype>>(inShape));
-		std::vector<std::shared_ptr<Tensor<Dtype>>> outDiff;
-		outDiff.push_back(std::make_shared<Tensor<Dtype>>(outShape));
+		std::vector<std::shared_ptr<Tensor<Dtype>>> in_diff_vec;
+		in_diff_vec.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
+		std::vector<std::shared_ptr<Tensor<Dtype>>> out_diff;
+		out_diff.push_back(std::make_shared<Tensor<Dtype>>(out_shape));
 
 		// set out here first.
-		pool->backward(inDataVec, outDataVec, inDiffVec, outDataVec);
-		matrixShow_float("D", (float *)inDiffVec[0]->getData(), inShape[tind::eNum], inShape[tind::eChannels], inShape[tind::eHeight], inShape[tind::eWidth]);
+		pool->backward(in_data_vec, out_data_vec, in_diff_vec, out_data_vec);
+		matrixShow_float("D", (float *)in_diff_vec[0]->getData(), in_shape[tind::eNum], in_shape[tind::eChannels], in_shape[tind::eHeight], in_shape[tind::eWidth]);
 	}
 
 }
 
 void testPool()
 {
-	dlex_cnn::PoolingOpTest<float> poolTest;
-	poolTest.forward();
+	dlex_cnn::PoolingOpTest<float> pool_test;
+	pool_test.forward();
 }
 #endif

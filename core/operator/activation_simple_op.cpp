@@ -30,32 +30,32 @@ namespace dlex_cnn
 	template <typename Dtype>
 	int ActivationOp<Dtype>::setOpFunc()
 	{
-		switch (param_.activationType) {
+		switch (param_.activation_type) {
 		case tind::Activation::eReLU:
-			pAct = std::bind(&ActivationOp::relu, this, std::placeholders::_1);
-			pRevAct = std::bind(&ActivationOp::rev_relu, this, std::placeholders::_1, std::placeholders::_2);
+			p_act = std::bind(&ActivationOp::relu, this, std::placeholders::_1);
+			p_rev_act = std::bind(&ActivationOp::rev_relu, this, std::placeholders::_1, std::placeholders::_2);
 			break;
 		case tind::Activation::eSigmoid:
-			pAct = std::bind(&ActivationOp::sigmoid, this, std::placeholders::_1);
-			pRevAct = std::bind(&ActivationOp::rev_sigmoid, this, std::placeholders::_1, std::placeholders::_2);
+			p_act = std::bind(&ActivationOp::sigmoid, this, std::placeholders::_1);
+			p_rev_act = std::bind(&ActivationOp::rev_sigmoid, this, std::placeholders::_1, std::placeholders::_2);
 			break;
 		case tind::Activation::eTanh:
-			pAct = std::bind(&ActivationOp::tanh, this, std::placeholders::_1);
-			pRevAct = std::bind(&ActivationOp::rev_tanh, this, std::placeholders::_1, std::placeholders::_2);
+			p_act = std::bind(&ActivationOp::tanh, this, std::placeholders::_1);
+			p_rev_act = std::bind(&ActivationOp::rev_tanh, this, std::placeholders::_1, std::placeholders::_2);
 			break;
 		default:
-			pAct = std::bind(&ActivationOp::relu, this, std::placeholders::_1);
-			pRevAct = std::bind(&ActivationOp::rev_relu, this, std::placeholders::_1, std::placeholders::_2);
+			p_act = std::bind(&ActivationOp::relu, this, std::placeholders::_1);
+			p_rev_act = std::bind(&ActivationOp::rev_relu, this, std::placeholders::_1, std::placeholders::_2);
 		}
 
 		return 0;
 	}
 	template <typename Dtype>
-	int ActivationOp<Dtype>::setOpParam(const std::string &opParamStr)
+	int ActivationOp<Dtype>::setOpParam(const std::string &op_param_str)
 	{
-		std::string optStr = opParamStr;
-		param_.activationType = (tind::Activation)atoi(fetchSubStr(optStr, "activationType:", ",").c_str());
-		param_.negative_slope = (tind::Activation)atoi(fetchSubStr(optStr, "negative_slope:", ",").c_str());
+		std::string opt_str = op_param_str;
+		param_.activation_type = (tind::Activation)atoi(fetchSubStr(opt_str, "activation_type:", ",").c_str());
+		param_.negative_slope = (tind::Activation)atoi(fetchSubStr(opt_str, "negative_slope:", ",").c_str());
 
 		setOpFunc();
 		return 0;
@@ -63,52 +63,52 @@ namespace dlex_cnn
 	template <typename Dtype>
 	std::string ActivationOp<Dtype>::genOpParamStr() const
 	{
-		std::stringstream paramStr;
-		paramStr << "activationType:" << param_.activationType << ",negative_slope:" << param_.negative_slope << ",";
-		return paramStr.str();
+		std::stringstream param_str;
+		param_str << "activation_type:" << param_.activation_type << ",negative_slope:" << param_.negative_slope << ",";
+		return param_str.str();
 	}
 	template <typename Dtype>
-	int ActivationOp<Dtype>::inferOutShape(std::vector<int> &inShape, std::vector<int> &outShape)
+	int ActivationOp<Dtype>::inferOutShape(std::vector<int> &in_shape, std::vector<int> &out_shape)
 	{
-		outShape = inShape;
+		out_shape = in_shape;
 		return 0;
 	}
 	template <typename Dtype>
-	int ActivationOp<Dtype>::allocBuf4Node(const std::vector<int> &inShape,
-		const std::vector<int> &outShape,
+	int ActivationOp<Dtype>::allocBuf4Node(const std::vector<int> &in_shape,
+		const std::vector<int> &out_shape,
 		std::vector<std::shared_ptr<Tensor<Dtype>>> &data) const
 	{
-		if (inShape[tind::eNum] <= 0 || inShape[tind::eChannels] <= 0 ||
-			inShape[tind::eHeight] <= 0 || inShape[tind::eWidth] <= 0 ||
-			inShape[tind::eNum] > 5000 || inShape[tind::eChannels] > 5000 ||
-			inShape[tind::eHeight] > 5000 || inShape[tind::eWidth] > 5000)
+		if (in_shape[tind::eNum] <= 0 || in_shape[tind::eChannels] <= 0 ||
+			in_shape[tind::eHeight] <= 0 || in_shape[tind::eWidth] <= 0 ||
+			in_shape[tind::eNum] > 5000 || in_shape[tind::eChannels] > 5000 ||
+			in_shape[tind::eHeight] > 5000 || in_shape[tind::eWidth] > 5000)
 		{
-			DLOG_ERR("[ InputOp::allocBuf4Node ]: inShape is invalid -> (%d, %d, %d, %d) \n",
-				inShape[tind::eNum], inShape[tind::eChannels], inShape[tind::eHeight], inShape[tind::eWidth]);
+			DLOG_ERR("[ InputOp::allocBuf4Node ]: in_shape is invalid -> (%d, %d, %d, %d) \n",
+				in_shape[tind::eNum], in_shape[tind::eChannels], in_shape[tind::eHeight], in_shape[tind::eWidth]);
 			return -1;
 		}
 
 		data.clear();
-		data.push_back(std::make_shared<Tensor<Dtype>>(inShape));
+		data.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
 
 		return 0;
 	}
 
 	template <typename Dtype>
-	int ActivationOp<Dtype>::allocOpBuf4Train(const std::vector<int> &inShape, const std::vector<int> &outShape)
+	int ActivationOp<Dtype>::allocOpBuf4Train(const std::vector<int> &in_shape, const std::vector<int> &out_shape)
 	{
-		if (inShape[tind::eNum] <= 0 || inShape[tind::eChannels] <= 0 ||
-			inShape[tind::eHeight] <= 0 || inShape[tind::eWidth] <= 0 ||
-			inShape[tind::eNum] > 5000 || inShape[tind::eChannels] > 5000 ||
-			inShape[tind::eHeight] > 5000 || inShape[tind::eWidth] > 5000)
+		if (in_shape[tind::eNum] <= 0 || in_shape[tind::eChannels] <= 0 ||
+			in_shape[tind::eHeight] <= 0 || in_shape[tind::eWidth] <= 0 ||
+			in_shape[tind::eNum] > 5000 || in_shape[tind::eChannels] > 5000 ||
+			in_shape[tind::eHeight] > 5000 || in_shape[tind::eWidth] > 5000)
 		{
-			DLOG_ERR("[ InputOp::allocOpBuf4Train ]: inShape is invalid -> (%d, %d, %d, %d) \n",
-				inShape[tind::eNum], inShape[tind::eChannels], inShape[tind::eHeight], inShape[tind::eWidth]);
+			DLOG_ERR("[ InputOp::allocOpBuf4Train ]: in_shape is invalid -> (%d, %d, %d, %d) \n",
+				in_shape[tind::eNum], in_shape[tind::eChannels], in_shape[tind::eHeight], in_shape[tind::eWidth]);
 			return -1;
 		}
 
 		diff_.clear();
-		diff_.push_back(std::make_shared<Tensor<Dtype>>(inShape));
+		diff_.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
 
 		return 0;
 	}
@@ -116,57 +116,57 @@ namespace dlex_cnn
 	template <typename Dtype>
 	void ActivationOp<Dtype>::forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
 	{
-		//pAct = std::bind(&ActivationOp::relu, this, std::placeholders::_1);
-		//const std::vector<int> prevShape = prev[0]->getShape();
-		const std::vector<int> prevSize = prev[0]->getSize();
-		const std::vector<int> nextSize = next[0]->getSize();
-		float* prevData = (float *)prev[0]->getData();
-		float* nextData = (float *)next[0]->getData();
+		//p_act = std::bind(&ActivationOp::relu, this, std::placeholders::_1);
+		//const std::vector<int> prev_shape = prev[0]->getShape();
+		const std::vector<int> prev_size = prev[0]->getSize();
+		const std::vector<int> next_size = next[0]->getSize();
+		float* prev_data = (float *)prev[0]->getData();
+		float* next_data = (float *)next[0]->getData();
 
 		for (int n = 0; n < prev[0]->getShape()[tind::eNum]; n++)
 		{
-			float* prevData_n = prevData + n * prevSize[tind::e3D];
-			float* nextData_n = nextData + n * nextSize[tind::e3D];
-			for (int i = 0; i < prevSize[tind::e3D]; i++)
+			float* prev_data_n = prev_data + n * prev_size[tind::e3D];
+			float* next_data_n = next_data + n * next_size[tind::e3D];
+			for (int i = 0; i < prev_size[tind::e3D]; i++)
 			{
-				nextData_n[i] = pAct(prevData_n[i]);
+				next_data_n[i] = p_act(prev_data_n[i]);
 			}
 		}
 	}
 
 	template <typename Dtype>
 	void ActivationOp<Dtype>::backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prevDiff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &nextDiff)
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
 	{
-		const int prevSize3D = prev[0]->getSize()[tind::e3D];
-		const int nextSize3D = next[0]->getSize()[tind::e3D];
-		const int prevDiffSize3D = prevDiff[0]->getSize()[tind::e3D];
-		const int nextDiffSize3D = nextDiff[0]->getSize()[tind::e3D];
-		float* prevData = (float *)prev[0]->getData();
-		float* nextData = (float *)next[0]->getData();
-		float* prevDiffData = (float *)prevDiff[0]->getData();
-		float* nextDiffData = (float *)nextDiff[0]->getData();
+		const int prev_size3D = prev[0]->getSize()[tind::e3D];
+		const int next_size3D = next[0]->getSize()[tind::e3D];
+		const int prev_diff_size3D = prev_diff[0]->getSize()[tind::e3D];
+		const int next_diff_size3D = next_diff[0]->getSize()[tind::e3D];
+		float* prev_data = (float *)prev[0]->getData();
+		float* next_data = (float *)next[0]->getData();
+		float* prev_diff_data = (float *)prev_diff[0]->getData();
+		float* next_diff_data = (float *)next_diff[0]->getData();
 
 		float* act_x = NULL;
 		int act_len = 0;
-		switch (param_.activationType) {
+		switch (param_.activation_type) {
 		case tind::Activation::eReLU:
-			act_x = prevData;
-			act_len = prevSize3D;
+			act_x = prev_data;
+			act_len = prev_size3D;
 			break;
 		default:
-			act_x = nextData;
-			act_len = nextSize3D;
+			act_x = next_data;
+			act_len = next_size3D;
 		}
 
 		for (int n = 0; n < prev[0]->getShape()[tind::eNum]; n++)
 		{
 			float* actx_n = act_x + n * act_len;
-			float* prevDiffData_n = prevDiffData + n * prevDiffSize3D;
-			float* nextDiffData_n = nextDiffData + n * nextDiffSize3D;
+			float* prev_diff_data_n = prev_diff_data + n * prev_diff_size3D;
+			float* next_diff_data_n = next_diff_data + n * next_diff_size3D;
 			for (int i = 0; i < act_len; i++)
 			{
-				pRevAct(actx_n[i], nextDiffData_n[i]);
+				p_rev_act(actx_n[i], next_diff_data_n[i]);
 			}
 		}
 	}

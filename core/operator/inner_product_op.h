@@ -27,8 +27,8 @@ namespace dlex_cnn
 		InnerProductOp();
 		InnerProductOp(InnerProductOpParam param);
 		virtual ~InnerProductOp();
-		inline virtual int setOpParam(InnerProductOpParam opParam) { param_ = opParam; return 0; };
-		virtual int setOpParam(const std::string &opParamStr) override;
+		inline virtual int setOpParam(InnerProductOpParam op_param) { param_ = op_param; return 0; };
+		virtual int setOpParam(const std::string &op_param_str) override;
 
 	private:
 		inline virtual const std::string &getOpType() const override { return op_type_; };
@@ -37,13 +37,13 @@ namespace dlex_cnn
 		inline virtual std::vector<std::shared_ptr<Tensor<Dtype>>> &getOpDiff() override { return diff_; };
 
 		virtual std::string genOpParamStr() const override;
-		virtual int inferOutShape(std::vector<int> &inShape, std::vector<int> &outShape) override;
-		//virtual int solveInnerParams(const std::vector<int> &inShape, const std::vector<int> &outShape,
+		virtual int inferOutShape(std::vector<int> &in_shape, std::vector<int> &out_shape) override;
+		//virtual int solveInnerParams(const std::vector<int> &in_shape, const std::vector<int> &out_shape,
 		//	std::vector<std::shared_ptr<Tensor<Dtype>>> &data) override;
-		virtual int allocBuf4Node(const std::vector<int> &inShape,
-			const std::vector<int> &outShape,
+		virtual int allocBuf4Node(const std::vector<int> &in_shape,
+			const std::vector<int> &out_shape,
 			std::vector<std::shared_ptr<Tensor<Dtype>>> &data) const override;
-		virtual int allocOpBuf4Train(const std::vector<int> &inShape, const std::vector<int> &outShape) override;
+		virtual int allocOpBuf4Train(const std::vector<int> &in_shape, const std::vector<int> &out_shape) override;
 		
 		// fc: o1 = i1 x w11 + i2 x w12 + i3 x w13 + b1;
 		//     o2 = i1 x w21 + i2 x w22 + i3 x w23 + b2;
@@ -61,18 +61,18 @@ namespace dlex_cnn
 		//       Or if it is "false", then weights have been saved like W(K,N), and the formula will be changed to O = I * W' + B.
 		virtual void forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
 
-		// 1、Update prevDiff, according to nextDiff and weight.
-		// prevDiff(num, in3DSize) = nextDiff(num, hidden_num) * weight(hidden_num, in3DSize).
-		// -> prevDiff(num, prevDiffSize[tind::e3D]) = nextDiff(num, nextDiffSize[tind::e3D]) * weight(nextDiffSize[tind::e3D], in3DSize).
+		// 1、Update prev_diff, according to next_diff and weight.
+		// prev_diff(num, in3DSize) = next_diff(num, hidden_num) * weight(hidden_num, in3DSize).
+		// -> prev_diff(num, prev_diff_size[tind::e3D]) = next_diff(num, next_diff_size[tind::e3D]) * weight(next_diff_size[tind::e3D], in3DSize).
 		//
 		// 2、Get weight gradient.
-		// nextDiff(num, hidden_num) -> nextDiff'(hidden_num, num).
-		// O(M,N) = weightGradient(hidden_num, in3DSize) = nextDiff'(hidden_num, num) * prevData(num, in3DSize).
+		// next_diff(num, hidden_num) -> next_diff'(hidden_num, num).
+		// O(M,N) = weightGradient(hidden_num, in3DSize) = next_diff'(hidden_num, num) * prev_data(num, in3DSize).
 		// -> M=hidden_num, N=in3DSize, K=num.
 		//
-		// 3、update bias, just accumulate nextDiffData.
+		// 3、update bias, just accumulate next_diff_data.
 		virtual void backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prevDiff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &nextDiff) override;
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
 
 		//void setParamaters(const DataSize _outMapSize, const bool _enabledBias);
 

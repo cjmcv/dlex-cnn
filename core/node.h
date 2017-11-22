@@ -83,23 +83,15 @@ namespace dlex_cnn
 		int resetDataSize(int index, const std::vector<int> &shape);
 
 		// get the mapping relationship between a hybrid operation and serval operations
-		int hybridOpMap(std::string &inteOpType);
+		int hybridOpMap(std::string &inte_op_type);
 
 		// Infer and generate inte_ops_ on the basis of sub_ops_ and phase_
 		int inferInteOp();
 
-		// paramaters reader and loader	
-		int writeNode2Text(FILE *fp);
-		int writeNode2Bin(FILE *fp);
-		int writeWB2Bin(FILE *fp);
-
-		int writeBin2Node(FILE *fp);
-		int readBin2WB(FILE *fp);
-		void serializeFromString(const std::string content);
 
 		// 网络结构: 可见，输入输出都行，也可在内部用字符串写网络结构
 		// name, index, in_idx_count, in_idx, （out_idx_count, out_idx,全部加载完毕后，再数，建立） in_shape（根据前一个node决定）, out_shape（推断）
-		// opParam
+		// op_param
 
 		// blob
 		// cpu_data_.size(), length, cpu_data_[0], length, [1], (length, [2])

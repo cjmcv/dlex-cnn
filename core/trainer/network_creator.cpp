@@ -11,7 +11,7 @@ namespace dlex_cnn
 {
 	//////////////// Input //////////////////
 	template <typename Dtype>
-	int NetCreator<Dtype>::createInputNode(std::string nodeName, std::string param, NetWork<Dtype> &network)
+	int NetCreator<Dtype>::createInputNode(std::string name, std::string param, NetWork<Dtype> &network)
 	{
 		std::shared_ptr<dlex_cnn::Op<Dtype>> input_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Input");
 		if (input_s == NULL)
@@ -22,11 +22,11 @@ namespace dlex_cnn
 		std::vector < std::shared_ptr<dlex_cnn::Op<Dtype>> > input;
 		input.push_back(input_s);
 
-		network.addNode(nodeName, input);
+		network.addNode(name, input);
 		return 0;
 	}
 	template <typename Dtype>
-	int NetCreator<Dtype>::createInputNode(std::string nodeName, InputOpParam param, NetWork<Dtype> &network)
+	int NetCreator<Dtype>::createInputNode(std::string name, InputOpParam param, NetWork<Dtype> &network)
 	{
 		std::shared_ptr<dlex_cnn::Op<Dtype>> input_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Input");
 		if (input_s == NULL)
@@ -37,13 +37,13 @@ namespace dlex_cnn
 		std::vector < std::shared_ptr<dlex_cnn::Op<Dtype>> > input;
 		input.push_back(input_s);
 
-		network.addNode(nodeName, input);
+		network.addNode(name, input);
 		return 0;
 	}
 
 	//////////////// Inner Product //////////////////
 	template <typename Dtype>
-	int NetCreator<Dtype>::createInnerProductNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network)
+	int NetCreator<Dtype>::createInnerProductNode(std::string in_node, std::string name, std::string param, NetWork<Dtype> &network)
 	{
 		std::shared_ptr<dlex_cnn::Op<Dtype>> fc_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("InnerProduct");
 		if (fc_s == NULL)
@@ -55,13 +55,13 @@ namespace dlex_cnn
 		fc.push_back(fc_s);
 
 		std::vector<std::string> inNodeNames;
-		inNodeNames.push_back(inNode);
+		inNodeNames.push_back(in_node);
 
 		network.addNode(name, fc, inNodeNames);
 		return 0;
 	}
 	template <typename Dtype>
-	int NetCreator<Dtype>::createInnerProductNode(std::string inNode, std::string name, InnerProductOpParam param, NetWork<Dtype> &network)
+	int NetCreator<Dtype>::createInnerProductNode(std::string in_node, std::string name, InnerProductOpParam param, NetWork<Dtype> &network)
 	{
 		std::shared_ptr<dlex_cnn::Op<Dtype>> fc_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("InnerProduct");
 		if (fc_s == NULL)
@@ -73,7 +73,7 @@ namespace dlex_cnn
 		fc.push_back(fc_s);
 
 		std::vector<std::string> inNodeNames;
-		inNodeNames.push_back(inNode);
+		inNodeNames.push_back(in_node);
 
 		network.addNode(name, fc, inNodeNames);
 		return 0;
@@ -81,7 +81,7 @@ namespace dlex_cnn
 
 	//////////////// Convolution //////////////////
 	template <typename Dtype>
-	int NetCreator<Dtype>::createConvNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network)
+	int NetCreator<Dtype>::createConvNode(std::string in_node, std::string name, std::string param, NetWork<Dtype> &network)
 	{
 		std::shared_ptr<dlex_cnn::Op<Dtype>> conv_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Convolution");
 		if (conv_s == NULL)
@@ -93,13 +93,13 @@ namespace dlex_cnn
 		conv.push_back(conv_s);
 
 		std::vector<std::string> inNodeNames;
-		inNodeNames.push_back(inNode);
+		inNodeNames.push_back(in_node);
 
 		network.addNode(name, conv, inNodeNames);
 		return 0;
 	}
 	template <typename Dtype>
-	int NetCreator<Dtype>::createConvNode(std::string inNode, std::string name, ConvolutionOpParam param, NetWork<Dtype> &network)
+	int NetCreator<Dtype>::createConvNode(std::string in_node, std::string name, ConvolutionOpParam param, NetWork<Dtype> &network)
 	{
 		std::shared_ptr<dlex_cnn::Op<Dtype>> conv_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Convolution");
 		if (conv_s == NULL)
@@ -111,7 +111,7 @@ namespace dlex_cnn
 		conv.push_back(conv_s);
 
 		std::vector<std::string> inNodeNames;
-		inNodeNames.push_back(inNode);
+		inNodeNames.push_back(in_node);
 
 		network.addNode(name, conv, inNodeNames);
 		return 0;
@@ -119,7 +119,7 @@ namespace dlex_cnn
 
 	//////////////// Deconvolution //////////////////
 	template <typename Dtype>
-	int NetCreator<Dtype>::createDeconvNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network)
+	int NetCreator<Dtype>::createDeconvNode(std::string in_node, std::string name, std::string param, NetWork<Dtype> &network)
 	{
 		std::shared_ptr<dlex_cnn::Op<Dtype>> deconv_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Deconvolution");
 		if (deconv_s == NULL)
@@ -131,13 +131,13 @@ namespace dlex_cnn
 		deconv.push_back(deconv_s);
 
 		std::vector<std::string> inNodeNames;
-		inNodeNames.push_back(inNode);
+		inNodeNames.push_back(in_node);
 
 		network.addNode(name, deconv, inNodeNames);
 		return 0;
 	}
 	template <typename Dtype>
-	int NetCreator<Dtype>::createDeconvNode(std::string inNode, std::string name, DeconvolutionOpParam param, NetWork<Dtype> &network)
+	int NetCreator<Dtype>::createDeconvNode(std::string in_node, std::string name, DeconvolutionOpParam param, NetWork<Dtype> &network)
 	{
 		std::shared_ptr<dlex_cnn::Op<Dtype>> deconv_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Deconvolution");
 		if (deconv_s == NULL)
@@ -149,7 +149,7 @@ namespace dlex_cnn
 		deconv.push_back(deconv_s);
 
 		std::vector<std::string> inNodeNames;
-		inNodeNames.push_back(inNode);
+		inNodeNames.push_back(in_node);
 
 		network.addNode(name, deconv, inNodeNames);
 		return 0;
@@ -157,7 +157,7 @@ namespace dlex_cnn
 
 	//////////////// Activation //////////////////
 	template <typename Dtype>
-	int NetCreator<Dtype>::createActivationNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network)
+	int NetCreator<Dtype>::createActivationNode(std::string in_node, std::string name, std::string param, NetWork<Dtype> &network)
 	{
 		std::shared_ptr<dlex_cnn::Op<Dtype>> act_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Activation");
 		if (act_s == NULL)
@@ -169,13 +169,13 @@ namespace dlex_cnn
 		act.push_back(act_s);
 
 		std::vector<std::string> inNodeNames;
-		inNodeNames.push_back(inNode);
+		inNodeNames.push_back(in_node);
 
 		network.addNode(name, act, inNodeNames);
 		return 0;
 	}
 	template <typename Dtype>
-	int NetCreator<Dtype>::createActivationNode(std::string inNode, std::string name, ActivationOpParam param, NetWork<Dtype> &network)
+	int NetCreator<Dtype>::createActivationNode(std::string in_node, std::string name, ActivationOpParam param, NetWork<Dtype> &network)
 	{
 		std::shared_ptr<dlex_cnn::Op<Dtype>> act_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Activation");
 		if (act_s == NULL)
@@ -187,7 +187,7 @@ namespace dlex_cnn
 		act.push_back(act_s);
 
 		std::vector<std::string> inNodeNames;
-		inNodeNames.push_back(inNode);
+		inNodeNames.push_back(in_node);
 
 		network.addNode(name, act, inNodeNames);
 		return 0;
@@ -195,7 +195,7 @@ namespace dlex_cnn
 
 	//////////////// Pooling //////////////////
 	template <typename Dtype>
-	int NetCreator<Dtype>::createPoolNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network)
+	int NetCreator<Dtype>::createPoolNode(std::string in_node, std::string name, std::string param, NetWork<Dtype> &network)
 	{
 		std::shared_ptr<dlex_cnn::Op<Dtype>> pool_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Pooling");
 		if (pool_s == NULL)
@@ -207,13 +207,13 @@ namespace dlex_cnn
 		pool.push_back(pool_s);
 
 		std::vector<std::string> inNodeNames;
-		inNodeNames.push_back(inNode);
+		inNodeNames.push_back(in_node);
 
 		network.addNode(name, pool, inNodeNames);
 		return 0;
 	}
 	template <typename Dtype>
-	int NetCreator<Dtype>::createPoolNode(std::string inNode, std::string name, PoolingOpParam param, NetWork<Dtype> &network)
+	int NetCreator<Dtype>::createPoolNode(std::string in_node, std::string name, PoolingOpParam param, NetWork<Dtype> &network)
 	{
 		std::shared_ptr<dlex_cnn::Op<Dtype>> pool_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Pooling");
 		if (pool_s == NULL)
@@ -225,7 +225,7 @@ namespace dlex_cnn
 		pool.push_back(pool_s);
 
 		std::vector<std::string> inNodeNames;
-		inNodeNames.push_back(inNode);
+		inNodeNames.push_back(in_node);
 
 		network.addNode(name, pool, inNodeNames);
 		return 0;
@@ -233,7 +233,7 @@ namespace dlex_cnn
 
 	//////////////// Softmax Cross Entropy Loss //////////////////
 	template <typename Dtype>
-	int NetCreator<Dtype>::createSoftmaxLossNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network)
+	int NetCreator<Dtype>::createSoftmaxLossNode(std::string in_node, std::string name, std::string param, NetWork<Dtype> &network)
 	{
 		//std::shared_ptr<dlex_cnn::Op<Dtype>> sm_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("SoftmaxCrossEntropyLossH");
 		//if (sm_s == NULL)
@@ -245,7 +245,7 @@ namespace dlex_cnn
 		//sm.push_back(sm_s);
 
 		//std::vector<std::string> inNodeNames;
-		//inNodeNames.push_back(inNode);
+		//inNodeNames.push_back(in_node);
 
 		//network.addNode(name, sm, inNodeNames);
 
@@ -267,14 +267,14 @@ namespace dlex_cnn
 		sm.push_back(sm_s);
 		sm.push_back(cel_s);
 		std::vector<std::string> inNodeNames;
-		inNodeNames.push_back(inNode);
+		inNodeNames.push_back(in_node);
 
 		network.addNode(name, sm, inNodeNames);
 
 		return 0;
 	}
 	template <typename Dtype>
-	int NetCreator<Dtype>::createSoftmaxLossNode(std::string inNode, std::string name, SoftmaxCrossEntropyLossHOpParam param, NetWork<Dtype> &network)
+	int NetCreator<Dtype>::createSoftmaxLossNode(std::string in_node, std::string name, SoftmaxCrossEntropyLossHOpParam param, NetWork<Dtype> &network)
 	{
 		std::shared_ptr<dlex_cnn::Op<Dtype>> sm_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("SoftmaxCrossEntropyLossH");
 		if (sm_s == NULL)
@@ -286,7 +286,7 @@ namespace dlex_cnn
 		sm.push_back(sm_s);
 
 		std::vector<std::string> inNodeNames;
-		inNodeNames.push_back(inNode);
+		inNodeNames.push_back(in_node);
 
 		network.addNode(name, sm, inNodeNames);
 		return 0;
@@ -294,7 +294,7 @@ namespace dlex_cnn
 
 	//////////////// Output //////////////////
 	template <typename Dtype>
-	int NetCreator<Dtype>::createOutputNode(std::string inNode, std::string name, std::string param, NetWork<Dtype> &network)
+	int NetCreator<Dtype>::createOutputNode(std::string in_node, std::string name, std::string param, NetWork<Dtype> &network)
 	{
 		std::shared_ptr<dlex_cnn::Op<Dtype>> out_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Output");
 		if (out_s == NULL)
@@ -306,13 +306,13 @@ namespace dlex_cnn
 		out.push_back(out_s);
 
 		std::vector<std::string> inNodeNames;
-		inNodeNames.push_back(inNode);
+		inNodeNames.push_back(in_node);
 
 		network.addNode(name, out, inNodeNames);
 		return 0;
 	}
 	template <typename Dtype>
-	int NetCreator<Dtype>::createOutputNode(std::string inNode, std::string name, OutputOpParam param, NetWork<Dtype> &network)
+	int NetCreator<Dtype>::createOutputNode(std::string in_node, std::string name, OutputOpParam param, NetWork<Dtype> &network)
 	{
 		std::shared_ptr<dlex_cnn::Op<Dtype>> out_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Output");
 		if (out_s == NULL)
@@ -324,7 +324,7 @@ namespace dlex_cnn
 		out.push_back(out_s);
 
 		std::vector<std::string> inNodeNames;
-		inNodeNames.push_back(inNode);
+		inNodeNames.push_back(in_node);
 
 		network.addNode(name, out, inNodeNames);
 		return 0;

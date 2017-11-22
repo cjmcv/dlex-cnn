@@ -27,20 +27,20 @@ namespace dlex_cnn
 		explicit Graph();
 		virtual ~Graph();
 
-		int getNodeIndex(const std::string &nodeName, int &index);
-		void addNode(const std::string &nodeName,
+		int getNodeIndex(const std::string &node_name, int &index);
+		void addNode(const std::string &node_name,
 			std::vector<std::shared_ptr<Op<Dtype>>> &op,
 			std::vector<std::string> &inNodeNames = std::vector<std::string>());
 		// Set input nodes of the graph.
 		int setInNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> inputData, const std::vector<std::string> nodeNames);	//
 		// Set output nodes of the graph.
-		int setOutNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> labelData, const std::vector<std::string> nodeNames);	//
+		int setOutNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> label_data, const std::vector<std::string> nodeNames);	//
 		int forwardGraph();
 		int backwardGraph();
 		// Fetch loss that has been saved in one of the output nodes.
-		int getLoss(const std::string &nodeName, Dtype &loss);
+		int getLoss(const std::string &node_name, Dtype &loss);
 		// Fetch data in the specified node.
-		int getNodeData(const std::string &nodeName, std::shared_ptr<Tensor<Dtype>> &cpuData);
+		int getNodeData(const std::string &node_name, std::shared_ptr<Tensor<Dtype>> &cpuData);
 
 		int graphShow();
 		int writeGraph2Text(FILE *fp);

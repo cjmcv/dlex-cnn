@@ -40,8 +40,8 @@ namespace dlex_cnn
 			return -1;
 		}
 
-		const int dataSize = datum->getSize()[tind::e3D];
-		const Dtype *pdstData = (Dtype *)datum->getData() + num_idx * dataSize;
+		const int data_size = datum->getSize()[tind::e3D];
+		const Dtype *pdata_dst = (Dtype *)datum->getData() + num_idx * data_size;
 
 		const unsigned char *pdata = image.pdata;
 		for (int i = 0; i < height; i++)
@@ -50,7 +50,7 @@ namespace dlex_cnn
 			{
 				for (int c = 0; c < image.channels; c++)
 				{
-					pdstData[(i*width + j) * image.channels + c] = (Dtype)(pdata[(i*width + j) * 3 + c] - mean_value_[c]) * scale_;
+					pdata_dst[(i*width + j) * image.channels + c] = (Dtype)(pdata[(i*width + j) * 3 + c] - mean_value_[c]) * scale_;
 				}
 			}
 		}
@@ -78,9 +78,9 @@ namespace dlex_cnn
 			return -1;
 		}
 
-		const Dtype *pdstData = (Dtype *)datum->getData() + num_idx * datum->getSize()[tind::e3D];
+		const Dtype *pdata_dst = (Dtype *)datum->getData() + num_idx * datum->getSize()[tind::e3D];
 		for (int i = 0; i < vec.size(); i++)
-			pdstData[i] = vec[i];
+			pdata_dst[i] = vec[i];
 
 		return 0;
 	}

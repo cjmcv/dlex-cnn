@@ -22,12 +22,12 @@ namespace dlex_cnn
 			clearPool();
 	}
 
-	void ThreadPool::createThreads(int threadNum)
+	void ThreadPool::createThreads(int thread_num)
 	{
 		is_stop_ = false;
 		if (is_created_ == true)
 		{
-			if (workers_.size() == threadNum)
+			if (workers_.size() == thread_num)
 				return;
 			else
 			{
@@ -36,7 +36,7 @@ namespace dlex_cnn
 			}
 		}
 		//printf("2\n");
-		for (int i = 0; i < threadNum; ++i)
+		for (int i = 0; i < thread_num; ++i)
 			workers_.emplace_back(
 			[this]
 		{

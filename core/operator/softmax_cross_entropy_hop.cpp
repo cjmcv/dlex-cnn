@@ -28,7 +28,7 @@ namespace dlex_cnn
 
 	}
 	template <typename Dtype>
-	int SoftmaxCrossEntropyLossHOp<Dtype>::setOpParam(const std::string &opParamStr)
+	int SoftmaxCrossEntropyLossHOp<Dtype>::setOpParam(const std::string &op_param_str)
 	{
 		// hop获取到hparam后，分别生成各子op对应的参数，对这些子op赋参
 		return 0;
@@ -36,52 +36,52 @@ namespace dlex_cnn
 	template <typename Dtype>
 	std::string SoftmaxCrossEntropyLossHOp<Dtype>::genOpParamStr() const
 	{
-		std::stringstream paramStr;
-		paramStr << ",";
-		return paramStr.str();
+		std::stringstream param_str;
+		param_str << ",";
+		return param_str.str();
 	}
 	template <typename Dtype>
-	int SoftmaxCrossEntropyLossHOp<Dtype>::inferOutShape(std::vector<int> &inShape, std::vector<int> &outShape)
+	int SoftmaxCrossEntropyLossHOp<Dtype>::inferOutShape(std::vector<int> &in_shape, std::vector<int> &out_shape)
 	{
-		outShape = inShape;
+		out_shape = in_shape;
 		return 0;
 	}
 	template <typename Dtype>
-	int SoftmaxCrossEntropyLossHOp<Dtype>::allocBuf4Node(const std::vector<int> &inShape,
-		const std::vector<int> &outShape,
+	int SoftmaxCrossEntropyLossHOp<Dtype>::allocBuf4Node(const std::vector<int> &in_shape,
+		const std::vector<int> &out_shape,
 		std::vector<std::shared_ptr<Tensor<Dtype>>> &data) const
 	{
-		if (inShape[tind::eNum] <= 0 || inShape[tind::eChannels] <= 0 ||
-			inShape[tind::eHeight] <= 0 || inShape[tind::eWidth] <= 0 ||
-			inShape[tind::eNum] > 5000 || inShape[tind::eChannels] > 5000 ||
-			inShape[tind::eHeight] > 5000 || inShape[tind::eWidth] > 5000)
+		if (in_shape[tind::eNum] <= 0 || in_shape[tind::eChannels] <= 0 ||
+			in_shape[tind::eHeight] <= 0 || in_shape[tind::eWidth] <= 0 ||
+			in_shape[tind::eNum] > 5000 || in_shape[tind::eChannels] > 5000 ||
+			in_shape[tind::eHeight] > 5000 || in_shape[tind::eWidth] > 5000)
 		{
-			DLOG_ERR("[ SoftmaxCrossEntropyLossHOp::allocBuf4Node ]: inShape is invalid -> (%d, %d, %d, %d) \n",
-				inShape[tind::eNum], inShape[tind::eChannels], inShape[tind::eHeight], inShape[tind::eWidth]);
+			DLOG_ERR("[ SoftmaxCrossEntropyLossHOp::allocBuf4Node ]: in_shape is invalid -> (%d, %d, %d, %d) \n",
+				in_shape[tind::eNum], in_shape[tind::eChannels], in_shape[tind::eHeight], in_shape[tind::eWidth]);
 			return -1;
 		}
 
 		data.clear();
-		data.push_back(std::make_shared<Tensor<Dtype>>(inShape));
+		data.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
 		
 		return 0;
 	}
 
 	template <typename Dtype>
-	int SoftmaxCrossEntropyLossHOp<Dtype>::allocOpBuf4Train(const std::vector<int> &inShape, const std::vector<int> &outShape)
+	int SoftmaxCrossEntropyLossHOp<Dtype>::allocOpBuf4Train(const std::vector<int> &in_shape, const std::vector<int> &out_shape)
 	{
-		if (inShape[tind::eNum] <= 0 || inShape[tind::eChannels] <= 0 ||
-			inShape[tind::eHeight] <= 0 || inShape[tind::eWidth] <= 0 ||
-			inShape[tind::eNum] > 5000 || inShape[tind::eChannels] > 5000 ||
-			inShape[tind::eHeight] > 5000 || inShape[tind::eWidth] > 5000)
+		if (in_shape[tind::eNum] <= 0 || in_shape[tind::eChannels] <= 0 ||
+			in_shape[tind::eHeight] <= 0 || in_shape[tind::eWidth] <= 0 ||
+			in_shape[tind::eNum] > 5000 || in_shape[tind::eChannels] > 5000 ||
+			in_shape[tind::eHeight] > 5000 || in_shape[tind::eWidth] > 5000)
 		{
-			DLOG_ERR("[ SoftmaxCrossEntropyLossHOp::allocOpBuf4Train ]: inShape is invalid -> (%d, %d, %d, %d) \n",
-				inShape[tind::eNum], inShape[tind::eChannels], inShape[tind::eHeight], inShape[tind::eWidth]);
+			DLOG_ERR("[ SoftmaxCrossEntropyLossHOp::allocOpBuf4Train ]: in_shape is invalid -> (%d, %d, %d, %d) \n",
+				in_shape[tind::eNum], in_shape[tind::eChannels], in_shape[tind::eHeight], in_shape[tind::eWidth]);
 			return -1;
 		}
 
 		diff_.clear();
-		diff_.push_back(std::make_shared<Tensor<Dtype>>(inShape));
+		diff_.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
 
 		if (sub_ops_.size() == 0)
 		{
@@ -105,37 +105,37 @@ namespace dlex_cnn
 	void SoftmaxCrossEntropyLossHOp<Dtype>::forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
 	{
 		//printf("start SoftmaxCrossEntropyLossHOp\n");
-		int opInd[2] = { -1 };
-		bool opFlag = false;
+		int op_ind[2] = { -1 };
+		bool flag = false;
 		if (sub_ops_[0]->getOpType() == "Softmax" && sub_ops_[1]->getOpType() == "CrossEntropyLoss")
 		{
-			opInd[0] = 0;
-			opInd[1] = 1;
-			opFlag = true;
+			op_ind[0] = 0;
+			op_ind[1] = 1;
+			flag = true;
 		}
 		else if (sub_ops_[0]->getOpType() == "CrossEntropyLoss" && sub_ops_[1]->getOpType() == "Softmax")
 		{
-			opInd[0] = 1;
-			opInd[1] = 0;
-			opFlag = true;
+			op_ind[0] = 1;
+			op_ind[1] = 0;
+			flag = true;
 		}
-		if (opFlag == false)
+		if (flag == false)
 		{
 			DLOG_ERR("[ SoftmaxCrossEntropyLossHOp::forward ]: the type of sub_ops_ are not (Softmax + CrossEntropyLoss) \n");
 			return;
 		}
 
-		sub_ops_[opInd[0]]->forward(prev, next);
-		sub_ops_[opInd[1]]->forward(next, next);
+		sub_ops_[op_ind[0]]->forward(prev, next);
+		sub_ops_[op_ind[1]]->forward(next, next);
 		//printf("finish SoftmaxCrossEntropyLossHOp\n");
 	}
 
 	template <typename Dtype>
 	void SoftmaxCrossEntropyLossHOp<Dtype>::backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prevDiff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &nextDiff)
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
 	{
-		int opInd[2] = { -1 };
-		bool opFlag = false;
+		int op_ind[2] = { -1 };
+		bool flag = false;
 		if (sub_ops_.size() != 2)
 		{
 			DLOG_ERR("[ SoftmaxCrossEntropyLossHOp::forward ]:  sub_ops_.size() != 2 \n");
@@ -143,23 +143,23 @@ namespace dlex_cnn
 		}
 		if (sub_ops_[0]->getOpType() == "Softmax" && sub_ops_[1]->getOpType() == "CrossEntropyLoss")
 		{
-			opInd[0] = 0;
-			opInd[1] = 1;
-			opFlag = true;
+			op_ind[0] = 0;
+			op_ind[1] = 1;
+			flag = true;
 		}
 		else if (sub_ops_[0]->getOpType() == "CrossEntropyLoss" && sub_ops_[1]->getOpType() == "Softmax")
 		{
-			opInd[0] = 1;
-			opInd[1] = 0;
-			opFlag = true;
+			op_ind[0] = 1;
+			op_ind[1] = 0;
+			flag = true;
 		}
-		if (opFlag == false)
+		if (flag == false)
 		{
 			DLOG_ERR("[ SoftmaxCrossEntropyLossHOp::forward ]:  the type of sub_ops_ are not (Softmax + CrossEntropyLoss) \n");
 			return;
 		}
-		sub_ops_[opInd[1]]->backward(prev, next, nextDiff, nextDiff);	//lastOutput in next[0], lastDiff will be generated in nextDiff
-		sub_ops_[opInd[0]]->backward(prev, next, prevDiff, nextDiff);
+		sub_ops_[op_ind[1]]->backward(prev, next, next_diff, next_diff);	//lastOutput in next[0], lastDiff will be generated in next_diff
+		sub_ops_[op_ind[0]]->backward(prev, next, prev_diff, next_diff);
 		
 	}
 

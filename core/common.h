@@ -52,7 +52,7 @@ namespace dlex_cnn
 //    } while (0)
 //
 // string process
-std::string fetchSubStr(std::string &srcStr, std::string startStr, std::string endStr);
+std::string fetchSubStr(std::string &src_str, std::string start_str, std::string end_str);
 
 }
 

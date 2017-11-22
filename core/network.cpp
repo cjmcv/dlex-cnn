@@ -40,21 +40,21 @@ namespace dlex_cnn {
 		return 0;
 	}
 	template <typename Dtype>
-	int NetWork<Dtype>::forward(const std::shared_ptr<Tensor<Dtype>> inputDataTensor, const std::shared_ptr<Tensor<Dtype>> labelDataTensor = NULL)
+	int NetWork<Dtype>::forward(const std::shared_ptr<Tensor<Dtype>> input_data_tensor, const std::shared_ptr<Tensor<Dtype>> label_data_tensor = NULL)
 	{
-		std::vector<std::shared_ptr<Tensor<Dtype>>> inputData;
-		inputData.push_back(inputDataTensor);
-		std::vector<std::string> nodeNames;
-		nodeNames.push_back("input");
-		graph_->setInNode(inputData, nodeNames);
+		std::vector<std::shared_ptr<Tensor<Dtype>>> input_data;
+		input_data.push_back(input_data_tensor);
+		std::vector<std::string> node_names;
+		node_names.push_back("input");
+		graph_->setInNode(input_data, node_names);
 
-		if (labelDataTensor != NULL)
+		if (label_data_tensor != NULL)
 		{
-			std::vector<std::shared_ptr<Tensor<Dtype>>> labelData;
-			labelData.push_back(labelDataTensor);
-			std::vector<std::string> nodeNames2;
-			nodeNames2.push_back("output");
-			graph_->setOutNode(labelData, nodeNames2);
+			std::vector<std::shared_ptr<Tensor<Dtype>>> label_data;
+			label_data.push_back(label_data_tensor);
+			std::vector<std::string> node_names2;
+			node_names2.push_back("output");
+			graph_->setOutNode(label_data, node_names2);
 			//printf("finish set outnode\n");
 		}
 
@@ -71,8 +71,8 @@ namespace dlex_cnn {
 		const std::vector<std::shared_ptr<Node<Dtype>>> &nodes = graph_->getGraphNodes();
 		for (int i = 0; i < nodes.size(); i++)
 		{
-			std::string opType = nodes[i]->getInteOp()->getOpType();
-			if (!(opType == "Input" || opType == "Output"))
+			std::string op_type = nodes[i]->getInteOp()->getOpType();
+			if (!(op_type == "Input" || op_type == "Output"))
 				optimizer_->update(nodes[i]);
 		}
 		return 0;
@@ -82,10 +82,10 @@ namespace dlex_cnn {
 
 	//train phase may use this
 	template <typename Dtype>
-	std::shared_ptr<Tensor<Dtype>> NetWork<Dtype>::testBatch(const std::shared_ptr<Tensor<Dtype>> inputDataTensor, const std::shared_ptr<Tensor<Dtype>> labelDataTensor = NULL)
+	std::shared_ptr<Tensor<Dtype>> NetWork<Dtype>::testBatch(const std::shared_ptr<Tensor<Dtype>> input_data_tensor, const std::shared_ptr<Tensor<Dtype>> label_data_tensor = NULL)
 	{
 		////setPhase(Phase::Test);
-		forward(inputDataTensor, labelDataTensor);
+		forward(input_data_tensor, label_data_tensor);
 		//return lastOutput_[0];
 		return NULL;
 	}
@@ -102,11 +102,11 @@ namespace dlex_cnn {
 		this->optimizer_->setLearningRate(lr);
 	}
 	template <typename Dtype>
-	void NetWork<Dtype>::addNode(std::string &nodeName, 
+	void NetWork<Dtype>::addNode(std::string &node_name, 
 		std::vector<std::shared_ptr<Op<Dtype>>> &op, 
-		std::vector<std::string> &inNodeNames = std::vector<std::string>())
+		std::vector<std::string> &in_node_names = std::vector<std::string>())
 	{
-		graph_->addNode(nodeName, op, inNodeNames);
+		graph_->addNode(node_name, op, in_node_names);
 	}
 	template <typename Dtype>
 	int NetWork<Dtype>::switchPhase(int phase)
@@ -128,14 +128,14 @@ namespace dlex_cnn {
 	}
 
 	template <typename Dtype>
-	float NetWork<Dtype>::trainBatch(const std::shared_ptr<Tensor<Dtype>> inputDataTensor,
-		const std::shared_ptr<Tensor<Dtype>> labelDataTensor)
+	float NetWork<Dtype>::trainBatch(const std::shared_ptr<Tensor<Dtype>> input_data_tensor,
+		const std::shared_ptr<Tensor<Dtype>> label_data_tensor)
 	{
 		//setPhase(Phase::Train);
 
-		printf("inputDataTensor[0] = %d\n", inputDataTensor->getShape()[0]);
+		printf("input_data_tensor[0] = %d\n", input_data_tensor->getShape()[0]);
 		//printf("trainBatch start forward\n");
-		forward(inputDataTensor, labelDataTensor);
+		forward(input_data_tensor, label_data_tensor);
 		//printf("trainBatch finish forward\n");
 
 		Dtype loss = 100.0;
@@ -148,19 +148,19 @@ namespace dlex_cnn {
 	}
 
 	template <typename Dtype>
-	int NetWork<Dtype>::getNodeData(const std::string &nodeName, std::shared_ptr<Tensor<Dtype>> &cpuData)
+	int NetWork<Dtype>::getNodeData(const std::string &node_name, std::shared_ptr<Tensor<Dtype>> &cpu_data)
 	{
-		graph_->getNodeData(nodeName, cpuData);
+		graph_->getNodeData(node_name, cpu_data);
 		return 0;
 	}
 	template <typename Dtype>
-	int NetWork<Dtype>::saveBinModel(const std::string& modelFile)
+	int NetWork<Dtype>::saveBinModel(const std::string& model_file)
 	{
 
 		return true;
 	}
 	template <typename Dtype>
-	int NetWork<Dtype>::loadBinModel(const std::string& modelFile)
+	int NetWork<Dtype>::loadBinModel(const std::string& model_file)
 	{
 
 		return true;
@@ -168,21 +168,21 @@ namespace dlex_cnn {
 	template <typename Dtype>
 	int NetWork<Dtype>::saveStageModel(const std::string &path, const int stage)
 	{
-		std::string structFileName = "iter_" + std::to_string(stage) + ".struct";
-		std::string paramFileName = "iter_" + std::to_string(stage) + ".param";
+		std::string struct_file_name = "iter_" + std::to_string(stage) + ".struct";
+		std::string param_file_name = "iter_" + std::to_string(stage) + ".param";
 
-		FILE *stFp = fopen(structFileName.c_str(), "w");
-		graph_->writeGraph2Text(stFp);
+		FILE *st_fp = fopen(struct_file_name.c_str(), "w");
+		graph_->writeGraph2Text(st_fp);
 
 		std::stringstream optss;
 		optss << "optimizer:" << optimizer_->getOptName() << ",lr:" << optimizer_->getLearningRate() << ";";
-		fprintf(stFp, "%s\n", optss.str().c_str());
+		fprintf(st_fp, "%s\n", optss.str().c_str());
 		
-		fclose(stFp);
+		fclose(st_fp);
 
-		FILE *paramFp = fopen(paramFileName.c_str(), "wb");
-		graph_->writeGraphParam2Bin(paramFp);
-		fclose(paramFp);
+		FILE *param_fp = fopen(param_file_name.c_str(), "wb");
+		graph_->writeGraphParam2Bin(param_fp);
+		fclose(param_fp);
 
 		return 0;
 	}
@@ -196,13 +196,13 @@ namespace dlex_cnn {
 			std::string cstr(cc);
 			printf("read3: %s\n", cstr.c_str());
 
-			std::string optStr = fetchSubStr(cstr, "optimizer:", ",");
+			std::string opt_str = fetchSubStr(cstr, "optimizer:", ",");
 			float lr = atof(fetchSubStr(cstr, "lr:", ";").c_str());
 
 			std::shared_ptr<dlex_cnn::Optimizer<Dtype>> optimizer;
-			if (dlex_cnn::Optimizer<Dtype>::getOptimizerByStr(optStr, optimizer))
+			if (dlex_cnn::Optimizer<Dtype>::getOptimizerByStr(opt_str, optimizer))
 			{
-				DLOG_ERR("[ NetWork::readHyperParams ]: Can not find optimizer by name - %s \n", optStr.c_str());
+				DLOG_ERR("[ NetWork::readHyperParams ]: Can not find optimizer by name - %s \n", opt_str.c_str());
 				return -1;
 			}
 			this->setOptimizer(optimizer);
@@ -215,7 +215,7 @@ namespace dlex_cnn {
 				return -1;
 			}
 
-			printf("read22_0: %s, %f\n", optStr.c_str(), lr);
+			printf("read22_0: %s, %f\n", opt_str.c_str(), lr);
 		}
 		return 0;
 	}
@@ -223,18 +223,18 @@ namespace dlex_cnn {
 	int NetWork<Dtype>::loadStageModel(const std::string &path, const int stage)
 	{
 		//readText2Graph(FILE *fp);
-		std::string structFileName = "iter_" + std::to_string(stage) + ".struct";
-		std::string paramFileName = "iter_" + std::to_string(stage) + ".param";
+		std::string struct_file_name = "iter_" + std::to_string(stage) + ".struct";
+		std::string param_file_name = "iter_" + std::to_string(stage) + ".param";
 
-		FILE *stFp = fopen(structFileName.c_str(), "r");
-		graph_->readText2Graph(stFp);
-		readHyperParams(stFp);
+		FILE *st_fp = fopen(struct_file_name.c_str(), "r");
+		graph_->readText2Graph(st_fp);
+		readHyperParams(st_fp);
 
-		fclose(stFp);
+		fclose(st_fp);
 
-		FILE *paramFp = fopen(paramFileName.c_str(), "rb");
-		graph_->readBin2GraphParam(paramFp);
-		fclose(paramFp);
+		FILE *param_fp = fopen(param_file_name.c_str(), "rb");
+		graph_->readBin2GraphParam(param_fp);
+		fclose(param_fp);
 
 		return 0;
 	}

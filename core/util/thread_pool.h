@@ -27,7 +27,7 @@ namespace dlex_cnn
 	public:
 		ThreadPool();
 		~ThreadPool();
-		void createThreads(int threadNum);
+		void createThreads(int thread_num);
 		void clearPool();
 		void exec(std::function<void(const int, const int)> func, const int number);
 
