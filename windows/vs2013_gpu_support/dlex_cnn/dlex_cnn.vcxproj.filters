@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="..\..\..\core\io\dataloader.h">
+      <Filter>源文件\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\io\prefetcher.h">
+      <Filter>源文件\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\io\preprocessor.h">
+      <Filter>源文件\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\util\math_functions.h">
+      <Filter>源文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\util\op_factory.h">
+      <Filter>源文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\util\thread_pool.h">
+      <Filter>源文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\util\timer.h">
+      <Filter>源文件\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\trainer\network_creator.h">
+      <Filter>源文件\trainer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\trainer\typical_network.h">
+      <Filter>源文件\trainer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\optimizer\optimizer.h">
+      <Filter>源文件\optimizer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\operator\activation_simple_op.h">
+      <Filter>源文件\operator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\operator\convolution_op.h">
+      <Filter>源文件\operator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\operator\cross_entropy_lop.h">
+      <Filter>源文件\operator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\operator\deconvolution_op.h">
+      <Filter>源文件\operator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\operator\inner_product_op.h">
+      <Filter>源文件\operator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\operator\input_op.h">
+      <Filter>源文件\operator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\operator\operator_base.h">
+      <Filter>源文件\operator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\operator\operator_hybrid.h">
+      <Filter>源文件\operator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\operator\operator_loss.h">
+      <Filter>源文件\operator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\operator\output_op.h">
+      <Filter>源文件\operator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\operator\pooling_op.h">
+      <Filter>源文件\operator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\operator\softmax_cross_entropy_hop.h">
+      <Filter>源文件\operator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\operator\softmax_op.h">
+      <Filter>源文件\operator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\common.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\configure.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\dlex_cnn.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\dlex_task.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\graph.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="kernel.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\network.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\node.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\tensor.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{77e28a7e-552d-4519-8ff7-868186cf516b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\engine">
+      <UniqueIdentifier>{3304acfd-8d6d-4ab3-a80f-880707f15efe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\io">
+      <UniqueIdentifier>{2667b62e-f4f2-46e7-bf60-3ce02cf5ff47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\util">
+      <UniqueIdentifier>{8db34ebf-3ca8-47ba-990a-933bf9a097f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\trainer">
+      <UniqueIdentifier>{039e0725-04f6-4b3c-a361-2d91e2d401a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\trainer\typical_network">
+      <UniqueIdentifier>{d9ff9457-f4d2-4006-bbd6-671c4688411d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\optimizer">
+      <UniqueIdentifier>{88ac4e7b-1fc1-46ff-999a-75283d1004ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\operator">
+      <UniqueIdentifier>{78a6cc3b-e4ef-47cc-975d-f99174e01740}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\core\io\dataloader.cpp">
+      <Filter>源文件\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\io\preprocessor.cpp">
+      <Filter>源文件\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\util\math_functions.cpp">
+      <Filter>源文件\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\util\thread_pool.cpp">
+      <Filter>源文件\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\trainer\network_creator.cpp">
+      <Filter>源文件\trainer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\trainer\typical_network\lenet.cpp">
+      <Filter>源文件\trainer\typical_network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\trainer\typical_network\mix.cpp">
+      <Filter>源文件\trainer\typical_network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\trainer\typical_network\mlp.cpp">
+      <Filter>源文件\trainer\typical_network</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\optimizer\optimizer.cpp">
+      <Filter>源文件\optimizer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\operator\activation_simple_op.cpp">
+      <Filter>源文件\operator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\operator\convolution_op.cpp">
+      <Filter>源文件\operator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\operator\cross_entropy_lop.cpp">
+      <Filter>源文件\operator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\operator\deconvolution_op.cpp">
+      <Filter>源文件\operator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\operator\inner_product_op.cpp">
+      <Filter>源文件\operator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\operator\input_op.cpp">
+      <Filter>源文件\operator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\operator\operator_base.cpp">
+      <Filter>源文件\operator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\operator\operator_hybrid.cpp">
+      <Filter>源文件\operator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\operator\operator_loss.cpp">
+      <Filter>源文件\operator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\operator\output_op.cpp">
+      <Filter>源文件\operator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\operator\pooling_op.cpp">
+      <Filter>源文件\operator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\operator\softmax_cross_entropy_hop.cpp">
+      <Filter>源文件\operator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\operator\softmax_op.cpp">
+      <Filter>源文件\operator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\common.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\dlex_task.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\graph.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\network.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\node.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\tensor.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="kernel.cu">
+      <Filter>源文件</Filter>
+    </CudaCompile>
+  </ItemGroup>
+</Project>
