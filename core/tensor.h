@@ -23,35 +23,47 @@ namespace dlex_cnn
 	{
 		enum TensorSizeIndex  { e1D, e2D, e3D, e4D };
 		enum TensorShapeIndex { eNum, eChannels, eHeight, eWidth };
+		enum TensorCopyMode { eHost2Host, eHost2Device, eDevice2Device, eDevice2Host };
 	}
 
 	template <typename Dtype>
 	class Tensor
 	{
 	public:
-		explicit Tensor() { data_ = NULL; };
+		explicit Tensor() { cpu_data_ = NULL; };
 		explicit Tensor(const int num, const int channels, const int height, const int width);
 		explicit Tensor(const std::vector<int> &shape);
 		virtual ~Tensor();
 		
+		void checkCpuData();
+		void checkGpuData();
 		inline std::vector<int> &getSize() { return size_; };
 		inline std::vector<int> &getShape() { return shape_; };
-		inline void *getData() { return data_; };
-		inline void setZero() { memset(data_, 0, sizeof(Dtype) * size_[tind::e4D]); };
+		inline void *getCpuData() {
+			checkCpuData();
+			return cpu_data_; 
+		}
+		inline void *getGpuData() {
+			checkGpuData();
+			return gpu_data_;
+		}
+		inline void setZero() { memset(getCpuData(), 0, sizeof(Dtype) * size_[tind::e4D]); };
 		inline void setValue(Dtype alpha) {
-			Dtype *dst = (Dtype *)data_;
+			Dtype *dst = (Dtype *)getCpuData();
 			for (int i = 0; i < size_[tind::e4D]; ++i) {
 				dst[i] = alpha;
 			}
 		};
 		// Just copy data, without changing their size
-		void copyDataTo(Tensor<Dtype> &dst_tensor);
+		void copyDataTo(Tensor<Dtype> &dst_tensor, tind::TensorCopyMode mode);
 		// Copy the whole tensor, includes their size and data.
 		void cloneTo(Tensor<Dtype> &dst_tensor);
 
 	private:
-		void *data_;
-		
+		void *cpu_data_;
+		void *gpu_data_;
+		int gpu_device_;
+
 		// eNum, eChannels, eHeight, eWidth
 		std::vector<int> shape_;
 

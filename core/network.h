@@ -20,6 +20,11 @@
 
 namespace dlex_cnn 
 {
+	namespace tind
+	{
+		enum Mode { CPU, GPU };
+	}
+
 	template <typename Dtype>
 	class NetWork
 	{
@@ -27,7 +32,7 @@ namespace dlex_cnn
 		NetWork();
 		virtual ~NetWork();
 	public:
-		int netWorkInit(std::string name);
+		int netWorkInit(std::string name, tind::Mode device_mode);
 
 		int saveBinModel(const std::string &model_file);
 		int loadBinModel(const std::string &model_file);
@@ -59,6 +64,8 @@ namespace dlex_cnn
 		int netWorkShow();
 		
 	private:
+		tind::Mode device_mode_;
+		int device_id_;
 		// Train/Test, should be the same as graph's
 		int phase_ = tind::Train;
 		std::string name_;

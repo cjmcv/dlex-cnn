@@ -111,7 +111,7 @@ namespace dlex_cnn
 		input_shape_ = shape;
 		int ret = inferOutShape();
 		if (ret == 0)
-			cpu_data_[index].reset(new Tensor<Dtype>(shape));
+			cpu_data_vec_[index].reset(new Tensor<Dtype>(shape));
 		return ret;
 	};
 	

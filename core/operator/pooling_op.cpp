@@ -119,8 +119,8 @@ namespace dlex_cnn
 		const std::vector<int> prev_shape = prev[0]->getShape();
 		const std::vector<int> next_shape = next[0]->getShape();
 
-		Dtype* prev_data = (Dtype *)prev[0]->getData();	//bottom_data
-		Dtype* next_data = (Dtype *)next[0]->getData();	//top_data
+		Dtype* prev_data = (Dtype *)prev[0]->getCpuData();	//bottom_data
+		Dtype* next_data = (Dtype *)next[0]->getCpuData();	//top_data
 
 		const std::vector<int> next_size = next[0]->getSize(); // 4d = top_count
 		const bool use_top_mask = next.size() > 1;
@@ -136,7 +136,7 @@ namespace dlex_cnn
 			else if (max_idx_map_->getSize()[tind::e4D] != next_size[tind::e4D])
 				max_idx_map_.reset(new Tensor<int>(next_shape));
 				
-			mask = (int *)max_idx_map_->getData();
+			mask = (int *)max_idx_map_->getCpuData();
 			max_idx_map_->setValue(Dtype(-1));
 
 			next[0]->setZero();
@@ -226,8 +226,8 @@ namespace dlex_cnn
 		const std::vector<int> prev_shape = prev[0]->getShape();
 		const std::vector<int> next_shape = next[0]->getShape();
 
-		Dtype* prev_diff_data = (Dtype *)prev_diff[0]->getData();	//bottom_data
-		Dtype* next_diff_data = (Dtype *)next_diff[0]->getData();	//top_data
+		Dtype* prev_diff_data = (Dtype *)prev_diff[0]->getCpuData();	//bottom_data
+		Dtype* next_diff_data = (Dtype *)next_diff[0]->getCpuData();	//top_data
 
 		prev_diff[0]->setZero();
 
@@ -235,7 +235,7 @@ namespace dlex_cnn
 		switch (this->param_.pooling_type) {
 		case tind::eMAX:
 			// The main loop
-			mask = (int *)max_idx_map_->getData();
+			mask = (int *)max_idx_map_->getCpuData();
 			
 			for (int n = 0; n < next_shape[tind::eNum]; ++n) {
 				for (int c = 0; c < next_shape[tind::eChannels]; ++c) {

@@ -5,6 +5,8 @@
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
+#include "util/device.h"
+
 #include "operator/inner_product_op.h"
 #include "util/math_functions.h"
 #include <sstream>
@@ -68,13 +70,13 @@ namespace dlex_cnn
 
 		//weight
 		data.push_back(std::make_shared<Tensor<Dtype>>(1, inShape3DSize * outShape3DSize, 1, 1));
-		normal_distribution_init<Dtype>((Dtype *)data[1]->getData(), data[1]->getSize()[tind::e4D], 0.0f, 0.1f);
+		normal_distribution_init<Dtype>((Dtype *)data[1]->getCpuData(), data[1]->getSize()[tind::e4D], 0.0f, 0.1f);
 
 		//blas
 		if (param_.blas_enable)
 		{
 			data.push_back(std::make_shared<Tensor<Dtype>>(1, out_shape[1], 1, 1));
-			dlex_set<Dtype>((Dtype *)data[2]->getData(), data[2]->getSize()[tind::e4D], 0.0f);
+			dlex_set<Dtype>((Dtype *)data[2]->getCpuData(), data[2]->getSize()[tind::e4D], 0.0f);
 		}
 		return 0;
 	}
@@ -112,18 +114,18 @@ namespace dlex_cnn
 
 		//data.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
 		//data.push_back(std::make_shared<Tensor<Dtype>>(1, inShape3DSize * outShape3DSize, 1, 1));
-		//normal_distribution_init<Dtype>((Dtype *)data[1]->getData(), data[1]->getSize()[tind::e4D], 0.0f, 0.1f);
+		//normal_distribution_init<Dtype>((Dtype *)data[1]->getCpuData(), data[1]->getSize()[tind::e4D], 0.0f, 0.1f);
 
 		gradient_.push_back(std::make_shared<Tensor<Dtype>>(1, inShape3DSize * outShape3DSize, 1, 1));
-		dlex_set<Dtype>((Dtype *)gradient_[0]->getData(), gradient_[0]->getSize()[tind::e4D], 0.0f);
+		dlex_set<Dtype>((Dtype *)gradient_[0]->getCpuData(), gradient_[0]->getSize()[tind::e4D], 0.0f);
 
 		if (param_.blas_enable)
 		{
 			//data.push_back(std::make_shared<Tensor<Dtype>>(1, out_shape[1], 1, 1));
-			//dlex_set<Dtype>((Dtype *)data[2]->getData(), data[2]->getSize()[tind::e4D], 0.0f);
+			//dlex_set<Dtype>((Dtype *)data[2]->getCpuData(), data[2]->getSize()[tind::e4D], 0.0f);
 
 			gradient_.push_back(std::make_shared<Tensor<Dtype>>(1, out_shape[1], 1, 1));
-			dlex_set<Dtype>((Dtype *)gradient_[1]->getData(), gradient_[1]->getSize()[tind::e4D], 0.0f);
+			dlex_set<Dtype>((Dtype *)gradient_[1]->getCpuData(), gradient_[1]->getSize()[tind::e4D], 0.0f);
 		}
 		return 0;
 	}
@@ -137,10 +139,10 @@ namespace dlex_cnn
 
 		//printf("into innerProduct forward:(%d, %d), (%d, %d)\n", prev3DSize, next3DSize, prev[1]->get4DSize(), prev[2]->get4DSize());
 
-		const Dtype* prev_data = (Dtype *)prev[0]->getData();
-		Dtype* next_data = (Dtype *)next[0]->getData();
-		const Dtype* weight_data = (Dtype *)prev[1]->getData();
-		const Dtype* bias_data = param_.blas_enable ? (Dtype *)prev[2]->getData() : nullptr;
+		const Dtype* prev_data = (Dtype *)prev[0]->getCpuData();
+		Dtype* next_data = (Dtype *)next[0]->getCpuData();
+		const Dtype* weight_data = (Dtype *)prev[1]->getCpuData();
+		const Dtype* bias_data = param_.blas_enable ? (Dtype *)prev[2]->getCpuData() : nullptr;
 
 		//for (int i = 0; i < prev[2]->get4DSize(); i++)
 		//{
@@ -171,12 +173,12 @@ namespace dlex_cnn
 	void InnerProductOp<Dtype>::backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
 		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
 	{
-		const Dtype* prev_data = (Dtype*)prev[0]->getData();
-		const Dtype* next_data = (Dtype*)next[0]->getData();
-		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getData();
-		const Dtype* next_diff_data = (Dtype*)next_diff[0]->getData();
-		const Dtype* weight_data = (Dtype*)prev[1]->getData();
-		//const Dtype* bias_data = param_.blas_enable ? (Dtype*)prev[2]->getData() : nullptr;
+		const Dtype* prev_data = (Dtype*)prev[0]->getCpuData();
+		const Dtype* next_data = (Dtype*)next[0]->getCpuData();
+		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getCpuData();
+		const Dtype* next_diff_data = (Dtype*)next_diff[0]->getCpuData();
+		const Dtype* weight_data = (Dtype*)prev[1]->getCpuData();
+		//const Dtype* bias_data = param_.blas_enable ? (Dtype*)prev[2]->getCpuData() : nullptr;
 
 		const std::vector<int> prev_diff_size = prev_diff[0]->getSize();
 		const std::vector<int> prev_data_size = prev[0]->getSize();
@@ -230,7 +232,7 @@ namespace dlex_cnn
 		////////////////////////////////////////////////////////////////////////////
 		//update this layer's param
 		//get weight gradient
-		Dtype* weight_gradient_data = (Dtype *)gradient_[0]->getData();
+		Dtype* weight_gradient_data = (Dtype *)gradient_[0]->getCpuData();
 
 		// next_diff(num, hidden_num) -> next_diff'(hidden_num, num)
 		// O(M,N) = weightGradient(hidden_num, in3DSize) = next_diff'(hidden_num, num) * prev_data(num, in3DSize)
@@ -251,7 +253,7 @@ namespace dlex_cnn
 		if (param_.blas_enable)
 		{
 			//get bias diff	
-			Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getData();
+			Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getCpuData();
 			const std::vector<int> biasGradSize = gradient_[1]->getSize();
 
 			gradient_[1]->setZero();

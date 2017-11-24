@@ -5,6 +5,7 @@
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
+#include "util/device.h"
 #include "tensor.h"
 
 namespace dlex_cnn
@@ -35,13 +36,7 @@ namespace dlex_cnn
 		size_.push_back(channels * size_[1]);
 		size_.push_back(num * size_[2]);
 		
-		data_ = NULL;
-		data_ = (void *)malloc(sizeof(Dtype) * size_[size_.size() - 1]);
-
-		if (data_ == NULL)
-		{
-			DLOG_ERR("[ Tensor::Tensor ]: Can not malloc for data_.\n");
-		}
+		cpu_data_ = NULL;
 	}
 
 	template <typename Dtype>
@@ -67,55 +62,118 @@ namespace dlex_cnn
 		for (int i = 1; i < shapeSize; i++)
 			size_.push_back(shape_[shapeSize - i - 1] * size_[i - 1]);
 		
-		data_ = NULL;
-		data_ = (void *)malloc(sizeof(Dtype) * size_[tind::e4D]);
-		if (data_ == NULL)
+		cpu_data_ = NULL;
+	}
+
+	template <typename Dtype>
+	void Tensor<Dtype>::checkCpuData()
+	{
+		if (cpu_data_ != NULL)	return;
+		cpu_data_ = (void *)malloc(sizeof(Dtype) * size_[tind::e4D]);
+		if (cpu_data_ == NULL)
 		{
-			DLOG_ERR("[ Tensor::Tensor ]: Can not malloc for data_.\n");
+			DLOG_ERR("[ Tensor::Tensor ]: Can not malloc for cpu_data_.\n");
+		}
+	}
+
+	template <typename Dtype>
+	void Tensor<Dtype>::checkGpuData()
+	{
+		if (gpu_data_ != NULL)
+			return;
+#ifndef CPU_ONLY
+		DCUDA_CHECK(cudaGetDevice(&gpu_device_));
+		DCUDA_CHECK(cudaMalloc(&gpu_data_, sizeof(Dtype) * size_[tind::e4D]));
+		DCUDA_CHECK(cudaMemset(gpu_data_, 0, sizeof(Dtype) * size_[tind::e4D]));	// needn't ?
+#endif
+		if (gpu_data_ == NULL)
+		{
+			DLOG_ERR("[ Tensor::Tensor ]: Can not malloc for cpu_data_.\n");
 		}
 	}
 
 	template <typename Dtype>
 	Tensor<Dtype>::~Tensor()
 	{
-		if (data_ != NULL)
-			free(data_);
-		data_ = NULL;
+		if (cpu_data_ != NULL)
+			free(cpu_data_);
+		cpu_data_ = NULL;
+
+		if (gpu_data_ != NULL)
+			cudaFree(gpu_data_);
+		gpu_data_ = NULL;
 	}
 
 	template <typename Dtype>
-	void Tensor<Dtype>::copyDataTo(Tensor<Dtype> &dst_tensor)
+	void Tensor<Dtype>::copyDataTo(Tensor<Dtype> &dst_tensor, tind::TensorCopyMode mode)
 	{
 		if (dst_tensor.shape_ != this->shape_ || dst_tensor.size_ != this->size_)
 		{
 			DLOG_ERR("[ Tensor::copyDataTo ]: src tensor and dst tensor should have the same size.\n");
 			return;
 		}
-		if (dst_tensor.data_ == NULL || this->data_ == NULL)
+		switch(mode)
 		{
-			DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.data_ == NULL || this->data_ == NULL.\n");
-			return;
+		case tind::eHost2Host:
+			if (dst_tensor.getCpuData() == NULL || this->cpu_data_ == NULL)
+			{
+				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getCpuData() == NULL || this->cpu_data_ == NULL.\n");
+				return;
+			}
+			memcpy(dst_tensor.cpu_data_, this->cpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D]);
+			break;
+		case tind::eHost2Device:
+			if (dst_tensor.getGpuData() == NULL || this->cpu_data_ == NULL)
+			{
+				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getGpuData() == NULL || this->cpu_data_ == NULL.\n");
+				return;
+			}
+			DCUDA_CHECK(cudaMemcpy(dst_tensor.gpu_data_, this->cpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D], cudaMemcpyHostToDevice));
+			break;
+		case tind::eDevice2Device:
+			if (dst_tensor.getGpuData() == NULL || this->gpu_data_ == NULL)
+			{
+				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getGpuData() == NULL || this->gpu_data_ == NULL.\n");
+				return;
+			}
+			DCUDA_CHECK(cudaMemcpy(dst_tensor.gpu_data_, this->gpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D], cudaMemcpyDeviceToDevice));
+			break;
+		case tind::eDevice2Host:
+			if (dst_tensor.getCpuData() == NULL || this->gpu_data_ == NULL)
+			{
+				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getCpuData() == NULL || this->gpu_data_ == NULL.\n");
+				return;
+			}
+			DCUDA_CHECK(cudaMemcpy(dst_tensor.cpu_data_, this->gpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D], cudaMemcpyDeviceToHost));
+			break;
+		default:
+			DLOG_ERR("[ Tensor::copyDataTo ]: TensorCopyMode .\n");
+			break;
 		}
-		memcpy(dst_tensor.data_, this->data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D]);
 	}
 
 	template <typename Dtype>
 	void Tensor<Dtype>::cloneTo(Tensor<Dtype> &dst_tensor)
 	{
-		dst_tensor.shape_ = this->shape_;
-		dst_tensor.size_ = this->size_;
+		//if (this->cpu_data_ == NULL)
+		//{
+		//	DLOG_ERR("[ Tensor::cloneTo ]: this->cpu_data_ == NULL.\n");
+		//	return;
+		//}
+		//dst_tensor.shape_ = this->shape_;
+		//dst_tensor.size_ = this->size_;
 
-		if (dst_tensor.data_ != NULL)
-		{
-			free(dst_tensor.data_);
-			dst_tensor.data_ = NULL;
-		}
+		//if (dst_tensor.cpu_data_ != NULL)
+		//{
+		//	free(dst_tensor.cpu_data_);
+		//	dst_tensor.cpu_data_ = NULL;
+		//}
 
-		dst_tensor.data_ = (void *)malloc(sizeof(Dtype) * this->size_[tind::e4D]);
-		if (dst_tensor.data_ == NULL)
-			DLOG_ERR("[ Tensor::cloneTo ]: Can not malloc for dst_tensor.data_.\n");
+		//dst_tensor.cpu_data_ = (void *)malloc(sizeof(Dtype) * this->size_[tind::e4D]);
+		//if (dst_tensor.cpu_data_ == NULL)
+		//	DLOG_ERR("[ Tensor::cloneTo ]: Can not malloc for dst_tensor.cpu_data_.\n");
 
-		memcpy(dst_tensor.data_, this->data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D]);
+		//memcpy(dst_tensor.cpu_data_, this->cpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D]);
 	}
 
 	INSTANTIATE_CLASS_NOR(Tensor);

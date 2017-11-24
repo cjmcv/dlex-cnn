@@ -118,7 +118,7 @@ namespace dlex_cnn
 	void InputOp<Dtype>::forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
 	{
 		for (int i = 0; i < prev.size(); i++)
-			prev[i]->copyDataTo(*next[i]);
+			prev[i]->copyDataTo(*next[i], tind::eHost2Host);
 	}
 
 	template <typename Dtype>

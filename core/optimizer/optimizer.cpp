@@ -24,23 +24,23 @@ namespace dlex_cnn
 	template <typename Dtype>
 	void SGD<Dtype>::update(std::shared_ptr<Node<Dtype>> node)
 	{
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> node_data = node->getDataVec();
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> node_data = node->getCpuDataVec();
 		if (node_data.size() == 1)
 			return;
 
 		const std::shared_ptr<Op<Dtype>> inteOp = node->getInteOp();
 
-		Dtype* weight_data = (Dtype *)node_data[1]->getData();
+		Dtype* weight_data = (Dtype *)node_data[1]->getCpuData();
 		const std::vector<int> weight_data_size = node_data[1]->getSize();
-		const Dtype* w_gradient_data = (Dtype *)(inteOp->getOpGradient())[0]->getData();
+		const Dtype* w_gradient_data = (Dtype *)(inteOp->getOpGradient())[0]->getCpuData();
 		for (int i = 0; i < weight_data_size[tind::e4D]; i++)
 			weight_data[i] -= lr_*w_gradient_data[i];
 
 		if (node_data.size() >= 2 && inteOp->getOpGradient().size() >= 2)
 		{
-			Dtype* blas_data = (Dtype *)node_data[2]->getData();
+			Dtype* blas_data = (Dtype *)node_data[2]->getCpuData();
 			const std::vector<int> blas_data_size = node_data[2]->getSize();
-			const Dtype* b_gradient_data = (Dtype *)(inteOp->getOpGradient())[1]->getData();
+			const Dtype* b_gradient_data = (Dtype *)(inteOp->getOpGradient())[1]->getCpuData();
 			for (int i = 0; i < blas_data_size[tind::e4D]; i++)
 				blas_data[i] -= lr_*b_gradient_data[i];
 		}

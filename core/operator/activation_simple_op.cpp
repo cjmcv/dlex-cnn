@@ -120,8 +120,8 @@ namespace dlex_cnn
 		//const std::vector<int> prev_shape = prev[0]->getShape();
 		const std::vector<int> prev_size = prev[0]->getSize();
 		const std::vector<int> next_size = next[0]->getSize();
-		float* prev_data = (float *)prev[0]->getData();
-		float* next_data = (float *)next[0]->getData();
+		float* prev_data = (float *)prev[0]->getCpuData();
+		float* next_data = (float *)next[0]->getCpuData();
 
 		for (int n = 0; n < prev[0]->getShape()[tind::eNum]; n++)
 		{
@@ -142,10 +142,10 @@ namespace dlex_cnn
 		const int next_size3D = next[0]->getSize()[tind::e3D];
 		const int prev_diff_size3D = prev_diff[0]->getSize()[tind::e3D];
 		const int next_diff_size3D = next_diff[0]->getSize()[tind::e3D];
-		float* prev_data = (float *)prev[0]->getData();
-		float* next_data = (float *)next[0]->getData();
-		float* prev_diff_data = (float *)prev_diff[0]->getData();
-		float* next_diff_data = (float *)next_diff[0]->getData();
+		float* prev_data = (float *)prev[0]->getCpuData();
+		float* next_data = (float *)next[0]->getCpuData();
+		float* prev_diff_data = (float *)prev_diff[0]->getCpuData();
+		float* next_diff_data = (float *)next_diff[0]->getCpuData();
 
 		float* act_x = NULL;
 		int act_len = 0;

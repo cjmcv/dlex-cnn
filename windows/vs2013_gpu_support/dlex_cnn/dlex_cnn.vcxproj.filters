@@ -97,6 +97,9 @@
     <ClInclude Include="..\..\..\core\tensor.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\core\util\device.h">
+      <Filter>源文件\util</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="源文件">

@@ -44,7 +44,7 @@ namespace dlex_cnn {
 		pool->allocOpBuf4Train(in_shape, out_shape);
 
 		// input (ic3, ih3, iw3)
-		float *in_data = (float *)in_data_vec[0]->getData();
+		float *in_data = (float *)in_data_vec[0]->getCpuData();
 		for (int i = 0; i < 1 * 1 * 10 * 10; i++)
 			in_data[i] = i;
 
@@ -55,10 +55,10 @@ namespace dlex_cnn {
 
 		pool->forward(in_data_vec, out_data_vec);
 
-		matrixShow_float("A", (float *)in_data_vec[0]->getData(), in_data_vec[0]->getShape()[tind::eNum], in_data_vec[0]->getShape()[tind::eChannels], in_data_vec[0]->getShape()[tind::eHeight], in_data_vec[0]->getShape()[tind::eWidth]);
-		matrixShow_float("B", (float *)out_data_vec[0]->getData(), out_data_vec[0]->getShape()[tind::eNum], out_data_vec[0]->getShape()[tind::eChannels], out_data_vec[0]->getShape()[tind::eHeight], out_data_vec[0]->getShape()[tind::eWidth]);
+		matrixShow_float("A", (float *)in_data_vec[0]->getCpuData(), in_data_vec[0]->getShape()[tind::eNum], in_data_vec[0]->getShape()[tind::eChannels], in_data_vec[0]->getShape()[tind::eHeight], in_data_vec[0]->getShape()[tind::eWidth]);
+		matrixShow_float("B", (float *)out_data_vec[0]->getCpuData(), out_data_vec[0]->getShape()[tind::eNum], out_data_vec[0]->getShape()[tind::eChannels], out_data_vec[0]->getShape()[tind::eHeight], out_data_vec[0]->getShape()[tind::eWidth]);
 		if (pooling_param.pooling_type = dlex_cnn::tind::eMAX)
-			matrixShow_int("C", (int *)pool->max_idx_map_->getData(), out_data_vec[0]->getShape()[tind::eNum], out_data_vec[0]->getShape()[tind::eChannels], out_data_vec[0]->getShape()[tind::eHeight], out_data_vec[0]->getShape()[tind::eWidth]);
+			matrixShow_int("C", (int *)pool->max_idx_map_->getCpuData(), out_data_vec[0]->getShape()[tind::eNum], out_data_vec[0]->getShape()[tind::eChannels], out_data_vec[0]->getShape()[tind::eHeight], out_data_vec[0]->getShape()[tind::eWidth]);
 
 		//反向传播，对比，矩阵手动计算对比
 		std::vector<std::shared_ptr<Tensor<Dtype>>> in_diff_vec;
@@ -68,7 +68,7 @@ namespace dlex_cnn {
 
 		// set out here first.
 		pool->backward(in_data_vec, out_data_vec, in_diff_vec, out_data_vec);
-		matrixShow_float("D", (float *)in_diff_vec[0]->getData(), in_shape[tind::eNum], in_shape[tind::eChannels], in_shape[tind::eHeight], in_shape[tind::eWidth]);
+		matrixShow_float("D", (float *)in_diff_vec[0]->getCpuData(), in_shape[tind::eNum], in_shape[tind::eChannels], in_shape[tind::eHeight], in_shape[tind::eWidth]);
 	}
 
 }

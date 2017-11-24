@@ -183,6 +183,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClInclude Include="..\..\..\core\tensor.h" />
     <ClInclude Include="..\..\..\core\trainer\network_creator.h" />
     <ClInclude Include="..\..\..\core\trainer\typical_network.h" />
+    <ClInclude Include="..\..\..\core\util\device.h" />
     <ClInclude Include="..\..\..\core\util\math_functions.h" />
     <ClInclude Include="..\..\..\core\util\op_factory.h" />
     <ClInclude Include="..\..\..\core\util\thread_pool.h" />
