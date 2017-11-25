@@ -5,7 +5,7 @@
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
-#include "optimizer/Optimizer.h"
+#include "optimizer/optimizer.h"
 
 namespace dlex_cnn
 {
@@ -19,10 +19,12 @@ namespace dlex_cnn
 
 		return 0;
 	}
+	INSTANTIATE_CLASS(Optimizer);
+    
 	//SGD
 	//w -= lr*g
 	template <typename Dtype>
-	void SGD<Dtype>::update(std::shared_ptr<Node<Dtype>> node)
+	void SGD<Dtype>::update(std::shared_ptr< Node<Dtype> > node)
 	{
 		const std::vector<std::shared_ptr<Tensor<Dtype>>> node_data = node->getCpuDataVec();
 		if (node_data.size() == 1)
@@ -34,7 +36,7 @@ namespace dlex_cnn
 		const std::vector<int> weight_data_size = node_data[1]->getSize();
 		const Dtype* w_gradient_data = (Dtype *)(inteOp->getOpGradient())[0]->getCpuData();
 		for (int i = 0; i < weight_data_size[tind::e4D]; i++)
-			weight_data[i] -= lr_*w_gradient_data[i];
+			weight_data[i] -= Optimizer<Dtype>::lr_*w_gradient_data[i];
 
 		if (node_data.size() >= 2 && inteOp->getOpGradient().size() >= 2)
 		{
@@ -42,10 +44,10 @@ namespace dlex_cnn
 			const std::vector<int> blas_data_size = node_data[2]->getSize();
 			const Dtype* b_gradient_data = (Dtype *)(inteOp->getOpGradient())[1]->getCpuData();
 			for (int i = 0; i < blas_data_size[tind::e4D]; i++)
-				blas_data[i] -= lr_*b_gradient_data[i];
+				blas_data[i] -= Optimizer<Dtype>::lr_*b_gradient_data[i];
 		}
 	}
 
-	INSTANTIATE_CLASS(Optimizer);
+	//INSTANTIATE_CLASS(Optimizer);
 	INSTANTIATE_CLASS(SGD);
 }//namespace

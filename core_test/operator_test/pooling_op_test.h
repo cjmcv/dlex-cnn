@@ -15,7 +15,7 @@ namespace dlex_cnn
 	template <typename Dtype>
 	class PoolingOpTest
 	{
-		template<typename Dtype> friend class PoolingOp;
+		template<typename T> friend class PoolingOp;
 
 	public:
 		PoolingOpTest() {};

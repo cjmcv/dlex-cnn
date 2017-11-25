@@ -40,7 +40,7 @@ namespace dlex_cnn
 	class PoolingOp : public Op<Dtype>
 	{
 #ifdef UNIT_TEST
-		template <typename Dtype>
+		template <typename T>
 		friend class PoolingOpTest;
 #endif
 	public:

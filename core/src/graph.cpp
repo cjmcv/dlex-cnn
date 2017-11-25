@@ -36,8 +36,8 @@ namespace dlex_cnn
 
 	template <typename Dtype>
 	void Graph<Dtype>::addNode(const std::string &node_name,
-		std::vector<std::shared_ptr<Op<Dtype>>> &op,
-		std::vector<std::string> &in_node_names = std::vector<std::string>())
+		const std::vector< std::shared_ptr< Op<Dtype> > > &op,
+		const std::vector<std::string> &in_node_names)
 	{
 		//const auto layer_type = layer->getLayerType();
 		//printf("NetWork addayer begin , type : %s\n", layer_type.c_str());

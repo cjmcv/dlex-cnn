@@ -37,7 +37,7 @@ public:
 	// Create operator instance according to the name that has been registered.
 	std::shared_ptr< dlex_cnn::Op<Dtype> > createOpByType(std::string type)
 	{
-		std::map<std::string, opCreator>::iterator it = op_creator_map_.find(type);
+		typename std::map<std::string, opCreator>::iterator it = op_creator_map_.find(type);
 		if (it == op_creator_map_.end())
 			return NULL;
 
@@ -50,7 +50,7 @@ public:
 
 	std::shared_ptr< dlex_cnn::Op<Dtype> > createOpByType(std::string type, std::string param_str)
 	{
-		std::map<std::string, opCreator>::iterator it = op_creator_map_.find(type);
+		typename std::map<std::string, opCreator>::iterator it = op_creator_map_.find(type);
 		if (it == op_creator_map_.end())
 			return NULL;
 
@@ -82,7 +82,7 @@ public:
 
 private:
 	OpFactory() {};
-	std::map<std::string, opCreator> op_creator_map_;
+	typename std::map<std::string, opCreator> op_creator_map_;
 };
 
 }	//namespace dlex_cnn

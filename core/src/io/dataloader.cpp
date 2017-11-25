@@ -44,13 +44,13 @@ namespace dlex_cnn
 		const Dtype *pdata_dst = (Dtype *)datum->getCpuData() + num_idx * data_size;
 
 		const unsigned char *pdata = image.pdata;
-		for (int i = 0; i < height; i++)
+		for (int i = 0; i < image.height; i++)
 		{
-			for (int j = 0; j < width; j++)
+			for (int j = 0; j < image.width; j++)
 			{
 				for (int c = 0; c < image.channels; c++)
 				{
-					pdata_dst[(i*width + j) * image.channels + c] = (Dtype)(pdata[(i*width + j) * 3 + c] - mean_value_[c]) * scale_;
+					pdata_dst[(i*image.width + j) * image.channels + c] = (Dtype)(pdata[(i*image.width + j) * 3 + c] - mean_value_[c]) * scale_;
 				}
 			}
 		}
@@ -63,6 +63,7 @@ namespace dlex_cnn
 		std::shared_ptr<dlex_cnn::Tensor<Dtype>> datum, 
 		const int num_idx)
 	{
+        /*
 		//move to inline, delete judge?
 		if (num_idx >= datum->getSize()[tind::eNum] ||
 			image.channels != datum->getSize()[tind::eChannels] ||
@@ -81,7 +82,7 @@ namespace dlex_cnn
 		const Dtype *pdata_dst = (Dtype *)datum->getCpuData() + num_idx * datum->getSize()[tind::e3D];
 		for (int i = 0; i < vec.size(); i++)
 			pdata_dst[i] = vec[i];
-
+        */
 		return 0;
 	}
 }

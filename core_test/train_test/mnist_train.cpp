@@ -264,8 +264,8 @@ namespace dlex_cnn
 
 		NetWork<float> network;
 		network.netWorkInit("netA", tind::CPU);
-		TypicalNet<float> typicalNet;
-		typicalNet.mix(batch_size, channels, height, width, network);
+		TypicalNet typicalNet;
+		typicalNet.mix<float>(batch_size, channels, height, width, network);
 
 		network.setLearningRate(learning_rate);
 

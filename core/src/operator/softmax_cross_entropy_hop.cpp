@@ -83,7 +83,7 @@ namespace dlex_cnn
 		diff_.clear();
 		diff_.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
 
-		if (sub_ops_.size() == 0)
+		if (HybridOp<Dtype>::sub_ops_.size() == 0)
 		{
 			// can set sub_ops's params by loading inteOp's params
 			std::shared_ptr<dlex_cnn::Op<Dtype>> sm_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Softmax");
@@ -94,8 +94,8 @@ namespace dlex_cnn
 			//dlex_cnn::CrossEntropyLossOpParam CELParam;
 			//dynamic_cast<dlex_cnn::CrossEntropyLossOp<Dtype> *>(cel_s.get())->setOpParam(CELParam);
 
-			sub_ops_.push_back(sm_s);
-			sub_ops_.push_back(cel_s);
+			HybridOp<Dtype>::sub_ops_.push_back(sm_s);
+			HybridOp<Dtype>::sub_ops_.push_back(cel_s);
 		}
 
 		return 0;
@@ -107,13 +107,13 @@ namespace dlex_cnn
 		//printf("start SoftmaxCrossEntropyLossHOp\n");
 		int op_ind[2] = { -1 };
 		bool flag = false;
-		if (sub_ops_[0]->getOpType() == "Softmax" && sub_ops_[1]->getOpType() == "CrossEntropyLoss")
+		if (HybridOp<Dtype>::sub_ops_[0]->getOpType() == "Softmax" && HybridOp<Dtype>::sub_ops_[1]->getOpType() == "CrossEntropyLoss")
 		{
 			op_ind[0] = 0;
 			op_ind[1] = 1;
 			flag = true;
 		}
-		else if (sub_ops_[0]->getOpType() == "CrossEntropyLoss" && sub_ops_[1]->getOpType() == "Softmax")
+		else if (HybridOp<Dtype>::sub_ops_[0]->getOpType() == "CrossEntropyLoss" && HybridOp<Dtype>::sub_ops_[1]->getOpType() == "Softmax")
 		{
 			op_ind[0] = 1;
 			op_ind[1] = 0;
@@ -125,8 +125,8 @@ namespace dlex_cnn
 			return;
 		}
 
-		sub_ops_[op_ind[0]]->forward(prev, next);
-		sub_ops_[op_ind[1]]->forward(next, next);
+		HybridOp<Dtype>::sub_ops_[op_ind[0]]->forward(prev, next);
+		HybridOp<Dtype>::sub_ops_[op_ind[1]]->forward(next, next);
 		//printf("finish SoftmaxCrossEntropyLossHOp\n");
 	}
 
@@ -136,18 +136,18 @@ namespace dlex_cnn
 	{
 		int op_ind[2] = { -1 };
 		bool flag = false;
-		if (sub_ops_.size() != 2)
+		if (HybridOp<Dtype>::sub_ops_.size() != 2)
 		{
 			DLOG_ERR("[ SoftmaxCrossEntropyLossHOp::forward ]:  sub_ops_.size() != 2 \n");
 			return;
 		}
-		if (sub_ops_[0]->getOpType() == "Softmax" && sub_ops_[1]->getOpType() == "CrossEntropyLoss")
+		if (HybridOp<Dtype>::sub_ops_[0]->getOpType() == "Softmax" && HybridOp<Dtype>::sub_ops_[1]->getOpType() == "CrossEntropyLoss")
 		{
 			op_ind[0] = 0;
 			op_ind[1] = 1;
 			flag = true;
 		}
-		else if (sub_ops_[0]->getOpType() == "CrossEntropyLoss" && sub_ops_[1]->getOpType() == "Softmax")
+		else if (HybridOp<Dtype>::sub_ops_[0]->getOpType() == "CrossEntropyLoss" && HybridOp<Dtype>::sub_ops_[1]->getOpType() == "Softmax")
 		{
 			op_ind[0] = 1;
 			op_ind[1] = 0;
@@ -158,8 +158,8 @@ namespace dlex_cnn
 			DLOG_ERR("[ SoftmaxCrossEntropyLossHOp::forward ]:  the type of sub_ops_ are not (Softmax + CrossEntropyLoss) \n");
 			return;
 		}
-		sub_ops_[op_ind[1]]->backward(prev, next, next_diff, next_diff);	//lastOutput in next[0], lastDiff will be generated in next_diff
-		sub_ops_[op_ind[0]]->backward(prev, next, prev_diff, next_diff);
+		HybridOp<Dtype>::sub_ops_[op_ind[1]]->backward(prev, next, next_diff, next_diff);	//lastOutput in next[0], lastDiff will be generated in next_diff
+		HybridOp<Dtype>::sub_ops_[op_ind[0]]->backward(prev, next, prev_diff, next_diff);
 		
 	}
 

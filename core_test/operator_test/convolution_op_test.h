@@ -16,7 +16,7 @@ namespace dlex_cnn
 	class ConvolutionOpTest
 	{
 		//template <float> friend class ConvolutionOp;//
-		template<typename Dtype> friend class ConvolutionOp;
+		template<typename T> friend class ConvolutionOp;
 
 	public:
 		ConvolutionOpTest() {};

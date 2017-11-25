@@ -41,7 +41,7 @@ namespace dlex_cnn {
 		return 0;
 	}
 	template <typename Dtype>
-	int NetWork<Dtype>::forward(const std::shared_ptr<Tensor<Dtype>> input_data_tensor, const std::shared_ptr<Tensor<Dtype>> label_data_tensor = NULL)
+	int NetWork<Dtype>::forward(const std::shared_ptr<Tensor<Dtype>> input_data_tensor, const std::shared_ptr<Tensor<Dtype>> label_data_tensor)
 	{
 		std::vector<std::shared_ptr<Tensor<Dtype>>> input_data;
 		input_data.push_back(input_data_tensor);
@@ -83,7 +83,7 @@ namespace dlex_cnn {
 
 	//train phase may use this
 	template <typename Dtype>
-	std::shared_ptr<Tensor<Dtype>> NetWork<Dtype>::testBatch(const std::shared_ptr<Tensor<Dtype>> input_data_tensor, const std::shared_ptr<Tensor<Dtype>> label_data_tensor = NULL)
+	std::shared_ptr<Tensor<Dtype>> NetWork<Dtype>::testBatch(const std::shared_ptr<Tensor<Dtype>> input_data_tensor, const std::shared_ptr<Tensor<Dtype>> label_data_tensor)
 	{
 		////setPhase(Phase::Test);
 		forward(input_data_tensor, label_data_tensor);
@@ -103,9 +103,9 @@ namespace dlex_cnn {
 		this->optimizer_->setLearningRate(lr);
 	}
 	template <typename Dtype>
-	void NetWork<Dtype>::addNode(std::string &node_name, 
-		std::vector<std::shared_ptr<Op<Dtype>>> &op, 
-		std::vector<std::string> &in_node_names = std::vector<std::string>())
+	void NetWork<Dtype>::addNode(const std::string &node_name, 
+		const std::vector<std::shared_ptr<Op<Dtype>>> &op, 
+		const std::vector<std::string> &in_node_names)
 	{
 		graph_->addNode(node_name, op, in_node_names);
 	}

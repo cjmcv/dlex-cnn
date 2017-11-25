@@ -10,7 +10,7 @@
 
 #include <vector>
 #include <cstdint>
-
+#include <algorithm>
 #include "io/dataloader.h"
 
 namespace dlex_cnn

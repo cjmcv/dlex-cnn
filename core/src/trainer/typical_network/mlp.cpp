@@ -10,7 +10,7 @@
 namespace dlex_cnn
 {
 	template <typename Dtype>
-	int TypicalNet<Dtype>::mlp(const int num, const int channels, const int height, const int width, NetWork<Dtype> &network)
+	int TypicalNet::mlp(const int num, const int channels, const int height, const int width, NetWork<Dtype> &network)
 	{
 		printf("start building net\n");
 		NetCreator<Dtype> creator;
@@ -47,6 +47,9 @@ namespace dlex_cnn
 
 		return 0;
 	}
+
+	template int TypicalNet::mlp(const int num, const int channels, const int height, const int width, NetWork<float> &network);
+	template int TypicalNet::mlp(const int num, const int channels, const int height, const int width, NetWork<double> &network);
 
 	
 }

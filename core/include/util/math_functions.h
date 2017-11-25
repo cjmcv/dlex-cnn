@@ -8,6 +8,7 @@
 #ifndef DLEX_OP_MATH_HPP_
 #define DLEX_OP_MATH_HPP_
 
+#include <string.h>
 #include <cmath>
 #include <random>
 #include <algorithm>

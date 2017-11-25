@@ -12,6 +12,10 @@
 
 namespace dlex_cnn
 {
+#ifndef FLT_MIN
+#define FLT_MIN 1.175494351e-38F 
+#endif
+
 // class instantiate
 #define INSTANTIATE_CLASS(classname) \
   char gInstantiationGuard##classname; \
@@ -25,9 +29,9 @@ namespace dlex_cnn
   template class classname<double>
 
 // log control
-#define DLOG_ERR(format, ...) fprintf(stdout,"ERROR: "format"\n", ##__VA_ARGS__);
-#define DLOG_INFO(format, ...) fprintf(stdout,"INFO: "format"\n", ##__VA_ARGS__);
-#define DLOG_WARN(format, ...) fprintf(stdout,"WARN: "format"\n", ##__VA_ARGS__);
+#define DLOG_ERR(format, ...) fprintf(stderr,"ERROR: "#format"\n", ##__VA_ARGS__);
+#define DLOG_INFO(format, ...) fprintf(stdout,"INFO: "#format"\n", ##__VA_ARGS__);
+#define DLOG_WARN(format, ...) fprintf(stdout,"WARN: "#format"\n", ##__VA_ARGS__);
 
 // val check
 #define DCHECK(val) (((val)==0)? false:true)

@@ -9,7 +9,7 @@
 #define DLEX_OP_OPTIMIZER_HPP_
 
 #include <vector>
-#include "Configure.h"
+#include "configure.h"
 #include "node.h"
 
 namespace dlex_cnn
@@ -22,10 +22,10 @@ namespace dlex_cnn
 		Optimizer(const float lr) :lr_(lr){}
 		void setLearningRate(const float lr) { lr_ = lr; };
 		inline float getLearningRate() { return lr_; };
-		virtual void update(std::shared_ptr<Node<Dtype>> node) = 0;
 		virtual inline const std::string &getOptName() { return ""; };
+		virtual void update(std::shared_ptr< Node<Dtype> > node) = 0;
 		static int getOptimizerByStr(std::string &type, std::shared_ptr<Optimizer<Dtype>> &opt);
-	protected:
+    protected:
 		float lr_ = 0.1f;
 	};
 
@@ -34,11 +34,12 @@ namespace dlex_cnn
 	{
 	public:
 		SGD() {}
-		SGD(const float lr) :Optimizer(lr){}		
+		//SGD(const float lr) : Optimizer(lr){};
 		virtual inline const std::string &getOptName() override { return opt_name_; };
-		virtual void update(std::shared_ptr<Node<Dtype>> node) override;
+		virtual void update(std::shared_ptr< Node<Dtype> > node) override;
 	private:
 		std::string opt_name_ = "SGD";
 	};
+
 }
 #endif

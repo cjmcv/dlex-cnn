@@ -51,9 +51,9 @@ namespace dlex_cnn
 		int getNodeData(const std::string &node_name, std::shared_ptr<Tensor<Dtype>> &cpuData);
 		inline const std::shared_ptr<Graph<Dtype>> getGraph() { return graph_; };
 
-		void addNode(std::string &node_name, 
-			std::vector<std::shared_ptr<Op<Dtype>>> &op, 
-			std::vector<std::string> &in_node_names = std::vector<std::string>());
+		void addNode(const std::string &node_name, 
+			const std::vector<std::shared_ptr<Op<Dtype>>> &op, 
+			const std::vector<std::string> &in_node_names = std::vector<std::string>());
 		int switchPhase(int phase);
 
 		// fill the input data and label date (during training), then compute graph forward

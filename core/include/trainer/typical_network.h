@@ -13,27 +13,16 @@
 
 namespace dlex_cnn
 {
-	template <typename Dtype>
 	class TypicalNet
 	{
-	public:
-		TypicalNet() {};
-		virtual ~TypicalNet() {};
-
-	public:
+    public:
+		template <typename Dtype>
 		int mlp(const int num, const int channels, const int height, const int width, NetWork<Dtype> &network);
+		template <typename Dtype>
 		int lenet(const int num, const int channels, const int height, const int width, NetWork<Dtype> &network);
+		template <typename Dtype>
 		int mix(const int num, const int channels, const int height, const int width, NetWork<Dtype> &network);
 	};
-
-	template int TypicalNet<float>::mlp(const int num, const int channels, const int height, const int width, NetWork<float> &network);
-	template int TypicalNet<double>::mlp(const int num, const int channels, const int height, const int width, NetWork<double> &network);
-
-	template int TypicalNet<float>::lenet(const int num, const int channels, const int height, const int width, NetWork<float> &network);
-	template int TypicalNet<double>::lenet(const int num, const int channels, const int height, const int width, NetWork<double> &network);
-
-	template int TypicalNet<float>::mix(const int num, const int channels, const int height, const int width, NetWork<float> &network);
-	template int TypicalNet<double>::mix(const int num, const int channels, const int height, const int width, NetWork<double> &network);
 }
 
 #endif

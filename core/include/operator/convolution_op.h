@@ -35,8 +35,8 @@ namespace dlex_cnn
 	class ConvolutionOp : public Op<Dtype>
 	{
 #ifdef UNIT_TEST
-		template <typename Dtype>
-		friend class ConvolutionOpTest;
+		template <typename T>
+		friend class ConvolutionOpTest; // the typename should not be the same width ConvoluitionOp's "Dtype"
 #endif
 	public:
 		ConvolutionOp();

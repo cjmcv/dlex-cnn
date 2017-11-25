@@ -10,6 +10,7 @@
 
 //#include <iostream>
 #include <vector>
+#include <string.h>
 #include <memory>
 #include <stdlib.h>
 

@@ -34,7 +34,7 @@ namespace dlex_cnn
 	class DeconvolutionOp : public Op<Dtype>
 	{
 #ifdef UNIT_TEST
-		template <typename Dtype>
+		template <typename T>
 		friend class DeconvolutionOpTest;
 #endif
 	public:

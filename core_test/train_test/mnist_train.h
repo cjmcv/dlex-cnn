@@ -9,6 +9,7 @@
 #define DLEX_TEST_MNIST_TRAIN_HPP_
 //
 #include <iostream>
+#include <cassert>
 #include "dlex_cnn.h"
 #include "mnist_loader.h"
 #include "trainer/network_creator.h"

@@ -11,6 +11,7 @@
 
 //#include <iostream>
 #include <vector>
+#include <string>
 #include <memory>
 #include <stdlib.h>
 #include <stack>
@@ -29,8 +30,8 @@ namespace dlex_cnn
 
 		int getNodeIndex(const std::string &node_name, int &index);
 		void addNode(const std::string &node_name,
-			std::vector<std::shared_ptr<Op<Dtype>>> &op,
-			std::vector<std::string> &inNodeNames = std::vector<std::string>());
+			const std::vector<std::shared_ptr<Op<Dtype>>> &op,
+			const std::vector<std::string> &inNodeNames = std::vector<std::string>() );
 		// Set input nodes of the graph.
 		int setInNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> inputData, const std::vector<std::string> nodeNames);	//
 		// Set output nodes of the graph.
