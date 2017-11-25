@@ -112,14 +112,14 @@ namespace dlex_cnn
 		for (int i = offset; i < actual_end_pos; i++)
 		{
 			//image data
-			float* input_data = (float *)input_data_tensor->getData() + (i - offset)*size_per_image;//*sizeof(float)
+			float* input_data = (float *)input_data_tensor->getCpuData() + (i - offset)*size_per_image;//*sizeof(float)
 			const uint8_t* image_data = train_data_[i].first.pdata;
 			for (int j = 0; j < size_per_image; j++)
 			{
 				input_data[j] = (float)image_data[j] * scale_rate;
 			}
 			//label data
-			float* label_data = (float *)label_data_tensor->getData() + (i - offset)*size_per_label;//*sizeof(float)
+			float* label_data = (float *)label_data_tensor->getCpuData() + (i - offset)*size_per_label;//*sizeof(float)
 			const uint8_t label = train_data_[i].second;
 			for (int j = 0; j < size_per_label; j++)
 			{
@@ -139,7 +139,7 @@ namespace dlex_cnn
 		std::shared_ptr<dlex_cnn::Tensor<float>> result(new dlex_cnn::Tensor<float>(number, size_per_label, 1, 1));
 		for (int i = start; i < start + len; i++)
 		{
-			float* label_data = (float *)result->getData() + (i - start)*size_per_label;//*sizeof(float)
+			float* label_data = (float *)result->getCpuData() + (i - start)*size_per_label;//*sizeof(float)
 			const uint8_t label = test_data[i].second;
 			for (int j = 0; j < size_per_label; j++)
 			{
@@ -163,7 +163,7 @@ namespace dlex_cnn
 		for (int i = start; i < start + len; i++)
 		{
 			//image data
-			float* input_data = (float *)result->getData() + (i - start)*size_per_image;
+			float* input_data = (float *)result->getCpuData() + (i - start)*size_per_image;
 			const uint8_t* image_data = test_data[i].first.pdata;
 			for (int j = 0; j < size_per_image; j++)
 			{
@@ -205,7 +205,7 @@ namespace dlex_cnn
 			std::shared_ptr<dlex_cnn::Tensor<float>> probDataTensor;
 			network.getNodeData("output", probDataTensor);
 
-			//float *pdata = (float *)probDataTensor->getData();
+			//float *pdata = (float *)probDataTensor->getCpuData();
 			//for (int i = 0; i < probDataTensor->getSize()[dlex_cnn::tind::e4D]; i++)
 			//{
 			//	printf("%f, ", pdata[i]);
@@ -221,7 +221,7 @@ namespace dlex_cnn
 
 			//printf("ready to get acc\n");
 			const int label_size = probDataTensor->getSize()[dlex_cnn::tind::e3D];
-			const float* prob_data = (float *)probDataTensor->getData();
+			const float* prob_data = (float *)probDataTensor->getCpuData();
 			for (int j = 0; j < len; j++)
 			{
 				const uint8_t real_prob = test_data[i + j].second;
@@ -262,16 +262,16 @@ namespace dlex_cnn
 		printf("construct network begin...\n");
 		registerOpClass();
 
-		//NetWork<float> network;
+		NetWork<float> network;
+		network.netWorkInit("netA", tind::CPU);
+		TypicalNet<float> typicalNet;
+		typicalNet.mix(batch_size, channels, height, width, network);
+
+		network.setLearningRate(learning_rate);
+
+		//dlex_cnn::NetWork<float> network;
 		//network.netWorkInit("netA");
-		//TypicalNet<float> typicalNet;
-		//typicalNet.mix(batch_size, channels, height, width, network);
-
-		//network.setLearningRate(learning_rate);
-
-		dlex_cnn::NetWork<float> network;
-		network.netWorkInit("netA");
-		network.loadStageModel("./", 1);
+		//network.loadStageModel("./", 1);
 
 		printf("construct network done.\n");
 
@@ -372,7 +372,7 @@ namespace dlex_cnn
 
 		printf("construct network begin...\n");
 		dlex_cnn::NetWork<float> network;
-		network.netWorkInit("netA");
+		network.netWorkInit("netA", tind::CPU);
 		network.loadStageModel(modelFilePath, iter);
 		printf("construct network done.\n");
 

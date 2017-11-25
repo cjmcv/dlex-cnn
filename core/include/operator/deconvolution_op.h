@@ -14,7 +14,7 @@
 #include "util/math_functions.h"
 
 #ifdef UNIT_TEST
-#include "../core_test/operator_test/deconvolution_op_test.h"
+#include "../../core_test/operator_test/deconvolution_op_test.h"
 #endif
 
 namespace dlex_cnn

@@ -5,7 +5,7 @@
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
-#include "operator_hybrid.h"
+#include "operator/operator_hybrid.h"
 
 const std::map<std::string, std::vector<std::string>, int> opListMapTwo;
 const std::map<std::string, std::vector<std::string>, int> opListMapThree;

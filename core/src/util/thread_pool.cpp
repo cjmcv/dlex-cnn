@@ -5,7 +5,7 @@
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
-#include "thread_pool.h"
+#include "util/thread_pool.h"
 
 namespace dlex_cnn
 {

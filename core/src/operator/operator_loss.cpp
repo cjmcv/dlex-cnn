@@ -5,7 +5,7 @@
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
-#include "operator_loss.h"
+#include "operator/operator_loss.h"
 
 namespace dlex_cnn
 {

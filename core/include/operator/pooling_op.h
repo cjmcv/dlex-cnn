@@ -14,7 +14,7 @@
 #include "tensor.h"
 
 #ifdef UNIT_TEST
-#include "../core_test/operator_test/pooling_op_test.h"
+#include "../../core_test/operator_test/pooling_op_test.h"
 #endif
 
 

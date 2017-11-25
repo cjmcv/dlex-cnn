@@ -5,7 +5,7 @@
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
-#include "network_creator.h"
+#include "trainer/network_creator.h"
 
 namespace dlex_cnn
 {

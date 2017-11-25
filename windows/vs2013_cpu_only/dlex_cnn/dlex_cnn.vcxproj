@@ -19,67 +19,68 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\core\common.cpp" />
-    <ClCompile Include="..\..\..\core\dlex_task.cpp" />
-    <ClCompile Include="..\..\..\core\graph.cpp" />
-    <ClCompile Include="..\..\..\core\io\dataloader.cpp" />
-    <ClCompile Include="..\..\..\core\io\preprocessor.cpp" />
-    <ClCompile Include="..\..\..\core\network.cpp" />
-    <ClCompile Include="..\..\..\core\node.cpp" />
-    <ClCompile Include="..\..\..\core\operator\activation_simple_op.cpp" />
-    <ClCompile Include="..\..\..\core\operator\convolution_op.cpp" />
-    <ClCompile Include="..\..\..\core\operator\cross_entropy_lop.cpp" />
-    <ClCompile Include="..\..\..\core\operator\deconvolution_op.cpp" />
-    <ClCompile Include="..\..\..\core\operator\inner_product_op.cpp" />
-    <ClCompile Include="..\..\..\core\operator\input_op.cpp" />
-    <ClCompile Include="..\..\..\core\operator\operator_base.cpp" />
-    <ClCompile Include="..\..\..\core\operator\operator_hybrid.cpp" />
-    <ClCompile Include="..\..\..\core\operator\operator_loss.cpp" />
-    <ClCompile Include="..\..\..\core\operator\output_op.cpp" />
-    <ClCompile Include="..\..\..\core\operator\pooling_op.cpp" />
-    <ClCompile Include="..\..\..\core\operator\softmax_cross_entropy_hop.cpp" />
-    <ClCompile Include="..\..\..\core\operator\softmax_op.cpp" />
-    <ClCompile Include="..\..\..\core\optimizer\optimizer.cpp" />
-    <ClCompile Include="..\..\..\core\tensor.cpp" />
-    <ClCompile Include="..\..\..\core\trainer\network_creator.cpp" />
-    <ClCompile Include="..\..\..\core\trainer\typical_network\lenet.cpp" />
-    <ClCompile Include="..\..\..\core\trainer\typical_network\mix.cpp" />
-    <ClCompile Include="..\..\..\core\trainer\typical_network\mlp.cpp" />
-    <ClCompile Include="..\..\..\core\util\math_functions.cpp" />
-    <ClCompile Include="..\..\..\core\util\thread_pool.cpp" />
+    <ClInclude Include="..\..\..\core\include\common.h" />
+    <ClInclude Include="..\..\..\core\include\configure.h" />
+    <ClInclude Include="..\..\..\core\include\dlex_cnn.h" />
+    <ClInclude Include="..\..\..\core\include\dlex_task.h" />
+    <ClInclude Include="..\..\..\core\include\graph.h" />
+    <ClInclude Include="..\..\..\core\include\io\dataloader.h" />
+    <ClInclude Include="..\..\..\core\include\io\prefetcher.h" />
+    <ClInclude Include="..\..\..\core\include\io\preprocessor.h" />
+    <ClInclude Include="..\..\..\core\include\network.h" />
+    <ClInclude Include="..\..\..\core\include\node.h" />
+    <ClInclude Include="..\..\..\core\include\operator\activation_simple_op.h" />
+    <ClInclude Include="..\..\..\core\include\operator\convolution_op.h" />
+    <ClInclude Include="..\..\..\core\include\operator\cross_entropy_lop.h" />
+    <ClInclude Include="..\..\..\core\include\operator\deconvolution_op.h" />
+    <ClInclude Include="..\..\..\core\include\operator\inner_product_op.h" />
+    <ClInclude Include="..\..\..\core\include\operator\input_op.h" />
+    <ClInclude Include="..\..\..\core\include\operator\operator_base.h" />
+    <ClInclude Include="..\..\..\core\include\operator\operator_hybrid.h" />
+    <ClInclude Include="..\..\..\core\include\operator\operator_loss.h" />
+    <ClInclude Include="..\..\..\core\include\operator\output_op.h" />
+    <ClInclude Include="..\..\..\core\include\operator\pooling_op.h" />
+    <ClInclude Include="..\..\..\core\include\operator\softmax_cross_entropy_hop.h" />
+    <ClInclude Include="..\..\..\core\include\operator\softmax_op.h" />
+    <ClInclude Include="..\..\..\core\include\optimizer\optimizer.h" />
+    <ClInclude Include="..\..\..\core\include\tensor.h" />
+    <ClInclude Include="..\..\..\core\include\trainer\network_creator.h" />
+    <ClInclude Include="..\..\..\core\include\trainer\typical_network.h" />
+    <ClInclude Include="..\..\..\core\include\util\device.h" />
+    <ClInclude Include="..\..\..\core\include\util\math_functions.h" />
+    <ClInclude Include="..\..\..\core\include\util\op_factory.h" />
+    <ClInclude Include="..\..\..\core\include\util\thread_pool.h" />
+    <ClInclude Include="..\..\..\core\include\util\timer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\core\common.h" />
-    <ClInclude Include="..\..\..\core\configure.h" />
-    <ClInclude Include="..\..\..\core\dlex_cnn.h" />
-    <ClInclude Include="..\..\..\core\dlex_task.h" />
-    <ClInclude Include="..\..\..\core\graph.h" />
-    <ClInclude Include="..\..\..\core\io\dataloader.h" />
-    <ClInclude Include="..\..\..\core\io\prefetcher.h" />
-    <ClInclude Include="..\..\..\core\io\preprocessor.h" />
-    <ClInclude Include="..\..\..\core\network.h" />
-    <ClInclude Include="..\..\..\core\node.h" />
-    <ClInclude Include="..\..\..\core\operator\activation_simple_op.h" />
-    <ClInclude Include="..\..\..\core\operator\convolution_op.h" />
-    <ClInclude Include="..\..\..\core\operator\cross_entropy_lop.h" />
-    <ClInclude Include="..\..\..\core\operator\deconvolution_op.h" />
-    <ClInclude Include="..\..\..\core\operator\inner_product_op.h" />
-    <ClInclude Include="..\..\..\core\operator\input_op.h" />
-    <ClInclude Include="..\..\..\core\operator\operator_base.h" />
-    <ClInclude Include="..\..\..\core\operator\operator_hybrid.h" />
-    <ClInclude Include="..\..\..\core\operator\operator_loss.h" />
-    <ClInclude Include="..\..\..\core\operator\output_op.h" />
-    <ClInclude Include="..\..\..\core\operator\pooling_op.h" />
-    <ClInclude Include="..\..\..\core\operator\softmax_cross_entropy_hop.h" />
-    <ClInclude Include="..\..\..\core\operator\softmax_op.h" />
-    <ClInclude Include="..\..\..\core\optimizer\optimizer.h" />
-    <ClInclude Include="..\..\..\core\tensor.h" />
-    <ClInclude Include="..\..\..\core\trainer\network_creator.h" />
-    <ClInclude Include="..\..\..\core\trainer\typical_network.h" />
-    <ClInclude Include="..\..\..\core\util\math_functions.h" />
-    <ClInclude Include="..\..\..\core\util\op_factory.h" />
-    <ClInclude Include="..\..\..\core\util\thread_pool.h" />
-    <ClInclude Include="..\..\..\core\util\timer.h" />
+    <ClCompile Include="..\..\..\core\src\common.cpp" />
+    <ClCompile Include="..\..\..\core\src\dlex_task.cpp" />
+    <ClCompile Include="..\..\..\core\src\graph.cpp" />
+    <ClCompile Include="..\..\..\core\src\io\dataloader.cpp" />
+    <ClCompile Include="..\..\..\core\src\io\preprocessor.cpp" />
+    <ClCompile Include="..\..\..\core\src\network.cpp" />
+    <ClCompile Include="..\..\..\core\src\node.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\activation_simple_op.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\convolution_op.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\cross_entropy_lop.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\deconvolution_op.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\inner_product_op.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\input_op.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\operator_base.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\operator_hybrid.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\operator_loss.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\output_op.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\pooling_op.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\softmax_cross_entropy_hop.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\softmax_op.cpp" />
+    <ClCompile Include="..\..\..\core\src\optimizer\optimizer.cpp" />
+    <ClCompile Include="..\..\..\core\src\tensor.cpp" />
+    <ClCompile Include="..\..\..\core\src\trainer\network_creator.cpp" />
+    <ClCompile Include="..\..\..\core\src\trainer\typical_network\lenet.cpp" />
+    <ClCompile Include="..\..\..\core\src\trainer\typical_network\mix.cpp" />
+    <ClCompile Include="..\..\..\core\src\trainer\typical_network\mlp.cpp" />
+    <ClCompile Include="..\..\..\core\src\util\math_functions.cpp" />
+    <ClCompile Include="..\..\..\core\src\util\thread_pool.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B83A591F-2B04-479F-959A-1178D4B15B3B}</ProjectGuid>
@@ -161,8 +162,8 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;DLEX_CNN_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;DLEX_CNN_EXPORTS;CPU_ONLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../../core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
@@ -198,8 +199,8 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;DLEX_CNN_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../../core</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;DLEX_CNN_EXPORTS;CPU_ONLY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../../core/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

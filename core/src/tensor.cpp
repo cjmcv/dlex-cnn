@@ -98,10 +98,11 @@ namespace dlex_cnn
 		if (cpu_data_ != NULL)
 			free(cpu_data_);
 		cpu_data_ = NULL;
-
+#ifndef CPU_ONLY
 		if (gpu_data_ != NULL)
 			cudaFree(gpu_data_);
 		gpu_data_ = NULL;
+#endif
 	}
 
 	template <typename Dtype>
@@ -122,6 +123,7 @@ namespace dlex_cnn
 			}
 			memcpy(dst_tensor.cpu_data_, this->cpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D]);
 			break;
+#ifndef CPU_ONLY
 		case tind::eHost2Device:
 			if (dst_tensor.getGpuData() == NULL || this->cpu_data_ == NULL)
 			{
@@ -146,8 +148,9 @@ namespace dlex_cnn
 			}
 			DCUDA_CHECK(cudaMemcpy(dst_tensor.cpu_data_, this->gpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D], cudaMemcpyDeviceToHost));
 			break;
+#endif
 		default:
-			DLOG_ERR("[ Tensor::copyDataTo ]: TensorCopyMode .\n");
+			DLOG_ERR("[ Tensor::copyDataTo ]: TensorCopyMode is invalid.\n");
 			break;
 		}
 	}

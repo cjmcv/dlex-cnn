@@ -5,7 +5,7 @@
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
-#include "operator_base.h"
+#include "operator/operator_base.h"
 
 namespace dlex_cnn
 {
