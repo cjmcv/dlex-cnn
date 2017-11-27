@@ -1,31 +1,40 @@
-# dlex-cnn （部分模块未完成，框架不完整！正利用业余时间持续更新）
+# dlex-cnn : Deep Learning Exercise. A simple convolution neural network framework.
 
 ---
 
-dlex-cnn 是一个以算法练习为目的而写的深度学习框架，支持网络的训练和测试。
+## Features
+* Easy to understand, and the algorithm implementation details are presented as annotations.
+* Needn't rely on any third-party libraries, pure c++ and cuda implemented.
+* Involves many kinds of acceleration methods, such as SSE etc. So it is also a note for learning those acceleration methods.
 
 ---
 
-# 特点
+## Basic Module
+* Network: The biggest unit, which contains a Graph, is in charge of network's training, inference and model's I/O etc.
+* Graph: Organizes all of the nodes in a network.
+* Node: Mainly holds operators and tensor data.
+* Tensor: The basic data structure.
+* Operator: Contains activation(ReLU/Sigmoid/Tanh), convolution, deconvolution, inner product, pooling(max/ave), softmax and softmax loss for now.
+* Optimizer: Only support SGD for now.
+* Model's I/O: To save and load models.
+* Data Prefetching: Prefetch data for CUDA training and inference. [To Do]
+* Trainer: Provides an easy way to create a new network, and it also includes some typical network structures.
+* Operators factory: A simple factory for operators.
+* Thread Pool: Takes a part in prefetching and acceleration, which needs multi-threads to assist.
+* Memory Pool. [To Do]
 
-* 轻量级，无第三方库依赖，框架的设计以算法理解为重心，更方便读者了解每个算法细节。
 
-* 保留优化加速前的算法基本版本，注释有详细的演算过程，可方便对应公式。
+## Acceleration methods
+* CUDA: Nearly throughout the whole project, to accelerate the operators mainly. [Doing now]
+* Thread Pool: Mainly for operators and prefetching module.
+* TBB: CPU multi-thread acceleration. Mainly for operators, can be replaced by Thread Pool. [To Do]
+* SSE: Instruction acceleration. Mainly for math functions. [To Do]
 
-### 计划内容
 
-* 完善单元测试代码。
+## Installation
+* Windows: Only contains VS2013 project files with x64 in the "windows" folder. And of course, this program is pure c++ and cuda implemented, you can easily create project files in other IDE.
+* Linux: There are two CMakeLists.txt in "linux" folder to generate the target files you want. More details in "cmake/README.md".
 
-* 添加各op在GPU端的CUDA实现；
-
-* 添加各op在CPU端的SSE实现；
-
-* 框架优化：包括数据预取、网络初始化、模型输入输出等；
-
-* 根据论文研究情况，持续添加新算法的实现；
-
----
 
 ### License
-
 MIT
