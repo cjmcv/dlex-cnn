@@ -13,6 +13,7 @@
 #include <memory>
 #include "network.h"
 #include "node.h"
+#include "io/data_prefetcher.h"
 
 namespace dlex_cnn
 {
@@ -23,16 +24,11 @@ namespace dlex_cnn
 		Task();
 		virtual ~Task();
 	public:
-		std::vector<NetWork> netWorks;
-		std::vector<Node<Dtype>> nodes;		//中间节点，用于网络间通信？未完成，最后处理
-		
-		//std::vector<Node>
+		static tind::Mode device_mode_;
+		static DataPrefetcher prefetcher_;
 
-		//float getLoss(const std::shared_ptr<DataTensor> labelDataTensor, const std::shared_ptr<DataTensor> outputDataTensor);
-
-	//private:
-	//	void setPhase(Phase phase);
-
+		std::vector<std::shared_ptr<NetWork>> networks_;		// Only support one network for now.
+		std::vector<std::shared_ptr<Node<Dtype>>> net_nodes_;	// Intermediate nodes of different networks, NOT IMPLEMENTED!
 	};
 }
 

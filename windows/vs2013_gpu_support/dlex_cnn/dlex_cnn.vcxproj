@@ -153,9 +153,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CudaCompile Include="kernel.cu" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\..\core\include\common.h" />
     <ClInclude Include="..\..\..\core\include\configure.h" />
     <ClInclude Include="..\..\..\core\include\dlex_cnn.h" />
@@ -188,7 +185,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClInclude Include="..\..\..\core\include\util\op_factory.h" />
     <ClInclude Include="..\..\..\core\include\util\thread_pool.h" />
     <ClInclude Include="..\..\..\core\include\util\timer.h" />
-    <ClInclude Include="kernel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\core\src\common.cpp" />

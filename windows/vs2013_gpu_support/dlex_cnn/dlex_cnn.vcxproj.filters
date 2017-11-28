@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="kernel.h">
-      <Filter>源文件\src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\core\include\io\dataloader.h">
       <Filter>源文件\include\io</Filter>
     </ClInclude>
@@ -236,10 +233,5 @@
     <ClCompile Include="..\..\..\core\src\util\thread_pool.cpp">
       <Filter>源文件\src\util</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <CudaCompile Include="kernel.cu">
-      <Filter>源文件\src</Filter>
-    </CudaCompile>
   </ItemGroup>
 </Project>

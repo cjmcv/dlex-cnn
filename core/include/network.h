@@ -64,7 +64,6 @@ namespace dlex_cnn
 		int netWorkShow();
 		
 	private:
-		tind::Mode device_mode_;
 		int device_id_;
 		// Train/Test, should be the same as graph's
 		int phase_ = tind::Train;
