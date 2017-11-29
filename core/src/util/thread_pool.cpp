@@ -10,7 +10,7 @@
 namespace dlex_cnn
 {
 	// the constructor just launches some amount of workers_
-	// m_exec.push_back(std::thread(std::mem_fn(&GxxMtcnn::InnerDetect), this));
+	// m_exec.push_back(std::thread(std::mem_fn(&InnerDetect), this));
 	ThreadPool::ThreadPool()
 		: is_created_(false)
 	{

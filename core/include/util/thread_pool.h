@@ -22,7 +22,6 @@
 
 namespace dlex_cnn
 {
-	// prefetch in network/ graph multiPath in graph/ op compute in opBase
 	class ThreadPool {
 	public:
 		ThreadPool();

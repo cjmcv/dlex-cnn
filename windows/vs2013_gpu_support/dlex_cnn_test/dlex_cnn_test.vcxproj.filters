@@ -71,5 +71,8 @@
     <ClInclude Include="..\..\..\core_test\train_test\mnist_train.h">
       <Filter>源文件\train_test</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\core_test\util_test\util_test.h">
+      <Filter>源文件\util_test</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

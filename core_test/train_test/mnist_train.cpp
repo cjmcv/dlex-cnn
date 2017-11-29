@@ -92,15 +92,16 @@ namespace dlex_cnn
 		int actual_end_pos = offset + length;
 		if (actual_end_pos > train_data_.size())
 		{
-			//image data
-			//auto inputDataSize = input_data_tensor->getSize();
-			input_data_tensor->getShape()[0] = train_data_.size() - offset;
-			actual_end_pos = offset + input_data_tensor->getShape()[0];
-			input_data_tensor.reset(new dlex_cnn::Tensor<float>(input_data_tensor->getShape()));
-			//label data
-			//auto labelDataSize = label_data_tensor->getSize();
-			label_data_tensor->getShape()[0] = input_data_tensor->getShape()[0];
-			label_data_tensor.reset(new dlex_cnn::Tensor<float>(label_data_tensor->getShape()));
+			return false;
+			////image data
+			////auto inputDataSize = input_data_tensor->getSize();
+			//input_data_tensor->getShape()[0] = train_data_.size() - offset;
+			//actual_end_pos = offset + input_data_tensor->getShape()[0];
+			//input_data_tensor.reset(new dlex_cnn::Tensor<float>(input_data_tensor->getShape()));
+			////label data
+			////auto labelDataSize = label_data_tensor->getSize();
+			//label_data_tensor->getShape()[0] = input_data_tensor->getShape()[0];
+			//label_data_tensor.reset(new dlex_cnn::Tensor<float>(label_data_tensor->getShape()));
 		}
 		//printf("ready to copy\n");
 		//copy
@@ -236,6 +237,35 @@ namespace dlex_cnn
 
 		const float accuracy = (float)correct_count / (float)test_data.size();
 		return std::pair<float, float>(accuracy, 0);	//loss
+	}
+
+	void MnistTrainTest::prefetchData()
+	{
+		if (!loadMnistData(tind::Train))
+		{
+			printf("error loadMnistData\n");
+			return;
+		}
+		int batch_size = 128;
+		const int channels = train_data_[0].first.channels;
+		const int width = train_data_[0].first.width;
+		const int height = train_data_[0].first.height;
+
+		std::shared_ptr<dlex_cnn::Tensor<float>> input_data_tensor = std::make_shared<dlex_cnn::Tensor<float>>(batch_size, channels, height, width);	//shoule be moved
+		std::shared_ptr<dlex_cnn::Tensor<float>> label_data_tensor = std::make_shared<dlex_cnn::Tensor<float>>(batch_size, 1, 1, 1);//class_num_
+
+		int batch_idx = 0;
+		while (1)
+		{
+			if (!fetchBatchData(train_data_, input_data_tensor, label_data_tensor, batch_idx * batch_size, batch_size))
+			{
+				batch_idx = 0;
+				std::random_shuffle(train_data_.begin(), train_data_.end());
+				//epoch_idx++;	// epoch 改为外面计算，用全部数据得到一个epoch有多少个batch - to do
+				continue;
+			}
+			network_.prefetcher_.pushData(input_data_tensor, label_data_tensor);
+		}
 	}
 
 	void MnistTrainTest::train()

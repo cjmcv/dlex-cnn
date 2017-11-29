@@ -24,14 +24,18 @@ namespace dlex_cnn
 		virtual ~DataPrefetcher();
 
 	// 设备信息监管全局，prefetch由input_op取数，外部入队列（单独开一线程自己处理）。
-	// 提取mnist数据，pushdata（判断模式，若为GPU则入到GPU队列），input_op（操作prefetcher，prefetcher属于network）内pushData到下一层
+	// 提取mnist数据，pushdata（判断模式，若为GPU则入到GPU队列），input_op（prefetcher作为入参输入到input，prefetcher属于network）内pushData到下一层
+	// block_queue
 	public:
-		int pushData(std::shared_ptr<dlex_cnn::Tensor<float>> input_data, 
-					 std::shared_ptr<dlex_cnn::Tensor<float>> label_data);
+		int pushData(std::shared_ptr<dlex_cnn::Tensor<Dtype>> input_data,
+			std::shared_ptr<dlex_cnn::Tensor<Dtype>> label_data);
 		int popData();
 
+	protected:
+		void entryInnerThread();
+
 	private:
-		std::queue<>
+		std::queue < std::pair < std::shared_ptr<dlex_cnn::Tensor<float>>, std::shared_ptr<dlex_cnn::Tensor<float>> > > data_queue_;
 		std::vector<float> mean_value_;
 	};
 }

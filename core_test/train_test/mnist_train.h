@@ -26,6 +26,8 @@ namespace dlex_cnn
 		void train();
 		void test(const std::string& model_file_path, const int iter);
 
+		void prefetchData();
+
 	private:
 		bool loadMnistData(tind::Phase phase);
 		bool releaseMnistData();
@@ -40,6 +42,8 @@ namespace dlex_cnn
 		std::pair<float, float> testInTrain(dlex_cnn::NetWork<float>& network, const int batch, const std::vector< std::pair<dlex_cnn::IMAGE_DATUM, char> > &test_data);
 
 	private:
+		NetWork<float> network_;
+
 		int class_num_;
 
 		std::string train_images_file_;

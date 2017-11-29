@@ -187,3 +187,5 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+windows/vs2013_gpu_support/dlex_cnn_test/iter_1.param
+windows/vs2013_gpu_support/dlex_cnn_test/iter_1.struct

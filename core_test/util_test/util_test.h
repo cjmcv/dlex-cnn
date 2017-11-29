@@ -5,27 +5,16 @@
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
-#include "dlex_task.h"
+#ifndef DLEX_TEST_UTIL_HPP_
+#define DLEX_TEST_UTIL_HPP_
+//
+#include <iostream>
+#include <cassert>
+#include "dlex_cnn.h"
 
-namespace dlex_cnn
-{
-	static Task *gTask = NULL;
+#include "util/thread_pool.h"
+#include "util/timer.h"
 
-	Task::Task()
-	{
-		
-	}
+int test_threadPool();
 
-	Task::~Task()
-	{
-
-	}
-
-	//Task& Task::Get()
-	//{
-	//	if (gTask == NULL)
-	//		gTask = new Task();
-
-	//	return *gTask;
-	//}
-}
+#endif

@@ -17,18 +17,21 @@
 
 namespace dlex_cnn
 {
-	template <typename Dtype>
 	class Task
 	{
 	public:
 		Task();
 		virtual ~Task();
 	public:
-		static tind::Mode device_mode_;
-		static DataPrefetcher prefetcher_;
+		tind::Mode device_mode_;
+		//DataPrefetcher<Dtype> prefetcher_;
 
-		std::vector<std::shared_ptr<NetWork>> networks_;		// Only support one network for now.
-		std::vector<std::shared_ptr<Node<Dtype>>> net_nodes_;	// Intermediate nodes of different networks, NOT IMPLEMENTED!
+		//static Task& Get();
+		//inline static tind::Mode mode() { return Get().device_mode_; }
+		//inline static tind::Mode prefetcher() { return Get().prefetcher_; }
+
+		//std::vector<std::shared_ptr<NetWork<Dtype>>> networks_;		// Only support one network for now.
+		//std::vector<std::shared_ptr<Node<Dtype>>> net_nodes_;	// Intermediate nodes of different networks, NOT IMPLEMENTED!
 	};
 }
 

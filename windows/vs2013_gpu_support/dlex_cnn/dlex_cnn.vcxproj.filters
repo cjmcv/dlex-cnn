@@ -4,9 +4,6 @@
     <ClInclude Include="..\..\..\core\include\io\dataloader.h">
       <Filter>源文件\include\io</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\core\include\io\prefetcher.h">
-      <Filter>源文件\include\io</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\core\include\io\preprocessor.h">
       <Filter>源文件\include\io</Filter>
     </ClInclude>
@@ -96,6 +93,13 @@
     </ClInclude>
     <ClInclude Include="..\..\..\core\include\tensor.h">
       <Filter>源文件\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\include\io\prefetcher.h" />
+    <ClInclude Include="..\..\..\core\include\io\data_prefetcher.h">
+      <Filter>源文件\include\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\include\util\thread_inner.h">
+      <Filter>源文件\include\util</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -231,6 +235,12 @@
       <Filter>源文件\src\util</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\core\src\util\thread_pool.cpp">
+      <Filter>源文件\src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\src\io\data_prefetcher.h.cpp">
+      <Filter>源文件\src\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\src\util\thread_inner.cpp">
       <Filter>源文件\src\util</Filter>
     </ClCompile>
   </ItemGroup>

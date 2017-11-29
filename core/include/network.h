@@ -17,6 +17,7 @@
 #include "graph.h"
 #include "node.h"
 #include "tensor.h"
+#include "io/data_prefetcher.h"
 
 namespace dlex_cnn 
 {
@@ -32,6 +33,8 @@ namespace dlex_cnn
 		NetWork();
 		virtual ~NetWork();
 	public:
+		DataPrefetcher<Dtype> prefetcher_;
+
 		int netWorkInit(std::string name, tind::Mode device_mode);
 
 		int saveBinModel(const std::string &model_file);
@@ -68,6 +71,7 @@ namespace dlex_cnn
 		// Train/Test, should be the same as graph's
 		int phase_ = tind::Train;
 		std::string name_;
+
 		// Mainly contains nodes and operators
 		std::shared_ptr<Graph<Dtype>> graph_;
 		// Optimizer to update node's paramater during training

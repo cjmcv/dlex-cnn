@@ -1,5 +1,4 @@
-#include "util/thread_pool.h"
-#include "util/timer.h"
+#include "util_test.h"
 
 void compTest(int *a, int *b, int len)
 {
@@ -11,7 +10,7 @@ void compTest(int *a, int *b, int len)
 	}
 }
 
-int test_threadPool(int argc, char* argv[])
+int test_threadPool()
 {
 	int len = 10;// 1000000;
 	int num = 50;

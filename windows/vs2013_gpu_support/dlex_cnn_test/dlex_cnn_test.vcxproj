@@ -162,6 +162,7 @@
     <ClInclude Include="..\..\..\core_test\operator_test\pooling_op_test.h" />
     <ClInclude Include="..\..\..\core_test\train_test\mnist_loader.h" />
     <ClInclude Include="..\..\..\core_test\train_test\mnist_train.h" />
+    <ClInclude Include="..\..\..\core_test\util_test\util_test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

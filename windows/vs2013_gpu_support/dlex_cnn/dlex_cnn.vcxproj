@@ -159,6 +159,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClInclude Include="..\..\..\core\include\dlex_task.h" />
     <ClInclude Include="..\..\..\core\include\graph.h" />
     <ClInclude Include="..\..\..\core\include\io\dataloader.h" />
+    <ClInclude Include="..\..\..\core\include\io\data_prefetcher.h" />
     <ClInclude Include="..\..\..\core\include\io\prefetcher.h" />
     <ClInclude Include="..\..\..\core\include\io\preprocessor.h" />
     <ClInclude Include="..\..\..\core\include\network.h" />
@@ -183,6 +184,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClInclude Include="..\..\..\core\include\util\device.h" />
     <ClInclude Include="..\..\..\core\include\util\math_functions.h" />
     <ClInclude Include="..\..\..\core\include\util\op_factory.h" />
+    <ClInclude Include="..\..\..\core\include\util\thread_inner.h" />
     <ClInclude Include="..\..\..\core\include\util\thread_pool.h" />
     <ClInclude Include="..\..\..\core\include\util\timer.h" />
   </ItemGroup>
@@ -191,6 +193,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClCompile Include="..\..\..\core\src\dlex_task.cpp" />
     <ClCompile Include="..\..\..\core\src\graph.cpp" />
     <ClCompile Include="..\..\..\core\src\io\dataloader.cpp" />
+    <ClCompile Include="..\..\..\core\src\io\data_prefetcher.h.cpp" />
     <ClCompile Include="..\..\..\core\src\io\preprocessor.cpp" />
     <ClCompile Include="..\..\..\core\src\network.cpp" />
     <ClCompile Include="..\..\..\core\src\node.cpp" />
@@ -214,6 +217,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClCompile Include="..\..\..\core\src\trainer\typical_network\mix.cpp" />
     <ClCompile Include="..\..\..\core\src\trainer\typical_network\mlp.cpp" />
     <ClCompile Include="..\..\..\core\src\util\math_functions.cpp" />
+    <ClCompile Include="..\..\..\core\src\util\thread_inner.cpp" />
     <ClCompile Include="..\..\..\core\src\util\thread_pool.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

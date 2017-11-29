@@ -36,7 +36,6 @@ namespace dlex_cnn {
 	{
 		graph_.reset(new Graph<Dtype>());
 		name_ = name;
-		device_mode_ = device_mode;
 
 		return 0;
 	}
