@@ -160,7 +160,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClInclude Include="..\..\..\core\include\graph.h" />
     <ClInclude Include="..\..\..\core\include\io\dataloader.h" />
     <ClInclude Include="..\..\..\core\include\io\data_prefetcher.h" />
-    <ClInclude Include="..\..\..\core\include\io\prefetcher.h" />
     <ClInclude Include="..\..\..\core\include\io\preprocessor.h" />
     <ClInclude Include="..\..\..\core\include\network.h" />
     <ClInclude Include="..\..\..\core\include\node.h" />
@@ -181,6 +180,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClInclude Include="..\..\..\core\include\tensor.h" />
     <ClInclude Include="..\..\..\core\include\trainer\network_creator.h" />
     <ClInclude Include="..\..\..\core\include\trainer\typical_network.h" />
+    <ClInclude Include="..\..\..\core\include\util\blocking_queue.h" />
     <ClInclude Include="..\..\..\core\include\util\device.h" />
     <ClInclude Include="..\..\..\core\include\util\math_functions.h" />
     <ClInclude Include="..\..\..\core\include\util\op_factory.h" />
@@ -216,6 +216,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClCompile Include="..\..\..\core\src\trainer\typical_network\lenet.cpp" />
     <ClCompile Include="..\..\..\core\src\trainer\typical_network\mix.cpp" />
     <ClCompile Include="..\..\..\core\src\trainer\typical_network\mlp.cpp" />
+    <ClCompile Include="..\..\..\core\src\util\blocking_queue.cpp" />
     <ClCompile Include="..\..\..\core\src\util\math_functions.cpp" />
     <ClCompile Include="..\..\..\core\src\util\thread_inner.cpp" />
     <ClCompile Include="..\..\..\core\src\util\thread_pool.cpp" />
