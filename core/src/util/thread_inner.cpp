@@ -11,7 +11,7 @@ namespace dlex_cnn
 {
 
 	ThreadInner::ThreadInner()
-		: thread_()
+		: thread_(), interrupt_flag_(false)
 	{
 
 	}
@@ -25,9 +25,16 @@ namespace dlex_cnn
 		return thread_ && thread_->joinable();
 	}
 
-	//bool ThreadInner::must_stop() {
-	//	return thread_ && thread_->interruption_requested();
-	//}
+	bool ThreadInner::must_stop() 
+	{
+		if (thread_ && interrupt_flag_)// && thread_->interruption_requested();
+		{
+			interrupt_flag_ = false;
+			return true;
+		}
+		else
+			return false;
+	}
 
 	void ThreadInner::startInnerThread()
 	{
@@ -46,6 +53,7 @@ namespace dlex_cnn
 		if (is_started()) 
 		{
 			//thread_->interrupt();
+			interrupt_flag_ = true;
 			try 
 			{
 				thread_->join();

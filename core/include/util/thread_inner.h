@@ -30,6 +30,7 @@ namespace dlex_cnn
 		bool must_stop();
 
 	private:
+		bool interrupt_flag_;
 		std::shared_ptr<std::thread> thread_;
 	};
 }

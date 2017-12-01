@@ -58,8 +58,8 @@ namespace dlex_cnn
 		queue_.pop();
 	}
 
-	template class BlockingQueue<std::pair < std::shared_ptr<Tensor<float>>, std::shared_ptr<Tensor<float>> >>;
-	template class BlockingQueue<std::pair < std::shared_ptr<Tensor<double>>, std::shared_ptr<Tensor<double>> >>;
+	template class BlockingQueue<std::pair < std::shared_ptr<Tensor<float>>, std::shared_ptr<Tensor<float>> >*>;
+	template class BlockingQueue<std::pair < std::shared_ptr<Tensor<double>>, std::shared_ptr<Tensor<double>> >*>;
 	template class BlockingQueue< std::shared_ptr< Tensor<float> > >;
 	template class BlockingQueue< std::shared_ptr< Tensor<double> > >;
 	INSTANTIATE_CLASS(BlockingQueue);

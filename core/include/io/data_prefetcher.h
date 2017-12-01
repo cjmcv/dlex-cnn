@@ -9,16 +9,18 @@
 #ifndef DLEX_PREFETCH_HPP_
 #define DLEX_PREFETCH_HPP_
 
-#include "util/thread_pool.h"
 #include "tensor.h"
+#include "util/thread_inner.h"
+#include "util/blocking_queue.h"
 
 #include <queue>
 
 namespace dlex_cnn
 {
 	template <typename Dtype>
-	class DataPrefetcher
+	class DataPrefetcher : ThreadInner
 	{
+		using TensorPair = std::pair < std::shared_ptr<Tensor<Dtype>>, std::shared_ptr<Tensor<Dtype>> >;
 	public:
 		DataPrefetcher();
 		virtual ~DataPrefetcher();
@@ -27,16 +29,19 @@ namespace dlex_cnn
 	// 提取mnist数据，pushdata（判断模式，若为GPU则入到GPU队列），input_op（prefetcher作为入参输入到input，prefetcher属于network）内pushData到下一层
 	// block_queue
 	public:
-		int pushData(std::shared_ptr<dlex_cnn::Tensor<Dtype>> input_data,
-			std::shared_ptr<dlex_cnn::Tensor<Dtype>> label_data);
-		int popData();
+		static const int PREFETCH_COUNT = 3;
 
-	protected:
-		void entryInnerThread();
+		inline void setInstantiation(void *ptr) { instant_ = ptr; }
+		void *instant_ = NULL;
+		bool(*batch_loader_pfunc_)(void *, TensorPair*) = NULL;
+		bool loadBatch(TensorPair* batch);
 
+		virtual void entryInnerThread();
 	private:
-		std::queue < std::pair < std::shared_ptr<dlex_cnn::Tensor<float>>, std::shared_ptr<dlex_cnn::Tensor<float>> > > data_queue_;
-		std::vector<float> mean_value_;
+
+		TensorPair base_storage_[PREFETCH_COUNT];
+		BlockingQueue < TensorPair* > free_;
+		BlockingQueue < TensorPair* > full_;
 	};
 }
 

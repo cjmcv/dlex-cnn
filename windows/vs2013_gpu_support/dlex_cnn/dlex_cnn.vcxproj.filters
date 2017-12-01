@@ -239,14 +239,14 @@
     <ClCompile Include="..\..\..\core\src\util\thread_pool.cpp">
       <Filter>源文件\src\util</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\core\src\io\data_prefetcher.h.cpp">
-      <Filter>源文件\src\io</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\core\src\util\thread_inner.cpp">
       <Filter>源文件\src\util</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\core\src\util\blocking_queue.cpp">
       <Filter>源文件\src\util</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\src\io\data_prefetcher.cpp">
+      <Filter>源文件\src\io</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

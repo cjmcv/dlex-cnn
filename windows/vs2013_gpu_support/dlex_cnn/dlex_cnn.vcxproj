@@ -193,7 +193,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClCompile Include="..\..\..\core\src\dlex_task.cpp" />
     <ClCompile Include="..\..\..\core\src\graph.cpp" />
     <ClCompile Include="..\..\..\core\src\io\dataloader.cpp" />
-    <ClCompile Include="..\..\..\core\src\io\data_prefetcher.h.cpp" />
+    <ClCompile Include="..\..\..\core\src\io\data_prefetcher.cpp" />
     <ClCompile Include="..\..\..\core\src\io\preprocessor.cpp" />
     <ClCompile Include="..\..\..\core\src\network.cpp" />
     <ClCompile Include="..\..\..\core\src\node.cpp" />
