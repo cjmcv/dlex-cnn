@@ -78,6 +78,10 @@ namespace dlex_cnn
 		std::shared_ptr<Graph<Dtype>> graph_;
 		// Optimizer to update node's paramater during training
 		std::shared_ptr<Optimizer<Dtype>> optimizer_;
+		
+		// As the intermediate variable to transfer input/label data.
+		std::vector<std::shared_ptr<Tensor<Dtype>>> input_data_vec_;
+		std::vector<std::shared_ptr<Tensor<Dtype>>> label_data_vec_;
 	};
 
 }

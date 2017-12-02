@@ -42,7 +42,23 @@ namespace dlex_cnn {
 	template <typename Dtype>
 	int NetWork<Dtype>::feedDataByPrefetcher()
 	{
-		//...
+		int ret = 0;
+		std::pair < std::shared_ptr<Tensor<Dtype>>, std::shared_ptr<Tensor<Dtype>> > *batch;
+		prefetcher_.feedBatchOut(&batch);
+
+		input_data_vec_.clear();
+		input_data_vec_.push_back(batch->first);
+		ret = graph_->setInNode(input_data_vec_);
+
+		label_data_vec_.clear();
+		label_data_vec_.push_back(batch->second);
+		ret += graph_->setOutNode(label_data_vec_);
+
+		prefetcher_.refillBuffer(&batch);
+
+		if (ret != 0)
+			return -1;
+
 		return 0;
 	}
 	template <typename Dtype>
@@ -50,21 +66,27 @@ namespace dlex_cnn {
 	{
 		if (input_data_tensor == NULL)
 		{
-			
+			int ret = feedDataByPrefetcher();
+			if (ret != 0)
+				return -1;
 		}
 		else
 		{
-			std::vector<std::shared_ptr<Tensor<Dtype>>> input_data;
-			input_data.push_back(input_data_tensor);
-			graph_->setInNode(input_data);
+			int ret = 0;
+			input_data_vec_.clear();
+			input_data_vec_.push_back(input_data_tensor);
+			ret = graph_->setInNode(input_data_vec_);
 
 			if (label_data_tensor != NULL)
 			{
-				std::vector<std::shared_ptr<Tensor<Dtype>>> label_data;
-				label_data.push_back(label_data_tensor);
-				graph_->setOutNode(label_data);
+				label_data_vec_.clear();
+				label_data_vec_.push_back(label_data_tensor);
+				ret += graph_->setOutNode(label_data_vec_);
 				//printf("finish set outnode\n");
 			}
+
+			if (ret != 0)
+				return -1;
 		}
 
 		graph_->forwardGraph();
@@ -85,7 +107,7 @@ namespace dlex_cnn {
 				optimizer_->update(nodes[i]);
 		}
 		return 0;
-	}                                                                                                            
+	}
 	//////////////////////////////////////////////////////////////////////////
 	//test only!
 
@@ -147,7 +169,7 @@ namespace dlex_cnn {
 	{
 		//setPhase(Phase::Train);
 
-		printf("input_data_tensor[0] = %d\n", input_data_tensor->getShape()[0]);
+		//printf("input_data_tensor[0] = %d\n", input_data_tensor->getShape()[0]);
 		//printf("trainBatch start forward\n");
 		forward(input_data_tensor, label_data_tensor);
 		//printf("trainBatch finish forward\n");
