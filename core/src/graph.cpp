@@ -90,11 +90,19 @@ namespace dlex_cnn
 		printf("NetWork addayer end. add data Tensor done.\n");
 	}
 
+	template <typename Dtype>
+	int Graph<Dtype>::setIONodeName(const std::vector<std::string> &in_node_names, const std::vector<std::string> &out_node_names)
+	{
+		in_node_names_.assign(in_node_names.begin(), in_node_names.end());
+		out_node_names_.assign(out_node_names.begin(), out_node_names.end());
+
+		return 0;
+	}
 	// fill the input data in innode->cpu_data_[0]
 	template <typename Dtype>
-	int Graph<Dtype>::setInNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> input_data, const std::vector<std::string> node_names)
+	int Graph<Dtype>::setInNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> input_data)
 	{
-		if (input_data.size() != node_names.size())
+		if (input_data.size() != in_node_names_.size())
 		{ 
 			DLOG_ERR("[ Graph::setInNode ]: input_data should have the same size with node_names\n");
 			return -1;
@@ -118,10 +126,10 @@ namespace dlex_cnn
 		for (int i = 0; i < input_data.size(); i++)
 		{
 			int index = -1;
-			int ret = getNodeIndex(node_names[i], index);
+			int ret = getNodeIndex(in_node_names_[i], index);
 			if (ret != 0)
 			{
-				DLOG_ERR("[ Graph::setInNode ]: Can not get node with name %s \n", node_names[i].c_str());
+				DLOG_ERR("[ Graph::setInNode ]: Can not get node with name %s \n", in_node_names_[i].c_str());
 				return -1;
 			}
 
@@ -139,9 +147,9 @@ namespace dlex_cnn
 
 	//fill the label data in outnode->cpu_data_[1]
 	template <typename Dtype>
-	int Graph<Dtype>::setOutNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> label_data, const std::vector<std::string> node_names)
+	int Graph<Dtype>::setOutNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> label_data)
 	{
-		if (label_data.size() != node_names.size())
+		if (label_data.size() != out_node_names_.size())
 		{
 			DLOG_ERR("[ Graph::setOutNode ]: label_data should have the same size with node_names\n");
 			return -1;
@@ -156,11 +164,11 @@ namespace dlex_cnn
 		for (int i = 0; i < label_data.size(); i++)
 		{
 			int index = -1;
-			int ret = getNodeIndex(node_names[i], index);
+			int ret = getNodeIndex(out_node_names_[i], index);
 			//printf("s1 set out node\n");
 			if (ret != 0)
 			{
-				DLOG_ERR("[ Graph::setOutNode ]: Can not get node with name %s. \n", node_names[i].c_str());
+				DLOG_ERR("[ Graph::setOutNode ]: Can not get node with name %s. \n", out_node_names_[i].c_str());
 				return -1;
 			}
 			

@@ -32,10 +32,11 @@ namespace dlex_cnn
 		void addNode(const std::string &node_name,
 			const std::vector<std::shared_ptr<Op<Dtype>>> &op,
 			const std::vector<std::string> &inNodeNames = std::vector<std::string>() );
+		int setIONodeName(const std::vector<std::string> &in_node_names, const std::vector<std::string> &out_node_names);
 		// Set input nodes of the graph.
-		int setInNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> inputData, const std::vector<std::string> nodeNames);	//
+		int setInNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> inputData);	//
 		// Set output nodes of the graph.
-		int setOutNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> label_data, const std::vector<std::string> nodeNames);	//
+		int setOutNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> label_data);	//
 		int forwardGraph();
 		int backwardGraph();
 		// Fetch loss that has been saved in one of the output nodes.
@@ -57,6 +58,10 @@ namespace dlex_cnn
 
 	private:
 		int phase_ = tind::Train;
+		// The names of input nodes, and the order of vector's elements should matche the input data vector's.
+		std::vector<std::string> in_node_names_;
+		// The names of output nodes.
+		std::vector<std::string> out_node_names_;
 		// Bakckup in_node's name and idx
 		std::map<std::string, int> in_nodes_map_;
 		// Bakckup out_node's name and idx

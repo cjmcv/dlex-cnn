@@ -49,8 +49,10 @@ namespace dlex_cnn
 		void setOptimizer(std::shared_ptr<Optimizer<Dtype>> optimizer);
 		void setLearningRate(const float lr);
 
-		float trainBatch(const std::shared_ptr<Tensor<Dtype>> input_data_tensor,
-			const std::shared_ptr<Tensor<Dtype>> label_data_tensor);
+		inline int setIONodeName(const std::vector<std::string> &in_node_names, const std::vector<std::string> &out_node_names);
+		int feedDataByPrefetcher();
+		float trainBatch(const std::shared_ptr<Tensor<Dtype>> input_data_tensor = NULL, 
+			const std::shared_ptr<Tensor<Dtype>> label_data_tensor = NULL);
 		int getNodeData(const std::string &node_name, std::shared_ptr<Tensor<Dtype>> &cpuData);
 		inline const std::shared_ptr<Graph<Dtype>> getGraph() { return graph_; };
 
@@ -59,8 +61,8 @@ namespace dlex_cnn
 			const std::vector<std::string> &in_node_names = std::vector<std::string>());
 		int switchPhase(int phase);
 
-		// fill the input data and label date (during training), then compute graph forward
-		int forward(const std::shared_ptr<Tensor<Dtype>> input_data_tensor, const std::shared_ptr<Tensor<Dtype>> label_data_tensor = NULL);
+		// fill the input data and label date for training first, then compute graph forward
+		int forward(const std::shared_ptr<Tensor<Dtype>> input_data_tensor = NULL, const std::shared_ptr<Tensor<Dtype>> label_data_tensor = NULL);
 		// compute graph backward and update nodes'paramaters
 		int backward();
 

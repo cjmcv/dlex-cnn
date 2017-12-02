@@ -40,22 +40,31 @@ namespace dlex_cnn {
 		return 0;
 	}
 	template <typename Dtype>
+	int NetWork<Dtype>::feedDataByPrefetcher()
+	{
+		//...
+		return 0;
+	}
+	template <typename Dtype>
 	int NetWork<Dtype>::forward(const std::shared_ptr<Tensor<Dtype>> input_data_tensor, const std::shared_ptr<Tensor<Dtype>> label_data_tensor)
 	{
-		std::vector<std::shared_ptr<Tensor<Dtype>>> input_data;
-		input_data.push_back(input_data_tensor);
-		std::vector<std::string> node_names;
-		node_names.push_back("input");
-		graph_->setInNode(input_data, node_names);
-
-		if (label_data_tensor != NULL)
+		if (input_data_tensor == NULL)
 		{
-			std::vector<std::shared_ptr<Tensor<Dtype>>> label_data;
-			label_data.push_back(label_data_tensor);
-			std::vector<std::string> node_names2;
-			node_names2.push_back("output");
-			graph_->setOutNode(label_data, node_names2);
-			//printf("finish set outnode\n");
+			
+		}
+		else
+		{
+			std::vector<std::shared_ptr<Tensor<Dtype>>> input_data;
+			input_data.push_back(input_data_tensor);
+			graph_->setInNode(input_data);
+
+			if (label_data_tensor != NULL)
+			{
+				std::vector<std::shared_ptr<Tensor<Dtype>>> label_data;
+				label_data.push_back(label_data_tensor);
+				graph_->setOutNode(label_data);
+				//printf("finish set outnode\n");
+			}
 		}
 
 		graph_->forwardGraph();
@@ -125,6 +134,11 @@ namespace dlex_cnn {
 			////graph_->nodes_[i]->initNode();	// 这里会改变node的权重
 		}
 		return 0;
+	}
+	template <typename Dtype>
+	inline int NetWork<Dtype>::setIONodeName(const std::vector<std::string> &in_node_names, const std::vector<std::string> &out_node_names)
+	{
+		return graph_->setIONodeName(in_node_names, out_node_names);
 	}
 
 	template <typename Dtype>
