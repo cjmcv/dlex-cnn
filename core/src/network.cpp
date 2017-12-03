@@ -32,7 +32,7 @@ namespace dlex_cnn {
 		printf("NetWork destructed.\n");
 	}
 	template <typename Dtype>
-	int NetWork<Dtype>::netWorkInit(std::string name, tind::Mode device_mode)
+	int NetWork<Dtype>::netWorkInit(std::string name)
 	{
 		graph_.reset(new Graph<Dtype>());
 		name_ = name;

@@ -156,7 +156,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClInclude Include="..\..\..\core\include\common.h" />
     <ClInclude Include="..\..\..\core\include\configure.h" />
     <ClInclude Include="..\..\..\core\include\dlex_cnn.h" />
-    <ClInclude Include="..\..\..\core\include\dlex_task.h" />
+    <ClInclude Include="..\..\..\core\include\task.h" />
     <ClInclude Include="..\..\..\core\include\graph.h" />
     <ClInclude Include="..\..\..\core\include\io\dataloader.h" />
     <ClInclude Include="..\..\..\core\include\io\data_prefetcher.h" />
@@ -190,7 +190,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\core\src\common.cpp" />
-    <ClCompile Include="..\..\..\core\src\dlex_task.cpp" />
+    <ClCompile Include="..\..\..\core\src\task.cpp" />
     <ClCompile Include="..\..\..\core\src\graph.cpp" />
     <ClCompile Include="..\..\..\core\src\io\dataloader.cpp" />
     <ClCompile Include="..\..\..\core\src\io\data_prefetcher.cpp" />

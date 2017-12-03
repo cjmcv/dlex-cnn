@@ -14,6 +14,7 @@
 #include "configure.h"
 #include "optimizer/optimizer.h"
 
+#include "task.h"
 #include "graph.h"
 #include "node.h"
 #include "tensor.h"
@@ -21,11 +22,6 @@
 
 namespace dlex_cnn 
 {
-	namespace tind
-	{
-		enum Mode { CPU, GPU };
-	}
-
 	template <typename Dtype>
 	class NetWork
 	{
@@ -35,7 +31,7 @@ namespace dlex_cnn
 	public:
 		DataPrefetcher<Dtype> prefetcher_;
 
-		int netWorkInit(std::string name, tind::Mode device_mode);
+		int netWorkInit(std::string name);
 
 		int saveBinModel(const std::string &model_file);
 		int loadBinModel(const std::string &model_file);

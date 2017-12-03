@@ -79,9 +79,6 @@
     <ClInclude Include="..\..\..\core\include\dlex_cnn.h">
       <Filter>源文件\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\core\include\dlex_task.h">
-      <Filter>源文件\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\core\include\graph.h">
       <Filter>源文件\include</Filter>
     </ClInclude>
@@ -102,6 +99,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\core\include\util\blocking_queue.h">
       <Filter>源文件\include\util</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\core\include\task.h">
+      <Filter>源文件\include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -209,9 +209,6 @@
     <ClCompile Include="..\..\..\core\src\common.cpp">
       <Filter>源文件\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\core\src\dlex_task.cpp">
-      <Filter>源文件\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\core\src\graph.cpp">
       <Filter>源文件\src</Filter>
     </ClCompile>
@@ -247,6 +244,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\core\src\io\data_prefetcher.cpp">
       <Filter>源文件\src\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\core\src\task.cpp">
+      <Filter>源文件\src</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

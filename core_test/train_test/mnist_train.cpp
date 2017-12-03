@@ -285,8 +285,9 @@ namespace dlex_cnn
 	}
 	void MnistTrainTest::trainWithPrefetcher()
 	{
+		Task::set_mode(tind::Mode::CPU);
 		NetWork<float> network;
-		network.netWorkInit("netA", tind::CPU);
+		network.netWorkInit("netA");
 		
 		startPrefetchData(network);
 
@@ -366,8 +367,9 @@ namespace dlex_cnn
 
 	void MnistTrainTest::train()
 	{
+		Task::set_mode(tind::Mode::CPU);
 		NetWork<float> network;
-		network.netWorkInit("netA", tind::CPU);
+		network.netWorkInit("netA");
 
 		//startPrefetchData(network);
 
@@ -495,6 +497,8 @@ namespace dlex_cnn
 
 	void MnistTrainTest::test(const std::string& modelFilePath, const int iter)
 	{
+		Task::set_mode(tind::Mode::CPU);
+
 		loadMnistData(tind::Test);
 
 		const int batch = 64;
@@ -507,7 +511,7 @@ namespace dlex_cnn
 
 		printf("construct network begin...\n");
 		dlex_cnn::NetWork<float> network;
-		network.netWorkInit("netA", tind::CPU);
+		network.netWorkInit("netA");
 		network.loadStageModel(modelFilePath, iter);
 		printf("construct network done.\n");
 

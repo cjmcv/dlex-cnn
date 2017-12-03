@@ -1,11 +1,11 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief  
+// > brief  Mainly for providing the device mode.
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
-#include "dlex_task.h"
+#include "task.h"
 
 namespace dlex_cnn
 {
@@ -13,7 +13,7 @@ namespace dlex_cnn
 
 	Task::Task()
 	{
-		
+		device_mode_ = tind::CPU;
 	}
 
 	Task::~Task()
@@ -21,11 +21,11 @@ namespace dlex_cnn
 
 	}
 
-	//Task& Task::Get()
-	//{
-	//	if (gTask == NULL)
-	//		gTask = new Task();
+	Task& Task::Get()
+	{
+		if (gTask == NULL)
+			gTask = new Task();
 
-	//	return *gTask;
-	//}
+		return *gTask;
+	}
 }
