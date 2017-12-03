@@ -24,9 +24,17 @@ namespace dlex_cnn
 	
 	public:		
 		void train();
+		void trainWithPrefetcher();
 		void test(const std::string& model_file_path, const int iter);
 
-		void prefetchData();
+		void startPrefetchData(NetWork<float> &network);
+		static bool loadBatch(void *instant_ptr, std::pair < std::shared_ptr<Tensor<float>>, std::shared_ptr<Tensor<float>> > *tensor_pair);
+		int batch_idx_;
+		int batch_size_;
+		int channels_;
+		int width_;
+		int height_;
+		int data_size_4D_;
 
 	private:
 		bool loadMnistData(tind::Phase phase);
@@ -41,6 +49,7 @@ namespace dlex_cnn
 		uint8_t getMaxIdxInArray(const float* start, const float* stop);
 		std::pair<float, float> testInTrain(dlex_cnn::NetWork<float>& network, const int batch, const std::vector< std::pair<dlex_cnn::IMAGE_DATUM, char> > &test_data);
 
+		
 	private:
 		NetWork<float> network_;
 

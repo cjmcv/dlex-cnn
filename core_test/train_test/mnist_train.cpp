@@ -239,37 +239,138 @@ namespace dlex_cnn
 		return std::pair<float, float>(accuracy, 0);	//loss
 	}
 
-	void MnistTrainTest::prefetchData()
+	bool MnistTrainTest::loadBatch(void *instant_ptr, std::pair < std::shared_ptr<Tensor<float>>, std::shared_ptr<Tensor<float>> > *tensor_pair)
+	{
+		MnistTrainTest *instant = (MnistTrainTest *)instant_ptr;
+
+		if (tensor_pair->first == NULL || tensor_pair->first->getSize()[tind::e4D] != instant->data_size_4D_)
+		{
+			tensor_pair->first.reset(new dlex_cnn::Tensor<float>(instant->batch_size_, instant->channels_, instant->height_, instant->width_));
+			tensor_pair->second.reset(new dlex_cnn::Tensor<float>(instant->batch_size_, 1, 1, 1));
+			printf("tensor_pair->first == NULL || tensor_pair->first->getSize()[tind::e4D] != instant->data_size_4D_ (%d, %d)\n", tensor_pair->first->getSize()[tind::e4D], instant->data_size_4D_);
+		}
+
+		if (!instant->fetchBatchData(instant->train_data_, tensor_pair->first, tensor_pair->second, instant->batch_idx_ * instant->batch_size_, instant->batch_size_))
+		{
+			instant->batch_idx_ = 0;
+			std::random_shuffle(instant->train_data_.begin(), instant->train_data_.end());
+			//epoch_idx++;	// epoch 改为外面计算，用全部数据得到一个epoch有多少个batch - to do
+			false;
+		}
+		instant->batch_idx_++;
+
+		return true;
+	}
+
+	void MnistTrainTest::startPrefetchData(NetWork<float> &network)
 	{
 		if (!loadMnistData(tind::Train))
 		{
 			printf("error loadMnistData\n");
 			return;
 		}
+
+		batch_idx_ = 0;
+		batch_size_ = 128;
+		channels_ = train_data_[0].first.channels;
+		width_ = train_data_[0].first.width;
+		height_ = train_data_[0].first.height;
+		data_size_4D_ = batch_size_ * channels_ * width_ * height_;
+
+		//DataPrefetcher<float> prefetcher;
+		network.prefetcher_.setInstantiation(this);
+		network.prefetcher_.batch_loader_pfunc_ = loadBatch;
+
+		network.prefetcher_.startInnerThread();
+	}
+	void MnistTrainTest::trainWithPrefetcher()
+	{
+		NetWork<float> network;
+		network.netWorkInit("netA", tind::CPU);
+		
+		startPrefetchData(network);
+
+		float learning_rate = 0.1f;
+		const float decay_rate = 0.8f;
+		const float min_learning_rate = 0.001f;
+		const int test_after_batches = 60;
+		const int max_batches = 10000;
 		int batch_size = 128;
 		const int channels = train_data_[0].first.channels;
 		const int width = train_data_[0].first.width;
 		const int height = train_data_[0].first.height;
+		printf("test_after_batches:%d\n", test_after_batches);
+		printf("learning_rate:%f ,decay_rate:%f , min_learning_rate:%f\n", learning_rate, decay_rate, min_learning_rate);
+		printf("channels:%d , width:%d , height:%d\n", channels, width, height);
 
-		std::shared_ptr<dlex_cnn::Tensor<float>> input_data_tensor = std::make_shared<dlex_cnn::Tensor<float>>(batch_size, channels, height, width);	//shoule be moved
-		std::shared_ptr<dlex_cnn::Tensor<float>> label_data_tensor = std::make_shared<dlex_cnn::Tensor<float>>(batch_size, 1, 1, 1);//class_num_
+		printf("construct network begin...\n");
+		registerOpClass();
 
-		int batch_idx = 0;
-		while (1)
+		TypicalNet typicalNet;
+		typicalNet.mlp<float>(batch_size, channels, height, width, network);
+
+		std::vector<std::string> in_node_names;
+		in_node_names.push_back("input");
+		std::vector<std::string> out_node_names;
+		out_node_names.push_back("output");
+		network.setIONodeName(in_node_names, out_node_names);
+
+		network.setLearningRate(learning_rate);
+
+		//dlex_cnn::NetWork<float> network;
+		//network.netWorkInit("netA");
+		//network.loadStageModel("./", 1);
+
+		printf("construct network done.\n");
+
+		float val_accuracy = 0.0f;
+		float train_total_loss = 0.0f;
+		int train_batches = 0;
+		float val_loss = 0.0f;
+
+		int save_iter = 19;
+		std::string model_saved_path = "./";
+
+		int lr_setp = 200;
+		int epoch_idx = 0;
+
+		for (int batch_idx = 0; batch_idx < max_batches; batch_idx++)
 		{
-			if (!fetchBatchData(train_data_, input_data_tensor, label_data_tensor, batch_idx * batch_size, batch_size))
+			const float batch_loss = network.trainBatch();
+
+			train_batches++;
+			train_total_loss += batch_loss;
+			printf("batch[%d]->train_batch_loss: %f, learning_rate: %f\n", batch_idx, batch_loss, learning_rate);
+			if (batch_idx && batch_idx % test_after_batches == 0)
 			{
-				batch_idx = 0;
-				std::random_shuffle(train_data_.begin(), train_data_.end());
-				//epoch_idx++;	// epoch 改为外面计算，用全部数据得到一个epoch有多少个batch - to do
-				continue;
+				network.switchPhase(dlex_cnn::tind::Phase::Test);
+				std::tie(val_accuracy, val_loss) = testInTrain(network, 128, validate_data_);	// 要注意最后一个batch为112，会修改掉所有节点的num维度，在下一轮训练过程中修改回来。
+				printf("sample : %d/%d , learning_rate : %f , train_avg_loss : %f , val_loss : %f , val_accuracy : %.4f%%\n",
+					batch_idx*batch_size, train_data_.size(), learning_rate, train_total_loss / train_batches, val_loss, val_accuracy*100.0f);
+
+				train_total_loss = 0.0f;
+				train_batches = 0;
+				network.switchPhase(dlex_cnn::tind::Phase::Train);
 			}
-			network_.prefetcher_.pushData(input_data_tensor, label_data_tensor);
+			if (batch_idx && batch_idx % save_iter == 0)
+				network.saveStageModel(model_saved_path, 1);
+
+			if (batch_idx && batch_idx % lr_setp == 0)
+			{
+				//update learning rate
+				learning_rate = std::max(learning_rate*decay_rate, min_learning_rate);
+				network.setLearningRate(learning_rate);
+			}
 		}
 	}
 
 	void MnistTrainTest::train()
 	{
+		NetWork<float> network;
+		network.netWorkInit("netA", tind::CPU);
+
+		//startPrefetchData(network);
+
 		if (!loadMnistData(tind::Train))
 		{
 			printf("error loadMnistData\n");
@@ -292,10 +393,14 @@ namespace dlex_cnn
 		printf("construct network begin...\n");
 		registerOpClass();
 
-		NetWork<float> network;
-		network.netWorkInit("netA", tind::CPU);
 		TypicalNet typicalNet;
 		typicalNet.mix<float>(batch_size, channels, height, width, network);
+
+		std::vector<std::string> in_node_names;
+		in_node_names.push_back("input");
+		std::vector<std::string> out_node_names;
+		out_node_names.push_back("output");
+		network.setIONodeName(in_node_names, out_node_names);
 
 		network.setLearningRate(learning_rate);
 
@@ -421,7 +526,8 @@ namespace dlex_cnn
 void mnistTrain()
 {
 	dlex_cnn::MnistTrainTest mnist;
-	mnist.train();
+	//mnist.train();
+	mnist.trainWithPrefetcher();
 	system("pause");
 
 	return ;
