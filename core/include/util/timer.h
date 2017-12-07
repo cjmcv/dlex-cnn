@@ -27,6 +27,7 @@
 
 
 // 待处理问题：
+// graph的setInNode和setOutNode可以合并为一个
 // Convolution group卷积未实现
 // 将conv和deconv的参数中kernel num/channels 改成output num进行统一?对外改为output num，对内还是num/channel
 // Pooling op中极大值池化max_idx_map_, 在不训练时可以省掉；

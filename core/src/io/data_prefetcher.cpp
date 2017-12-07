@@ -5,6 +5,7 @@
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
+#include "util/device.h"
 #include "io/data_prefetcher.h"
 
 namespace dlex_cnn
@@ -40,6 +41,12 @@ namespace dlex_cnn
 	template <typename Dtype>
 	void DataPrefetcher<Dtype>::entryInnerThread()
 	{
+#ifndef CPU_ONLY
+		cudaStream_t stream;
+		if (Task::mode() == tind::GPU) {
+			DCUDA_CHECK(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
+		}
+#endif
 		try 
 		{
 			while (!must_stop())
@@ -48,7 +55,14 @@ namespace dlex_cnn
 				free_.wait_and_pop(&batch);
 				if (!loadBatch(batch))
 					stopInnerThread();
-
+#ifndef CPU_ONLY
+				if (Task::mode() == tind::GPU) 
+				{
+					batch->first->asyncCpy2GPU(stream);
+					batch->second->asyncCpy2GPU(stream);
+					DCUDA_CHECK(cudaStreamSynchronize(stream));	//Waits for stream tasks to complete.
+				}
+#endif
 				full_.push(batch);
 			}
 		}

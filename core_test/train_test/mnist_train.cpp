@@ -247,7 +247,7 @@ namespace dlex_cnn
 		{
 			tensor_pair->first.reset(new dlex_cnn::Tensor<float>(instant->batch_size_, instant->channels_, instant->height_, instant->width_));
 			tensor_pair->second.reset(new dlex_cnn::Tensor<float>(instant->batch_size_, 1, 1, 1));
-			printf("tensor_pair->first == NULL || tensor_pair->first->getSize()[tind::e4D] != instant->data_size_4D_ (%d, %d)\n", tensor_pair->first->getSize()[tind::e4D], instant->data_size_4D_);
+			printf("loadBatch -> reset tensor_pair\n");
 		}
 
 		if (!instant->fetchBatchData(instant->train_data_, tensor_pair->first, tensor_pair->second, instant->batch_idx_ * instant->batch_size_, instant->batch_size_))

@@ -61,7 +61,6 @@ namespace dlex_cnn
 		std::vector<std::shared_ptr<Tensor<Dtype>>> &data) const
 	{
 		data.clear();
-		printf("data and gradient: size() : %d, %d\n", data.size(), gradient_.size());
 
 		int inShape3DSize = in_shape[1] * in_shape[2] * in_shape[3];
 		int outShape3DSize = out_shape[1] * out_shape[2] * out_shape[3];

@@ -9,6 +9,7 @@
 #ifndef DLEX_PREFETCH_HPP_
 #define DLEX_PREFETCH_HPP_
 
+#include "task.h"
 #include "tensor.h"
 #include "util/thread_inner.h"
 #include "util/blocking_queue.h"

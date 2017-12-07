@@ -76,7 +76,6 @@ namespace dlex_cnn
 		{
 			std::string inte_op_str;
 			hybridOpMap(inte_op_str);
-			printf("inteOp = %s\n", inte_op_str.c_str());
 			
 			int s_index = -1;
 			for (int i = 0; i < HOP_PHASEMAP_NUM; i++)

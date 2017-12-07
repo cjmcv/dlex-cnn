@@ -15,6 +15,7 @@
 #include <stdlib.h>
 
 #include "common.h"
+#include "util/device.h"
 
 #define MAX_SHAPE_SIZE 9999
 
@@ -57,8 +58,8 @@ namespace dlex_cnn
 		};
 		// Just copy data, without changing their size
 		void copyDataTo(Tensor<Dtype> &dst_tensor, tind::TensorCopyMode mode);
-		// Copy the whole tensor, includes their size and data.
-		void cloneTo(Tensor<Dtype> &dst_tensor);
+		// Push data from cpu to gpu.
+		void asyncCpy2GPU(const cudaStream_t& stream);
 
 	private:
 		void *cpu_data_;

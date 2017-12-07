@@ -20,8 +20,8 @@ namespace dlex_cnn
 		else if (num > MAX_SHAPE_SIZE || height > MAX_SHAPE_SIZE || width > MAX_SHAPE_SIZE)
 		{
 			DLOG_ERR("[ Tensor::Tensor ]: num(%d) > MAX_SHAPE_SIZE || \
-				height(%d) > MAX_SHAPE_SIZE || width(%d) > MAX_SHAPE_SIZE.\n", 
-				num, height, width);
+					 height(%d) > MAX_SHAPE_SIZE || width(%d) > MAX_SHAPE_SIZE.\n",
+					 num, height, width);
 		}
 
 		shape_.clear();
@@ -35,7 +35,7 @@ namespace dlex_cnn
 		size_.push_back(height * size_[0]);
 		size_.push_back(channels * size_[1]);
 		size_.push_back(num * size_[2]);
-		
+
 		cpu_data_ = NULL;
 	}
 
@@ -50,18 +50,18 @@ namespace dlex_cnn
 		else if (shape[0] > MAX_SHAPE_SIZE || shape[2] > MAX_SHAPE_SIZE || shape[3] > MAX_SHAPE_SIZE)
 		{
 			DLOG_ERR("[ Tensor::Tensor ]: num(%d) > MAX_SHAPE_SIZE || \
-							height(%d) > MAX_SHAPE_SIZE || width(%d) > MAX_SHAPE_SIZE.\n",
-							shape[0], shape[2], shape[3]);
+					 height(%d) > MAX_SHAPE_SIZE || width(%d) > MAX_SHAPE_SIZE.\n",
+					 shape[0], shape[2], shape[3]);
 		}
 
 		shape_.clear();
-		shape_ = shape;		
-		
+		shape_ = shape;
+
 		size_.clear();
 		size_.push_back(shape_[shapeSize - 1]);
 		for (int i = 1; i < shapeSize; i++)
 			size_.push_back(shape_[shapeSize - i - 1] * size_[i - 1]);
-		
+
 		cpu_data_ = NULL;
 	}
 
@@ -113,7 +113,7 @@ namespace dlex_cnn
 			DLOG_ERR("[ Tensor::copyDataTo ]: src tensor and dst tensor should have the same size.\n");
 			return;
 		}
-		switch(mode)
+		switch (mode)
 		{
 		case tind::eHost2Host:
 			if (dst_tensor.getCpuData() == NULL || this->cpu_data_ == NULL)
@@ -156,27 +156,14 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	void Tensor<Dtype>::cloneTo(Tensor<Dtype> &dst_tensor)
+	void Tensor<Dtype>::asyncCpy2GPU(const cudaStream_t& stream)
 	{
-		//if (this->cpu_data_ == NULL)
-		//{
-		//	DLOG_ERR("[ Tensor::cloneTo ]: this->cpu_data_ == NULL.\n");
-		//	return;
-		//}
-		//dst_tensor.shape_ = this->shape_;
-		//dst_tensor.size_ = this->size_;
+#ifndef CPU_ONLY
+		if (!DCHECK(this->cpu_data_ != NULL))
+			DLOG_ERR("this->cpu_data_ == NULL");
 
-		//if (dst_tensor.cpu_data_ != NULL)
-		//{
-		//	free(dst_tensor.cpu_data_);
-		//	dst_tensor.cpu_data_ = NULL;
-		//}
-
-		//dst_tensor.cpu_data_ = (void *)malloc(sizeof(Dtype) * this->size_[tind::e4D]);
-		//if (dst_tensor.cpu_data_ == NULL)
-		//	DLOG_ERR("[ Tensor::cloneTo ]: Can not malloc for dst_tensor.cpu_data_.\n");
-
-		//memcpy(dst_tensor.cpu_data_, this->cpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D]);
+		DCUDA_CHECK(cudaMemcpyAsync(getGpuData(), cpu_data_, sizeof(Dtype) * size_[tind::e4D], cudaMemcpyHostToDevice, stream));
+#endif
 	}
 
 	INSTANTIATE_CLASS_NOR(Tensor);

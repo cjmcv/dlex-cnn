@@ -39,11 +39,7 @@ namespace dlex_cnn
 		const std::vector< std::shared_ptr< Op<Dtype> > > &op,
 		const std::vector<std::string> &in_node_names)
 	{
-		//const auto layer_type = layer->getLayerType();
-		//printf("NetWork addayer begin , type : %s\n", layer_type.c_str());
 		std::shared_ptr<Node<Dtype>> node = std::make_shared<Node<Dtype>>();
-		//node->inputs_index_.clear();
-		//node->outputs_index_.clear();
 		
 		const int node_idx = nodes_.size();
 		node->setIndex(node_idx);
@@ -87,7 +83,7 @@ namespace dlex_cnn
 		node->initOp();
 		node->initNode();
 		nodes_.push_back(node);
-		printf("NetWork addayer end. add data Tensor done.\n");
+		DLOG_INFO("Add node: %s.", node->getInteOp()->getOpType().c_str());
 	}
 
 	template <typename Dtype>
