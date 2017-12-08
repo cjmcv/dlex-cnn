@@ -32,11 +32,14 @@ namespace dlex_cnn
 		void addNode(const std::string &node_name,
 			const std::vector<std::shared_ptr<Op<Dtype>>> &op,
 			const std::vector<std::string> &inNodeNames = std::vector<std::string>() );
+
+		void paramsInit();
 		int setIONodeName(const std::vector<std::string> &in_node_names, const std::vector<std::string> &out_node_names);
 		// Set input nodes of the graph.
-		int setInNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> inputData);	//
+		int setInNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> inputData);
 		// Set output nodes of the graph.
-		int setOutNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> label_data);	//
+		int setOutNode(const std::vector<std::shared_ptr<Tensor<Dtype>>> label_data);
+
 		int forwardGraph();
 		int backwardGraph();
 		// Fetch loss that has been saved in one of the output nodes.
@@ -45,6 +48,8 @@ namespace dlex_cnn
 		int getNodeData(const std::string &node_name, std::shared_ptr<Tensor<Dtype>> &cpuData);
 
 		int graphShow();
+
+		// Model Input and Output.
 		int writeGraph2Text(FILE *fp);
 		int writeGraph2Bin(FILE *fp);
 		int writeGraphParam2Bin(FILE *fp);

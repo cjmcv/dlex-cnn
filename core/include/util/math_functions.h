@@ -17,14 +17,14 @@ namespace dlex_cnn
 {
 	//all of these functions below is run on single thread, maybe they are SIMD optimized.
 	template <typename Dtype>
-	void normal_distribution_init(Dtype* data, const int size, const Dtype mean_value, const Dtype standard_deviation);
+	void normal_distribution_init(const int size, const Dtype mean_value, const Dtype standard_deviation, Dtype* data);
 
 	template <typename Dtype>
-	void dlex_set(Dtype* data, const int N, const Dtype alpha);
+	void dlex_set(const int N, const Dtype alpha, Dtype* data);
 
 	//a /= b
 	template <typename Dtype>
-	void div_inplace(Dtype* a, const Dtype b, const int len);
+	void div_inplace(const Dtype b, const int len, Dtype* data);
 
 	template <typename Dtype>
 	void im2col_cpu(const Dtype* data_im, const int channels,
@@ -54,5 +54,10 @@ namespace dlex_cnn
 	void backward_bias(const int num, const int len, const Dtype* next_diff, Dtype* bias_gradient);
 	template <typename Dtype>
 	void backward_bias(const int num, const int ch_size, const int len, const Dtype* next_diff, Dtype* bias_gradient);
+
+#ifndef CPU_ONLY
+	template <typename Dtype>
+	void dlex_gpu_set(const int N, const Dtype alpha, Dtype* data);
+#endif
 };
 #endif

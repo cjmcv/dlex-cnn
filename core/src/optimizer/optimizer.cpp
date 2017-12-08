@@ -26,7 +26,7 @@ namespace dlex_cnn
 	template <typename Dtype>
 	void SGD<Dtype>::update(std::shared_ptr< Node<Dtype> > node)
 	{
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> node_data = node->getCpuDataVec();
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> node_data = node->getDataVec();
 		if (node_data.size() == 1)
 			return;
 

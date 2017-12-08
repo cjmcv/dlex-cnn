@@ -113,7 +113,7 @@ namespace dlex_cnn
 	{
 		// get diff: input(lastOutput/label), output(lastDiff)
 		//printf("start CrossEntropyLossOp backward:(%d, %d, %d, %d)\n", prev.size(), next.size(), prev_diff.size(), next_diff.size());
-		prev_diff[0]->setZero();
+		prev_diff[0]->setCpuZero();
 
 		// labels_ should be setted in forward operation, and in backward, it needn't to be converted again
 		const int output_size4D = next[0]->getSize()[tind::e4D];

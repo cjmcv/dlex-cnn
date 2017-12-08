@@ -26,12 +26,12 @@ namespace dlex_cnn
 	class NetWork
 	{
 	public:
-		NetWork();
+		NetWork(std::string name);
 		virtual ~NetWork();
 	public:
 		DataPrefetcher<Dtype> prefetcher_;
 
-		int netWorkInit(std::string name);
+		int netParamsInit();
 
 		int saveBinModel(const std::string &model_file);
 		int loadBinModel(const std::string &model_file);

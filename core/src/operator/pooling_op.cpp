@@ -137,9 +137,9 @@ namespace dlex_cnn
 				max_idx_map_.reset(new Tensor<int>(next_shape));
 				
 			mask = (int *)max_idx_map_->getCpuData();
-			max_idx_map_->setValue(Dtype(-1));
+			max_idx_map_->setCpuValue(Dtype(-1));
 
-			next[0]->setZero();
+			next[0]->setCpuZero();
 			// The main loop
 			for (int n = 0; n < prev_shape[tind::eNum]; ++n) {
 				for (int c = 0; c < prev_shape[tind::eChannels]; ++c) {
@@ -173,7 +173,7 @@ namespace dlex_cnn
 			}
 			break;
 		case tind::eAVE:
-			next[0]->setZero();
+			next[0]->setCpuZero();
 			// The main loop
 			for (int n = 0; n < prev_shape[tind::eNum]; ++n) {
 				for (int c = 0; c < prev_shape[tind::eChannels]; ++c) {
@@ -229,7 +229,7 @@ namespace dlex_cnn
 		Dtype* prev_diff_data = (Dtype *)prev_diff[0]->getCpuData();	//bottom_data
 		Dtype* next_diff_data = (Dtype *)next_diff[0]->getCpuData();	//top_data
 
-		prev_diff[0]->setZero();
+		prev_diff[0]->setCpuZero();
 
 		const int* mask = NULL;  // suppress warnings about uninitialized variables
 		switch (this->param_.pooling_type) {

@@ -21,9 +21,11 @@
 namespace dlex_cnn {
 
 	template <typename Dtype>
-	NetWork<Dtype>::NetWork()
+	NetWork<Dtype>::NetWork(std::string name)
 	{
-		
+		name_ = name;
+		graph_.reset(new Graph<Dtype>());
+
 		printf("NetWork constructed.\n");
 	}
 	template <typename Dtype>
@@ -32,10 +34,9 @@ namespace dlex_cnn {
 		printf("NetWork destructed.\n");
 	}
 	template <typename Dtype>
-	int NetWork<Dtype>::netWorkInit(std::string name)
+	int NetWork<Dtype>::netParamsInit()
 	{
-		graph_.reset(new Graph<Dtype>());
-		name_ = name;
+		graph_->paramsInit();
 
 		return 0;
 	}

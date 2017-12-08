@@ -105,9 +105,6 @@ namespace dlex_cnn
 			return -1;
 		}
 
-		//data.clear();
-		//data.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
-
 		diff_.clear();
 		diff_.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
 
@@ -119,6 +116,13 @@ namespace dlex_cnn
 	{
 		for (int i = 0; i < prev.size(); i++)
 			prev[i]->copyDataTo(*next[i], tind::eHost2Host);
+	}
+
+	template <typename Dtype>
+	void InputOp<Dtype>::forward_gpu(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
+	{
+		for (int i = 0; i < prev.size(); i++)
+			prev[i]->copyDataTo(*next[i], tind::eDevice2Device);
 	}
 
 	template <typename Dtype>

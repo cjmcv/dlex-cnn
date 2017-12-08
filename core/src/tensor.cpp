@@ -37,6 +37,7 @@ namespace dlex_cnn
 		size_.push_back(num * size_[2]);
 
 		cpu_data_ = NULL;
+		gpu_data_ = NULL;
 	}
 
 	template <typename Dtype>
@@ -63,6 +64,7 @@ namespace dlex_cnn
 			size_.push_back(shape_[shapeSize - i - 1] * size_[i - 1]);
 
 		cpu_data_ = NULL;
+		gpu_data_ = NULL;
 	}
 
 	template <typename Dtype>

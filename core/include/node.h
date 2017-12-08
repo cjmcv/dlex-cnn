@@ -44,7 +44,7 @@ namespace dlex_cnn
 		inline const std::vector<int> &getOutputIdx() { return outputs_index_; }
 		inline const std::vector<std::string> &getOutputName() { return outputs_name_; }
 		inline const std::shared_ptr<Op<Dtype>> getInteOp() { return inte_ops_; }
-		inline const std::vector<std::shared_ptr<Tensor<Dtype>>> &getCpuDataVec() { return cpu_data_vec_; }
+		inline const std::vector<std::shared_ptr<Tensor<Dtype>>> &getDataVec() { return data_vec_; }
 		inline const std::string getOpParamBufStr() { 
 			op_param_str_ = inte_ops_->genOpParamStr();
 			return op_param_str_;
@@ -70,7 +70,7 @@ namespace dlex_cnn
 
 		// Allocate memory buffer for node according to inte_ops_
 		inline int initNode() {
-			int ret = inte_ops_->allocBuf4Node(input_shape_, output_shape_, cpu_data_vec_);
+			int ret = inte_ops_->allocBuf4Node(input_shape_, output_shape_, data_vec_);
 			return ret;
 		}
 
@@ -79,7 +79,7 @@ namespace dlex_cnn
 			return ret;
 		}
 
-		// Includes input_shape_, output_shape_ and the size of cpu_data_vec_
+		// Includes input_shape_, output_shape_ and the size of data_vec_
 		int resetDataSize(int index, const std::vector<int> &shape);
 
 		// get the mapping relationship between a hybrid operation and serval operations
@@ -92,9 +92,6 @@ namespace dlex_cnn
 		// 网络结构: 可见，输入输出都行，也可在内部用字符串写网络结构
 		// name, index, in_idx_count, in_idx, （out_idx_count, out_idx,全部加载完毕后，再数，建立） in_shape（根据前一个node决定）, out_shape（推断）
 		// op_param
-
-		// blob
-		// cpu_data_vec_.size(), length, cpu_data_vec_[0], length, [1], (length, [2])
 
 	private:
 		int phase_;
@@ -122,7 +119,7 @@ namespace dlex_cnn
 		std::vector<std::string> outputs_name_;
 
 		// include in_data/weight/blas
-		std::vector<std::shared_ptr<Tensor<Dtype>>> cpu_data_vec_;	
+		std::vector<std::shared_ptr<Tensor<Dtype>>> data_vec_;	
 		//std::vector<std::shared_ptr<Tensor<float>>> gradients_;	//include weight_gra/blas_gra
 
 	};

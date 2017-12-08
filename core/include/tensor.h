@@ -49,8 +49,8 @@ namespace dlex_cnn
 			checkGpuData();
 			return gpu_data_;
 		}
-		inline void setZero() { memset(getCpuData(), 0, sizeof(Dtype) * size_[tind::e4D]); };
-		inline void setValue(Dtype alpha) {
+		inline void setCpuZero() { memset(getCpuData(), 0, sizeof(Dtype) * size_[tind::e4D]); };
+		inline void setCpuValue(Dtype alpha) {
 			Dtype *dst = (Dtype *)getCpuData();
 			for (int i = 0; i < size_[tind::e4D]; ++i) {
 				dst[i] = alpha;

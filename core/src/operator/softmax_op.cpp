@@ -164,7 +164,7 @@ namespace dlex_cnn
 		}
 
 		//update prev_diff
-		prev_diff[0]->setZero();
+		prev_diff[0]->setCpuZero();
 		const int prevDataSize3D = prev_data_size[tind::e3D];
 		const int nextDataSize3D = next_data_size[tind::e3D];
 		const int prev_diff_size3D = prev_diff_size[tind::e3D];

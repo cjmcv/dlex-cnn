@@ -8,6 +8,8 @@
 
 #include <sstream>
 #include "graph.h"
+#include "task.h"
+#include "util/math_functions.h"
 
 namespace dlex_cnn
 {
@@ -86,6 +88,29 @@ namespace dlex_cnn
 		DLOG_INFO("Add node: %s.", node->getInteOp()->getOpType().c_str());
 	}
 
+	// Initialize all of the weight and bias.
+	template <typename Dtype>
+	void Graph<Dtype>::paramsInit()
+	{
+		for (int i = 0; i < nodes_.size(); i++)
+		{	
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> data_vec = nodes_[i]->getDataVec();
+
+			if (Task::mode() == tind::CPU)
+			{
+				if (data_vec.size() > 1)
+				{
+					normal_distribution_init<Dtype>(data_vec[1]->getSize()[tind::e4D], 0.0f, 0.1f, (Dtype *)data_vec[1]->getCpuData());
+					if (data_vec.size() > 2)
+						dlex_set<Dtype>(data_vec[2]->getSize()[tind::e4D], 0.0f, (Dtype *)data_vec[2]->getCpuData());
+				}
+			}
+			else
+			{
+			}
+		}
+	}
+
 	template <typename Dtype>
 	int Graph<Dtype>::setIONodeName(const std::vector<std::string> &in_node_names, const std::vector<std::string> &out_node_names)
 	{
@@ -129,14 +154,17 @@ namespace dlex_cnn
 				return -1;
 			}
 
-			if (nodes_[index]->getCpuDataVec()[0]->getSize()[tind::e4D] != input_data[i]->getSize()[tind::e4D])
+			if (nodes_[index]->getDataVec()[0]->getSize()[tind::e4D] != input_data[i]->getSize()[tind::e4D])
 			{
 				nodes_[index]->setInputShape(input_data[i]->getShape());
 				nodes_[index]->resetDataSize(0, input_data[i]->getShape());
 				//nodes_[index]->inferOutShape();
 				//cpu_data[0].reset(new Tensor<Dtype>(input_data[i]->getShape()));
 			}
-			input_data[i]->copyDataTo(*nodes_[index]->getCpuDataVec()[0], tind::eHost2Host);
+			if (Task::mode() == tind::CPU)
+				input_data[i]->copyDataTo(*nodes_[index]->getDataVec()[0], tind::eHost2Host);
+			else
+				input_data[i]->copyDataTo(*nodes_[index]->getDataVec()[0], tind::eDevice2Device);
 		}
 		return 0;
 	}
@@ -169,7 +197,7 @@ namespace dlex_cnn
 			}
 			
 			// The format of output node is ( output[0], label[1], loss[2] )
-			const int vec_size = nodes_[index]->getCpuDataVec().size();
+			const int vec_size = nodes_[index]->getDataVec().size();
 			if (vec_size != 3)
 			{
 				DLOG_ERR("[ Graph::setOutNode ]: Output node is not contains 3 tenosr. \n");
@@ -179,12 +207,15 @@ namespace dlex_cnn
 				nodes_[i]->inte_ops_->getOpDiff()[0].reset(new Tensor<Dtype>(nodes_[i]->cpu_data_[0]->shape_));*/
 
 			//printf("s set out node\n");
-			if (nodes_[index]->getCpuDataVec()[1]->getSize()[tind::e4D] != label_data[i]->getSize()[tind::e4D])
+			if (nodes_[index]->getDataVec()[1]->getSize()[tind::e4D] != label_data[i]->getSize()[tind::e4D])
 				nodes_[index]->resetDataSize(1, label_data[i]->getShape());
 
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> cpu_data = nodes_[index]->getCpuDataVec();
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> cpu_data = nodes_[index]->getDataVec();
 
-			label_data[i]->copyDataTo(*cpu_data[1], tind::eHost2Host);
+			if (Task::mode() == tind::CPU)
+				label_data[i]->copyDataTo(*cpu_data[1], tind::eHost2Host);
+			else
+				label_data[i]->copyDataTo(*cpu_data[1], tind::eDevice2Device);
 
 			//printf("finish set out node\n");
 		}
@@ -243,11 +274,11 @@ namespace dlex_cnn
 			}
 
 			// The bottom data of forward is saved in the node that executing forward operation. 
-			nodes_[output_idx[0]]->getCpuDataVec()[0]->setZero();
-			inte_op_idx->forward(nodes_[idx]->getCpuDataVec(), nodes_[output_idx[0]]->getCpuDataVec());
+			nodes_[output_idx[0]]->getDataVec()[0]->setCpuZero();
+			inte_op_idx->forward(nodes_[idx]->getDataVec(), nodes_[output_idx[0]]->getDataVec());
 
-			//float *outdata0 = (float *)nodes_[idx]->getCpuDataVec()[1]->getCpuData();
-			//for (int j = 0; j < nodes_[idx]->getCpuDataVec()[1]->getSize()[3]; j++)
+			//float *outdata0 = (float *)nodes_[idx]->getDataVec()[1]->getCpuData();
+			//for (int j = 0; j < nodes_[idx]->getDataVec()[1]->getSize()[3]; j++)
 			//	printf("%f,", outdata0[j]);
 			//printf("\n");
 
@@ -303,7 +334,7 @@ namespace dlex_cnn
 			}
 
 			const std::shared_ptr<Op<Dtype>> inte_op_idx = nodes_[idx]->getInteOp();
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> data_idx = nodes_[idx]->getCpuDataVec();
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> data_idx = nodes_[idx]->getDataVec();
 		
 			// recheck batch size : diff_
 			if (inte_op_idx->getOpDiff()[0]->getSize()[tind::e4D] != data_idx[0]->getSize()[tind::e4D])
@@ -314,8 +345,8 @@ namespace dlex_cnn
 
 			// The bottom data of backward is saved in the node that executing backward operation. 
 			const std::vector<int> output_idx = nodes_[idx]->getOutputIdx();
-			inte_op_idx->getOpDiff()[0]->setZero();
-			inte_op_idx->backward(data_idx, nodes_[output_idx[0]]->getCpuDataVec(),
+			inte_op_idx->getOpDiff()[0]->setCpuZero();
+			inte_op_idx->backward(data_idx, nodes_[output_idx[0]]->getDataVec(),
 				inte_op_idx->getOpDiff(), nodes_[output_idx[0]]->getInteOp()->getOpDiff());
 		}
 
@@ -325,7 +356,7 @@ namespace dlex_cnn
 		//{
 		//	//printf("backward[%d].\n", i);
 		//	timer.Start();
-		//	nodes_[i]->inte_ops_->getOpDiff()[0]->setZero();
+		//	nodes_[i]->inte_ops_->getOpDiff()[0]->setCpuZero();
 		//	nodes_[i]->inte_ops_->backward(nodes_[i]->cpu_data_, nodes_[nodes_[i]->outputs_index_[0]]->cpu_data_,
 		//		nodes_[i]->inte_ops_->getOpDiff(), nodes_[nodes_[i]->outputs_index_[0]]->inte_ops_->getOpDiff());
 		//	float us = timer.MilliSeconds();
@@ -351,7 +382,7 @@ namespace dlex_cnn
 			DLOG_ERR("[ Graph::getLoss ]: The node with name < %s >, is not an output node.\n", node_name.c_str());
 			return -1;
 		}
-		loss = *(Dtype *)(nodes_[index]->getCpuDataVec()[2]->getCpuData());
+		loss = *(Dtype *)(nodes_[index]->getDataVec()[2]->getCpuData());
 
 		return 0;
 	}
@@ -366,7 +397,7 @@ namespace dlex_cnn
 			DLOG_ERR("[ Graph::getNodeData ]: Can not get node with name < %s >.\n", node_name.c_str());
 			return -1;
 		}
-		cpuData = nodes_[index]->getCpuDataVec()[0];
+		cpuData = nodes_[index]->getDataVec()[0];
 
 		return 0;
 	}
@@ -403,7 +434,7 @@ namespace dlex_cnn
 			printf("*  node name: <%s> , op type: <%s>.\n", cur_node_name.c_str(), inte_op_idx->getOpType().c_str());
 
 			// weight / blas
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> data_vec = nodes_[idx]->getCpuDataVec();
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> data_vec = nodes_[idx]->getDataVec();
 			const std::vector<int> data_shape = data_vec[0]->getShape();
 			printf("*  data: (%d, %d, %d, %d). \n", data_shape[tind::eNum], data_shape[tind::eChannels], data_shape[tind::eHeight], data_shape[tind::eWidth]);
 			if (data_vec.size() >= 2)
@@ -449,7 +480,7 @@ namespace dlex_cnn
 			const std::vector<int> output_idx = nodes_[idx]->getOutputIdx();
 			for (int i = 0; i < input_idx.size(); i++)
 			{
-				const std::vector<int> shape = nodes_[input_idx[i]]->getOutputShape(); // getCpuDataVec()[0]->getShape();
+				const std::vector<int> shape = nodes_[input_idx[i]]->getOutputShape(); // getDataVec()[0]->getShape();
 				printf("*  %s <%s> (%d, %d, %d, %d) -> %s. \n", nodes_[input_idx[i]]->getName().c_str(),
 					nodes_[input_idx[i]]->getInteOp()->getOpType().c_str(),
 					shape[tind::eNum], shape[tind::eChannels], shape[tind::eHeight], shape[tind::eWidth],
@@ -457,7 +488,7 @@ namespace dlex_cnn
 			}
 			for (int i = 0; i < output_idx.size(); i++)
 			{
-				const std::vector<int> shape = nodes_[output_idx[i]]->getInputShape(); // getCpuDataVec()[0]->getShape();
+				const std::vector<int> shape = nodes_[output_idx[i]]->getInputShape(); // getDataVec()[0]->getShape();
 				printf("*  %s -> %s <%s> (%d, %d, %d, %d). \n", cur_node_name.c_str(),
 					nodes_[output_idx[i]]->getName().c_str(),
 					nodes_[output_idx[i]]->getInteOp()->getOpType().c_str(),
@@ -474,7 +505,7 @@ namespace dlex_cnn
 	int Graph<Dtype>::writeGraph2Text(FILE *fp)
 	{
 		std::stringstream optss;
-		optss << "graph_size:" << nodes_.size() << ";";
+		optss << "nodes_size:" << nodes_.size() << ";";
 		fprintf(fp, "%s\n", optss.str().c_str());
 
 		for (int i = 0; i < nodes_.size(); i++)
@@ -514,7 +545,7 @@ namespace dlex_cnn
 		{
 			std::string cstr(cc);
 			printf("read0: %s\n", cstr.c_str());
-			graph_size = atoi(fetchSubStr(cstr, "graph_size:", ";").c_str());
+			graph_size = atoi(fetchSubStr(cstr, "nodes_size:", ";").c_str());
 			printf("read0: %d\n", graph_size);
 		}
 		std::string node_name, op_type;
@@ -575,7 +606,7 @@ namespace dlex_cnn
 
 		}
 		//std::stringstream optss;
-		//optss << "graph_size:" << nodes_.size() << ";";
+		//optss << "nodes_size:" << nodes_.size() << ";";
 		//fprintf(fp, "%s\n", optss.str().c_str());
 
 		//for (int i = 0; i < nodes_.size(); i++)
@@ -600,7 +631,7 @@ namespace dlex_cnn
 			fwrite(node_name.c_str(), sizeof(char), name_len, fp);
 			//fwrite(&index_, sizeof(int), 1, fp);
 
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> data_vec = nodes_[i]->getCpuDataVec();
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> data_vec = nodes_[i]->getDataVec();
 
 			int size = data_vec.size();
 			fwrite(&size, sizeof(int), 1, fp);
@@ -655,7 +686,7 @@ namespace dlex_cnn
 					if (size <= 1)
 						break; 
 
-					const std::vector<std::shared_ptr<Tensor<Dtype>>> data_vec = nodes_[j]->getCpuDataVec();
+					const std::vector<std::shared_ptr<Tensor<Dtype>>> data_vec = nodes_[j]->getDataVec();
 					for (int k = 1; k < size; k++)
 					{
 						int len = 0;
