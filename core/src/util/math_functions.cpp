@@ -10,7 +10,7 @@
 namespace dlex_cnn
 {
 	template <typename Dtype>
-	void normal_distribution_init(Dtype* data, const int size, const Dtype mean_value, const Dtype standard_deviation)
+	void normal_distribution_init(const int size, const Dtype mean_value, const Dtype standard_deviation, Dtype* data)
 	{
 		std::random_device rd;
 		std::mt19937 engine(rd());
@@ -20,11 +20,11 @@ namespace dlex_cnn
 			data[i] = dist(engine);
 		}
 	}
-	template void normal_distribution_init<float>(float* data, const int size, const float mean_value, const float standard_deviation);
-	template void normal_distribution_init<double>(double* data, const int size, const double mean_value, const double standard_deviation);
+	template void normal_distribution_init<float>(const int size, const float mean_value, const float standard_deviation, float* data);
+	template void normal_distribution_init<double>(const int size, const double mean_value, const double standard_deviation, double* data);
 
 	template <typename Dtype>
-	void dlex_set(Dtype* data, const int N, const Dtype alpha)
+	void dlex_set(const int N, const Dtype alpha, Dtype* data)
 	{
 		if (alpha == 0) 
 		{
@@ -34,22 +34,22 @@ namespace dlex_cnn
 		for (int i = 0; i < N; ++i) 
 			data[i] = alpha;
 	}
-	template void dlex_set<int>(int* data, const int N, const int alpha);
-	template void dlex_set<float>(float* data, const int N, const float alpha);
-	template void dlex_set<double>(double* data, const int N, const double alpha);
+	template void dlex_set<int>(const int N, const int alpha, int* data);
+	template void dlex_set<float>(const int N, const float alpha, float* data);
+	template void dlex_set<double>(const int N, const double alpha, double* data);
 
 	//a /= b
 	template <typename Dtype>
-	void div_inplace(Dtype* a, const Dtype b, const int len)
+	void div_inplace(const Dtype b, const int len, Dtype* data)
 	{
 		for (int i = 0; i < len;i++)
 		{
-			a[i] /= b;
+			data[i] /= b;
 		}
 	}
-	template void div_inplace<int>(int* a, const int b, const int len);
-	template void div_inplace<float>(float* a, const float b, const int len);
-	template void div_inplace<double>(double* a, const double b, const int len);
+	template void div_inplace<int>(const int b, const int len, int* data);
+	template void div_inplace<float>(const float b, const int len, float* data);
+	template void div_inplace<double>(const double b, const int len, double* data);
 
 
 	// A(M,K) * B(K, N) = C(M, N)

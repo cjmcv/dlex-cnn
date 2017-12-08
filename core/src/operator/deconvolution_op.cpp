@@ -78,14 +78,11 @@ namespace dlex_cnn
 
 		//weight (kernels for convolution)
 		data.push_back(std::make_shared<Tensor<Dtype>>(in_shape[tind::eChannels], param_.kernel_channels, param_.kernel_w, param_.kernel_h)); // Different from conv, switch the input channels and output channels.
-		normal_distribution_init<Dtype>((Dtype *)data[1]->getCpuData(), data[1]->getSize()[tind::e4D], 0.0f, 0.1f);
 
 		//blas
 		if (param_.blas_enable)
-		{
 			data.push_back(std::make_shared<Tensor<Dtype>>(out_shape[tind::eChannels], 1, 1, 1));	// The same with conv, bias size is equal to output channel num
-			dlex_set<Dtype>((Dtype *)data[2]->getCpuData(), data[2]->getSize()[tind::e4D], 0.0f);
-		}
+
 		return 0;
 	}
 	template <typename Dtype>
@@ -106,13 +103,10 @@ namespace dlex_cnn
 
 		gradient_.clear();
 		gradient_.push_back(std::make_shared<Tensor<Dtype>>(in_shape[tind::eChannels], param_.kernel_channels, param_.kernel_w, param_.kernel_h)); // Different from conv
-		dlex_set<Dtype>((Dtype *)gradient_[0]->getCpuData(), gradient_[0]->getSize()[tind::e4D], 0.0f);
 
 		if (param_.blas_enable)
-		{
 			gradient_.push_back(std::make_shared<Tensor<Dtype>>(out_shape[tind::eChannels], 1, 1, 1));
-			dlex_set<Dtype>((Dtype *)gradient_[1]->getCpuData(), gradient_[1]->getSize()[tind::e4D], 0.0f);
-		}
+
 		return 0;
 	}
 
@@ -233,7 +227,7 @@ namespace dlex_cnn
 		Dtype* col_data = (Dtype *)col_buffer_->getCpuData();
 
 		// update prev_diff
-		prev_diff[0]->setZero();
+		prev_diff[0]->setCpuZero();
 		for (int ni = 0; ni < prev_shape[tind::eNum]; ni++)
 		{
 			//printf("address: %d\n", col_data);
@@ -251,7 +245,7 @@ namespace dlex_cnn
 		}
 
 		// update weight Diff
-		gradient_[0]->setZero();
+		gradient_[0]->setCpuZero();
 		Dtype* kernel_gradient_data = (Dtype *)gradient_[0]->getCpuData();
 		for (int ni = 0; ni < prev_diff_shape[tind::eNum]; ni++)
 		{
@@ -267,14 +261,14 @@ namespace dlex_cnn
 				1.0, prev_data + ni * prev_size[tind::e3D], col_data,
 				1.0, kernel_gradient_data);
 		}
-		div_inplace(kernel_gradient_data, (Dtype)next_shape[tind::eNum], kernel_size[tind::e4D]);
+		div_inplace((Dtype)next_shape[tind::eNum], kernel_size[tind::e4D], kernel_gradient_data);
 
 		//update bias gradient
-		gradient_[1]->setZero();
+		gradient_[1]->setCpuZero();
 		Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getCpuData();
 
 		backward_bias(next_diff_shape[tind::eNum], next_diff_shape[tind::eChannels], next_diff_size[tind::e2D], next_diff_data, bias_gradient_data);
-		div_inplace(bias_gradient_data, (Dtype)next_shape[tind::eNum], bias_size[tind::e4D]);
+		div_inplace((Dtype)next_shape[tind::eNum], bias_size[tind::e4D], bias_gradient_data);
 	}
 
 	INSTANTIATE_CLASS(DeconvolutionOp);

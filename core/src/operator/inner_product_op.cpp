@@ -69,14 +69,11 @@ namespace dlex_cnn
 
 		//weight
 		data.push_back(std::make_shared<Tensor<Dtype>>(1, inShape3DSize * outShape3DSize, 1, 1));
-		normal_distribution_init<Dtype>((Dtype *)data[1]->getCpuData(), data[1]->getSize()[tind::e4D], 0.0f, 0.1f);
 
 		//blas
 		if (param_.blas_enable)
-		{
 			data.push_back(std::make_shared<Tensor<Dtype>>(1, out_shape[1], 1, 1));
-			dlex_set<Dtype>((Dtype *)data[2]->getCpuData(), data[2]->getSize()[tind::e4D], 0.0f);
-		}
+
 		return 0;
 	}
 	template <typename Dtype>
@@ -110,22 +107,10 @@ namespace dlex_cnn
 		int outShape3DSize = out_shape[1] * out_shape[2] * out_shape[3];
 		
 		diff_.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
-
-		//data.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
-		//data.push_back(std::make_shared<Tensor<Dtype>>(1, inShape3DSize * outShape3DSize, 1, 1));
-		//normal_distribution_init<Dtype>((Dtype *)data[1]->getCpuData(), data[1]->getSize()[tind::e4D], 0.0f, 0.1f);
-
 		gradient_.push_back(std::make_shared<Tensor<Dtype>>(1, inShape3DSize * outShape3DSize, 1, 1));
-		dlex_set<Dtype>((Dtype *)gradient_[0]->getCpuData(), gradient_[0]->getSize()[tind::e4D], 0.0f);
-
 		if (param_.blas_enable)
-		{
-			//data.push_back(std::make_shared<Tensor<Dtype>>(1, out_shape[1], 1, 1));
-			//dlex_set<Dtype>((Dtype *)data[2]->getCpuData(), data[2]->getSize()[tind::e4D], 0.0f);
-
 			gradient_.push_back(std::make_shared<Tensor<Dtype>>(1, out_shape[1], 1, 1));
-			dlex_set<Dtype>((Dtype *)gradient_[1]->getCpuData(), gradient_[1]->getSize()[tind::e4D], 0.0f);
-		}
+
 		return 0;
 	}
 
@@ -231,8 +216,8 @@ namespace dlex_cnn
 		////////////////////////////////////////////////////////////////////////////
 		//update this layer's param
 		//get weight gradient
+		gradient_[0]->setCpuZero();
 		Dtype* weight_gradient_data = (Dtype *)gradient_[0]->getCpuData();
-
 		// next_diff(num, hidden_num) -> next_diff'(hidden_num, num)
 		// O(M,N) = weightGradient(hidden_num, in3DSize) = next_diff'(hidden_num, num) * prev_data(num, in3DSize)
 		// -> M=hidden_num, N=in3DSize, K=num
@@ -245,7 +230,7 @@ namespace dlex_cnn
 		worker2(0, prev_data_shape[tind::eNum]);
 
 		//div by batch size
-		div_inplace(weight_gradient_data, (Dtype)next_data_shape[tind::eNum], weight_size[tind::e4D]);
+		div_inplace((Dtype)next_data_shape[tind::eNum], weight_size[tind::e4D], weight_gradient_data);
 
 		////////////////////////////////////////////////////////////////////////
 		//update bias
@@ -255,13 +240,12 @@ namespace dlex_cnn
 			Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getCpuData();
 			const std::vector<int> biasGradSize = gradient_[1]->getSize();
 
-			gradient_[1]->setZero();
+			gradient_[1]->setCpuZero();
 			backward_bias(next_data_shape[tind::eNum], biasGradSize[tind::e3D], next_diff_data, bias_gradient_data);
 
 			//div by batch size
-			div_inplace(bias_gradient_data, (Dtype)next_data_shape[tind::eNum], biasGradSize[tind::e4D]);
+			div_inplace((Dtype)next_data_shape[tind::eNum], biasGradSize[tind::e4D], bias_gradient_data);
 		}
-
 	}
 
 	INSTANTIATE_CLASS(InnerProductOp);

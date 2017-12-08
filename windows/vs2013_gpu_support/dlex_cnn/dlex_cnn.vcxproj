@@ -221,6 +221,9 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClCompile Include="..\..\..\core\src\util\thread_inner.cpp" />
     <ClCompile Include="..\..\..\core\src\util\thread_pool.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="..\..\..\core\src\util\math_functions.cu" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 8.0.targets" />

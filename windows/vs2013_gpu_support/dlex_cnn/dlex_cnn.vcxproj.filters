@@ -249,4 +249,9 @@
       <Filter>源文件\src</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="..\..\..\core\src\util\math_functions.cu">
+      <Filter>源文件\src\util</Filter>
+    </CudaCompile>
+  </ItemGroup>
 </Project>
