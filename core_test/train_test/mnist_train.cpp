@@ -11,12 +11,23 @@ namespace dlex_cnn
 {
 	MnistTrainTest::MnistTrainTest()
 	{
-		class_num_ = 10;
 		train_images_file_ = "../../../res/mnist_data/train-images.idx3-ubyte";
 		train_labels_file_ = "../../../res/mnist_data/train-labels.idx1-ubyte";
 
 		test_images_file_ = "../../../res/mnist_data/t10k-images.idx3-ubyte";
 		test_labels_file_ = "../../../res/mnist_data/t10k-labels.idx1-ubyte";
+
+		model_saved_path_ = "./";
+
+		// Super parameters
+		batch_size_ = 128;
+		learning_rate_ = 0.1f;
+		decay_rate_ = 0.8f;
+		min_learning_rate_ = 0.001f;
+		test_after_batches_ = 60;
+		max_batches_ = 10000;
+		lr_setp_ = 200;
+		save_iter_ = 19;
 
 		printf("MnistTrainTest constructed.\n");
 	}
@@ -250,34 +261,21 @@ namespace dlex_cnn
 			printf("loadBatch -> reset tensor_pair\n");
 		}
 
-		if (!instant->fetchBatchData(instant->train_data_, tensor_pair->first, tensor_pair->second, instant->batch_idx_ * instant->batch_size_, instant->batch_size_))
+		if (!instant->fetchBatchData(instant->train_data_, tensor_pair->first, tensor_pair->second, instant->prefetch_batch_idx_ * instant->batch_size_, instant->batch_size_))
 		{
-			instant->batch_idx_ = 0;
+			instant->prefetch_batch_idx_ = 0;
 			std::random_shuffle(instant->train_data_.begin(), instant->train_data_.end());
 			//epoch_idx++;	// epoch 改为外面计算，用全部数据得到一个epoch有多少个batch - to do
 			false;
 		}
-		instant->batch_idx_++;
+		instant->prefetch_batch_idx_++;
 
 		return true;
 	}
 
 	void MnistTrainTest::startPrefetchData(NetWork<float> &network)
 	{
-		if (!loadMnistData(tind::Train))
-		{
-			printf("error loadMnistData\n");
-			return;
-		}
-
-		batch_idx_ = 0;
-		batch_size_ = 128;
-		channels_ = train_data_[0].first.channels;
-		width_ = train_data_[0].first.width;
-		height_ = train_data_[0].first.height;
-		data_size_4D_ = batch_size_ * channels_ * width_ * height_;
-
-		//DataPrefetcher<float> prefetcher;
+		prefetch_batch_idx_ = 0;
 		network.prefetcher_.setInstantiation(this);
 		network.prefetcher_.batch_loader_pfunc_ = loadBatch;
 
@@ -285,30 +283,37 @@ namespace dlex_cnn
 	}
 	void MnistTrainTest::trainWithPrefetcher()
 	{
-		Task::set_mode(tind::Mode::CPU);
-		NetWork<float> network;
-		network.netWorkInit("netA");
-		
-		startPrefetchData(network);
-
-		float learning_rate = 0.1f;
-		const float decay_rate = 0.8f;
-		const float min_learning_rate = 0.001f;
-		const int test_after_batches = 60;
-		const int max_batches = 10000;
-		int batch_size = 128;
-		const int channels = train_data_[0].first.channels;
-		const int width = train_data_[0].first.width;
-		const int height = train_data_[0].first.height;
-		printf("test_after_batches:%d\n", test_after_batches);
-		printf("learning_rate:%f ,decay_rate:%f , min_learning_rate:%f\n", learning_rate, decay_rate, min_learning_rate);
-		printf("channels:%d , width:%d , height:%d\n", channels, width, height);
-
-		printf("construct network begin...\n");
+		// Data preparing.
+		if (!loadMnistData(tind::Train))
+		{
+			printf("error loadMnistData\n");
+			return;
+		}
+		class_num_ = 10;
+		channels_ = train_data_[0].first.channels;
+		width_ = train_data_[0].first.width;
+		height_ = train_data_[0].first.height;
+		data_size_4D_ = batch_size_ * channels_ * width_ * height_;
+	
 		registerOpClass();
+		Task::set_mode(tind::Mode::CPU);
 
-		TypicalNet typicalNet;
-		typicalNet.mlp<float>(batch_size, channels, height, width, network);
+		NetWork<float> network("netA");
+
+		bool is_use_pretrain = false;
+		if (is_use_pretrain)
+		{
+			network.loadStageModel("./", 1);
+		}
+		else
+		{
+			TypicalNet typicalNet;
+			typicalNet.mlp<float>(batch_size_, channels_, height_, width_, network);
+			network.netParamsInit();
+		}
+		printf("Finish loading network structure.\n");
+
+		startPrefetchData(network);
 
 		std::vector<std::string> in_node_names;
 		in_node_names.push_back("input");
@@ -316,51 +321,39 @@ namespace dlex_cnn
 		out_node_names.push_back("output");
 		network.setIONodeName(in_node_names, out_node_names);
 
-		network.setLearningRate(learning_rate);
-
-		//dlex_cnn::NetWork<float> network;
-		//network.netWorkInit("netA");
-		//network.loadStageModel("./", 1);
-
-		printf("construct network done.\n");
-
 		float val_accuracy = 0.0f;
 		float train_total_loss = 0.0f;
 		int train_batches = 0;
 		float val_loss = 0.0f;
-
-		int save_iter = 19;
-		std::string model_saved_path = "./";
-
-		int lr_setp = 200;
 		int epoch_idx = 0;
 
-		for (int batch_idx = 0; batch_idx < max_batches; batch_idx++)
+		network.setLearningRate(learning_rate_);
+		for (int batch_idx = 0; batch_idx < max_batches_; batch_idx++)
 		{
 			const float batch_loss = network.trainBatch();
 
 			train_batches++;
 			train_total_loss += batch_loss;
-			printf("batch[%d]->train_batch_loss: %f, learning_rate: %f\n", batch_idx, batch_loss, learning_rate);
-			if (batch_idx && batch_idx % test_after_batches == 0)
+			printf("batch[%d]->train_batch_loss: %f, learning_rate: %f\n", batch_idx, batch_loss, learning_rate_);
+			if (batch_idx && batch_idx % test_after_batches_ == 0)
 			{
 				network.switchPhase(dlex_cnn::tind::Phase::Test);
 				std::tie(val_accuracy, val_loss) = testInTrain(network, 128, validate_data_);	// 要注意最后一个batch为112，会修改掉所有节点的num维度，在下一轮训练过程中修改回来。
 				printf("sample : %d/%d , learning_rate : %f , train_avg_loss : %f , val_loss : %f , val_accuracy : %.4f%%\n",
-					batch_idx*batch_size, train_data_.size(), learning_rate, train_total_loss / train_batches, val_loss, val_accuracy*100.0f);
+					batch_idx*batch_size_, train_data_.size(), learning_rate_, train_total_loss / train_batches, val_loss, val_accuracy*100.0f);
 
 				train_total_loss = 0.0f;
 				train_batches = 0;
 				network.switchPhase(dlex_cnn::tind::Phase::Train);
 			}
-			if (batch_idx && batch_idx % save_iter == 0)
-				network.saveStageModel(model_saved_path, 1);
+			if (batch_idx && batch_idx % save_iter_ == 0)
+				network.saveStageModel(model_saved_path_, 1);
 
-			if (batch_idx && batch_idx % lr_setp == 0)
+			if (batch_idx && batch_idx % lr_setp_ == 0)
 			{
 				//update learning rate
-				learning_rate = std::max(learning_rate*decay_rate, min_learning_rate);
-				network.setLearningRate(learning_rate);
+				learning_rate_ = std::max(learning_rate_*decay_rate_, min_learning_rate_);
+				network.setLearningRate(learning_rate_);
 			}
 		}
 	}
@@ -368,8 +361,7 @@ namespace dlex_cnn
 	void MnistTrainTest::train()
 	{
 		Task::set_mode(tind::Mode::CPU);
-		NetWork<float> network;
-		network.netWorkInit("netA");
+		NetWork<float> network("netA");
 
 		//startPrefetchData(network);
 
@@ -510,8 +502,7 @@ namespace dlex_cnn
 		registerOpClass();
 
 		printf("construct network begin...\n");
-		dlex_cnn::NetWork<float> network;
-		network.netWorkInit("netA");
+		dlex_cnn::NetWork<float> network("netA");
 		network.loadStageModel(modelFilePath, iter);
 		printf("construct network done.\n");
 

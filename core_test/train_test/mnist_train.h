@@ -29,12 +29,6 @@ namespace dlex_cnn
 
 		void startPrefetchData(NetWork<float> &network);
 		static bool loadBatch(void *instant_ptr, std::pair < std::shared_ptr<Tensor<float>>, std::shared_ptr<Tensor<float>> > *tensor_pair);
-		int batch_idx_;
-		int batch_size_;
-		int channels_;
-		int width_;
-		int height_;
-		int data_size_4D_;
 
 	private:
 		bool loadMnistData(tind::Phase phase);
@@ -51,15 +45,33 @@ namespace dlex_cnn
 
 		
 	private:
-		NetWork<float> network_;
-
+		// Super parameters.
+		float learning_rate_;
+		float decay_rate_;
+		float min_learning_rate_;
+		int test_after_batches_;
+		int max_batches_;
+		int batch_size_;
+		int lr_setp_;
+		int save_iter_;
+		
+		// Data parameters.
 		int class_num_;
+		int channels_;
+		int width_;
+		int height_;
+		int data_size_4D_;
 
+		// Data file path.
 		std::string train_images_file_;
 		std::string train_labels_file_;
 
 		std::string test_images_file_;
 		std::string test_labels_file_;
+
+		// Others.
+		int prefetch_batch_idx_;
+		std::string model_saved_path_;	
 
 		std::vector<std::pair<dlex_cnn::IMAGE_DATUM, char>> train_data_;
 		std::vector<std::pair<dlex_cnn::IMAGE_DATUM, char>> validate_data_;
