@@ -8,7 +8,6 @@
 #ifndef DLEX_OP_SOFTMAX_CROSS_HPP_
 #define DLEX_OP_SOFTMAX_CROSS_HPP_
 
-#include "configure.h"
 #include "operator_base.h"
 #include "operator_hybrid.h"
 #include "operator/cross_entropy_lop.h"

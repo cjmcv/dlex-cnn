@@ -8,7 +8,6 @@
 #ifndef DLEX_OP_INPUT_HPP_
 #define DLEX_OP_INPUT_HPP_
 
-#include "configure.h"
 #include "operator_base.h"
 #include "tensor.h"
 

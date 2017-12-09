@@ -9,7 +9,6 @@
 #define DLEX_OP_OPTIMIZER_HPP_
 
 #include <vector>
-#include "configure.h"
 #include "node.h"
 
 namespace dlex_cnn

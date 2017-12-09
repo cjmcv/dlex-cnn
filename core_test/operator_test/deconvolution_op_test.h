@@ -7,9 +7,10 @@
 
 #ifndef DLEX_TEST_DECONV_HPP_
 #define DLEX_TEST_DECONV_HPP_
-//
-#include "operator/deconvolution_op.h"
 
+#ifdef USE_OP_TEST
+
+#include "operator/deconvolution_op.h"
 namespace dlex_cnn
 {
 	template <typename Dtype>
@@ -27,7 +28,8 @@ namespace dlex_cnn
 		void backward();
 	};
 }
-	
 void testDeconv();
+
+#endif //USE_OP_TEST
 
 #endif

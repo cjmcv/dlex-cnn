@@ -58,8 +58,10 @@ namespace dlex_cnn
 		};
 		// Just copy data, without changing their size
 		void copyDataTo(Tensor<Dtype> &dst_tensor, tind::TensorCopyMode mode);
+#ifdef USE_CUDA
 		// Push data from cpu to gpu.
 		void asyncCpy2GPU(const cudaStream_t& stream);
+#endif
 
 	private:
 		void *cpu_data_;

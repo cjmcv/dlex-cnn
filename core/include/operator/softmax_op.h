@@ -8,7 +8,6 @@
 #ifndef DLEX_OP_SOFTMAX_HPP_
 #define DLEX_OP_SOFTMAX_HPP_
 
-#include "configure.h"
 #include "operator_base.h"
 #include "tensor.h"
 

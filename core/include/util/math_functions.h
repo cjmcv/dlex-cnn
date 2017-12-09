@@ -55,7 +55,7 @@ namespace dlex_cnn
 	template <typename Dtype>
 	void backward_bias(const int num, const int ch_size, const int len, const Dtype* next_diff, Dtype* bias_gradient);
 
-#ifndef CPU_ONLY
+#ifdef USE_CUDA
 	template <typename Dtype>
 	void dlex_gpu_set(const int N, const Dtype alpha, Dtype* data);
 #endif

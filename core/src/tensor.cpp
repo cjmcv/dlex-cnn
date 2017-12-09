@@ -83,10 +83,10 @@ namespace dlex_cnn
 	{
 		if (gpu_data_ != NULL)
 			return;
-#ifndef CPU_ONLY
-		DCUDA_CHECK(cudaGetDevice(&gpu_device_));
-		DCUDA_CHECK(cudaMalloc(&gpu_data_, sizeof(Dtype) * size_[tind::e4D]));
-		DCUDA_CHECK(cudaMemset(gpu_data_, 0, sizeof(Dtype) * size_[tind::e4D]));	// needn't ?
+#ifdef USE_CUDA
+		CUDA_DCHECK(cudaGetDevice(&gpu_device_));
+		CUDA_DCHECK(cudaMalloc(&gpu_data_, sizeof(Dtype) * size_[tind::e4D]));
+		CUDA_DCHECK(cudaMemset(gpu_data_, 0, sizeof(Dtype) * size_[tind::e4D]));	// needn't ?
 #endif
 		if (gpu_data_ == NULL)
 		{
@@ -100,7 +100,7 @@ namespace dlex_cnn
 		if (cpu_data_ != NULL)
 			free(cpu_data_);
 		cpu_data_ = NULL;
-#ifndef CPU_ONLY
+#ifdef USE_CUDA
 		if (gpu_data_ != NULL)
 			cudaFree(gpu_data_);
 		gpu_data_ = NULL;
@@ -125,14 +125,14 @@ namespace dlex_cnn
 			}
 			memcpy(dst_tensor.cpu_data_, this->cpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D]);
 			break;
-#ifndef CPU_ONLY
+#ifdef USE_CUDA
 		case tind::eHost2Device:
 			if (dst_tensor.getGpuData() == NULL || this->cpu_data_ == NULL)
 			{
 				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getGpuData() == NULL || this->cpu_data_ == NULL.\n");
 				return;
 			}
-			DCUDA_CHECK(cudaMemcpy(dst_tensor.gpu_data_, this->cpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D], cudaMemcpyHostToDevice));
+			CUDA_DCHECK(cudaMemcpy(dst_tensor.gpu_data_, this->cpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D], cudaMemcpyHostToDevice));
 			break;
 		case tind::eDevice2Device:
 			if (dst_tensor.getGpuData() == NULL || this->gpu_data_ == NULL)
@@ -140,7 +140,7 @@ namespace dlex_cnn
 				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getGpuData() == NULL || this->gpu_data_ == NULL.\n");
 				return;
 			}
-			DCUDA_CHECK(cudaMemcpy(dst_tensor.gpu_data_, this->gpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D], cudaMemcpyDeviceToDevice));
+			CUDA_DCHECK(cudaMemcpy(dst_tensor.gpu_data_, this->gpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D], cudaMemcpyDeviceToDevice));
 			break;
 		case tind::eDevice2Host:
 			if (dst_tensor.getCpuData() == NULL || this->gpu_data_ == NULL)
@@ -148,7 +148,7 @@ namespace dlex_cnn
 				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getCpuData() == NULL || this->gpu_data_ == NULL.\n");
 				return;
 			}
-			DCUDA_CHECK(cudaMemcpy(dst_tensor.cpu_data_, this->gpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D], cudaMemcpyDeviceToHost));
+			CUDA_DCHECK(cudaMemcpy(dst_tensor.cpu_data_, this->gpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D], cudaMemcpyDeviceToHost));
 			break;
 #endif
 		default:
@@ -157,16 +157,16 @@ namespace dlex_cnn
 		}
 	}
 
+#ifdef USE_CUDA
 	template <typename Dtype>
 	void Tensor<Dtype>::asyncCpy2GPU(const cudaStream_t& stream)
 	{
-#ifndef CPU_ONLY
 		if (!DCHECK(this->cpu_data_ != NULL))
 			DLOG_ERR("this->cpu_data_ == NULL");
 
-		DCUDA_CHECK(cudaMemcpyAsync(getGpuData(), cpu_data_, sizeof(Dtype) * size_[tind::e4D], cudaMemcpyHostToDevice, stream));
-#endif
+		CUDA_DCHECK(cudaMemcpyAsync(getGpuData(), cpu_data_, sizeof(Dtype) * size_[tind::e4D], cudaMemcpyHostToDevice, stream));
 	}
+#endif
 
 	INSTANTIATE_CLASS_NOR(Tensor);
 }

@@ -41,10 +41,10 @@ namespace dlex_cnn
 	template <typename Dtype>
 	void DataPrefetcher<Dtype>::entryInnerThread()
 	{
-#ifndef CPU_ONLY
+#ifdef USE_CUDA
 		cudaStream_t stream;
 		if (Task::mode() == tind::GPU) {
-			DCUDA_CHECK(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
+			CUDA_DCHECK(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
 		}
 #endif
 		try 
@@ -55,12 +55,12 @@ namespace dlex_cnn
 				free_.wait_and_pop(&batch);
 				if (!loadBatch(batch))
 					stopInnerThread();
-#ifndef CPU_ONLY
+#ifdef USE_CUDA
 				if (Task::mode() == tind::GPU) 
 				{
 					batch->first->asyncCpy2GPU(stream);
 					batch->second->asyncCpy2GPU(stream);
-					DCUDA_CHECK(cudaStreamSynchronize(stream));	//Waits for stream tasks to complete.
+					CUDA_DCHECK(cudaStreamSynchronize(stream));	//Waits for stream tasks to complete.
 				}
 #endif
 				full_.push(batch);

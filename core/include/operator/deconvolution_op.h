@@ -8,12 +8,11 @@
 #ifndef DLEX_OP_DECONVOLUTION_HPP_
 #define DLEX_OP_DECONVOLUTION_HPP_
 
-#include "configure.h"
 #include "operator_base.h"
 #include "tensor.h"
 #include "util/math_functions.h"
 
-#ifdef UNIT_TEST
+#ifdef USE_OP_TEST
 #include "../../core_test/operator_test/deconvolution_op_test.h"
 #endif
 
@@ -33,7 +32,7 @@ namespace dlex_cnn
 	template <typename Dtype>
 	class DeconvolutionOp : public Op<Dtype>
 	{
-#ifdef UNIT_TEST
+#ifdef USE_OP_TEST
 		template <typename T>
 		friend class DeconvolutionOpTest;
 #endif

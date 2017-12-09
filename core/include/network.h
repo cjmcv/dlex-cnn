@@ -11,7 +11,6 @@
 
 #include <memory>
 #include <vector>
-#include "configure.h"
 #include "optimizer/optimizer.h"
 
 #include "task.h"

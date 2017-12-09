@@ -7,9 +7,10 @@
 
 #ifndef DLEX_TEST_POOLING_HPP_
 #define DLEX_TEST_POOLING_HPP_
-//
-#include "operator/pooling_op.h"
 
+#ifdef USE_OP_TEST
+
+#include "operator/pooling_op.h"
 namespace dlex_cnn
 {
 	template <typename Dtype>
@@ -26,8 +27,9 @@ namespace dlex_cnn
 		void backward();
 	};
 }
-
 void testPool();
+
+#endif // USE_OP_TEST
 
 #endif
 

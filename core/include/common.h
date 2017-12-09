@@ -46,21 +46,9 @@ namespace dlex_cnn
 #define DCHECK_GT(val1, val2) (((val1)> (val2))? true:false)
 
 // assert
-#ifndef CPU_ONLY
-
-enum EN_CudaErrCode {
+enum EN_ErrCode {
 	CUDA_DCHECK_EXC = 1
 };
-
-#define CUDA_DCHECK(condition) \
-  do { \
-    cudaError_t error = condition; \
-	if(error != cudaSuccess) { \
-		DLOG_ERR(cudaGetErrorString(error)); \
-		throw(CUDA_DCHECK_EXC);	\
-		}\
-    } while (0)
-#endif
 
 // string process
 std::string fetchSubStr(std::string &src_str, std::string start_str, std::string end_str);

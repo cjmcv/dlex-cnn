@@ -8,8 +8,9 @@
 #ifndef DLEX_DEVICE_HPP_
 #define DLEX_DEVICE_HPP_
 
-#ifndef CPU_ONLY
+#ifdef USE_CUDA
 
+#include "common.h"
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 #include <curand.h>
@@ -30,12 +31,12 @@ namespace dlex_cnn
        i < (n); \
        i += blockDim.x * gridDim.x)
 
-#define DCUDA_CHECK(condition) \
+#define CUDA_DCHECK(condition) \
 	do { \
 		cudaError_t error = condition; \
 		if(error != cudaSuccess) { \
-			fprintf(stderr, cudaGetErrorString(error)); \
-			throw(1);	\
+			DLOG_ERR(cudaGetErrorString(error)); \
+			throw(CUDA_DCHECK_EXC);	\
 		}\
 	} while (0)
 
@@ -47,6 +48,6 @@ namespace dlex_cnn
 //	} while (0)
 
 }
-#endif	//CPU_ONLY
+#endif	//USE_CUDA
 
 #endif //DLEX_COMMON_HPP_

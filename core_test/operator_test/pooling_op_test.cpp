@@ -9,7 +9,7 @@
 #include "common/tools.h"
 #include "pooling_op_test.h"
 
-#ifdef UNIT_TEST
+#ifdef USE_OP_TEST
 namespace dlex_cnn {
 
 	template <typename Dtype>

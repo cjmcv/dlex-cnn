@@ -8,12 +8,11 @@
 #ifndef DLEX_OP_CONVOLUTION_HPP_
 #define DLEX_OP_CONVOLUTION_HPP_
 
-#include "configure.h"
 #include "operator_base.h"
 #include "tensor.h"
 #include "util/math_functions.h"
 
-#ifdef UNIT_TEST
+#ifdef USE_OP_TEST
 #include "../../core_test/operator_test/convolution_op_test.h"
 #endif
 
@@ -34,7 +33,7 @@ namespace dlex_cnn
 	template <typename Dtype>
 	class ConvolutionOp : public Op<Dtype>
 	{
-#ifdef UNIT_TEST
+#ifdef USE_OP_TEST
 		template <typename T>
 		friend class ConvolutionOpTest; // the typename should not be the same width ConvoluitionOp's "Dtype"
 #endif

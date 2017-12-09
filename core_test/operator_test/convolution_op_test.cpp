@@ -11,7 +11,7 @@
 
 //#include "../core/operator/convolution_op.h"
 
-#ifdef UNIT_TEST
+#ifdef USE_OP_TEST
 namespace dlex_cnn {
 
 	template <typename Dtype>

@@ -8,12 +8,11 @@
 #ifndef DLEX_OP_POOLING_HPP_
 #define DLEX_OP_POOLING_HPP_
 
-#include "configure.h"
 #include "operator_base.h"
 #include "util/math_functions.h"
 #include "tensor.h"
 
-#ifdef UNIT_TEST
+#ifdef USE_OP_TEST
 #include "../../core_test/operator_test/pooling_op_test.h"
 #endif
 
@@ -39,7 +38,7 @@ namespace dlex_cnn
 	template <typename Dtype>
 	class PoolingOp : public Op<Dtype>
 	{
-#ifdef UNIT_TEST
+#ifdef USE_OP_TEST
 		template <typename T>
 		friend class PoolingOpTest;
 #endif

@@ -10,12 +10,8 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
-//configure
-#include "configure.h"
 
-//network
 #include "network.h"
-
 #include "util/timer.h"
 
 namespace dlex_cnn {

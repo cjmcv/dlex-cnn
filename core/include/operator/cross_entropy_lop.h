@@ -8,7 +8,6 @@
 #ifndef DLEX_OP_CROSS_ENTROPY_HPP_
 #define DLEX_OP_CROSS_ENTROPY_HPP_
 
-#include "configure.h"
 #include "operator_base.h"
 #include "operator_loss.h"
 #include "tensor.h"

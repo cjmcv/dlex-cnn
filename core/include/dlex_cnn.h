@@ -8,8 +8,6 @@
 #ifndef DLEX_DLEX_HPP_
 #define DLEX_DLEX_HPP_
 
-//configure
-#include "configure.h"
 #include "util/math_functions.h"
 #include "util/op_factory.h"
 #include "util/thread_pool.h"
@@ -28,9 +26,7 @@
 #include "operator/cross_entropy_lop.h"
 #include "operator/softmax_cross_entropy_hop.h"
 
-//network
 #include "network.h"
-//dataType define
 #include "node.h"
 #include "tensor.h"
 
