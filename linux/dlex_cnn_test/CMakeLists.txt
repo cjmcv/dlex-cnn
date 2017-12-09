@@ -1,5 +1,13 @@
-# cmake needs this line
+# Cmake needs this line
 cmake_minimum_required(VERSION 2.8)
+
+# Options
+option(USE_OP_TEST  "Build with operator test"  ON) # Should be the same with option in libdlex_cnn.so
+
+# Add definitions by some options
+if(USE_OP_TEST)
+    add_definitions(-DUSE_OP_TEST)
+endif()
 
 # Define project name
 project(dlex_cnn_test)
@@ -16,14 +24,12 @@ else()
     message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
-#SET(CMAKE_BUILD_TYPE "Debug")
-SET(CMAKE_BUILD_TYPE "Release")
-SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb") 
-SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall") 
+#set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_BUILD_TYPE "Release")
+set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb") 
+set(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall") 
 
-ADD_DEFINITIONS(-DCPU_ONLY)
-
-# include
+# Include
 SET(INCLUDE_LIST ${PROJECT_SOURCE_DIR}/../../core/include
                  ${PROJECT_SOURCE_DIR}/../../core_test
                  )
@@ -31,23 +37,20 @@ include_directories(${INCLUDE_LIST})
 
 message(STATUS "include: ${INCLUDE_LIST}")
 
-set(PROJECT_SDK_DIR ${PROJECT_SOURCE_DIR}/../)
-SET(LIBS_LIST ${PROJECT_SDK_DIR}/build/libdlex_cnn.so
-              )
+# Source
+file(GLOB_RECURSE SRC_LIST "${PROJECT_SOURCE_DIR}/../../core_test/*.cpp"
+                           "${PROJECT_SOURCE_DIR}/../../core_test/*/*.cpp"
+                           )
+message(STATUS "src: ${SRC_LIST}")
 
-# source
-file(GLOB_RECURSE COMPARE_SRC_LIST "${PROJECT_SOURCE_DIR}/../../core/src/*.cpp"
-                                   "${PROJECT_SOURCE_DIR}/../../core/src/*/*.cpp"
-                                   "${PROJECT_SOURCE_DIR}/../../core_test/*.cpp"
-                                   "${PROJECT_SOURCE_DIR}/../../core_test/*/*.cpp"
-                                   )
-
-message(STATUS "src: ${COMPARE_SRC_LIST}")
-
-# build
-add_executable(${PROJECT_NAME} ${COMPARE_SRC_LIST})
+# Build
+add_executable(${PROJECT_NAME} ${SRC_LIST})
 
 # Link libraries
-target_link_libraries(${PROJECT_NAME} ${LIBS_LIST} -lpthread) # -lpthread -ltcmalloc
+set(PROJECT_SDK_DIR ${PROJECT_SOURCE_DIR}/../)
+set(LIBS_LIST ${PROJECT_SDK_DIR}/build/libdlex_cnn.so
+              )
+target_link_libraries(${PROJECT_NAME} ${LIBS_LIST} -pthread)
 
-SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
+# Set output path
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)

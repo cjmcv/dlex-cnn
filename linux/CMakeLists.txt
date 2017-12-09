@@ -1,11 +1,20 @@
-# cmake needs this line
+# Cmake needs this line
 cmake_minimum_required(VERSION 2.8)
 
+# Options
+option(USE_CUDA  "Build with CUDA support"  ON)
+option(USE_OP_TEST  "Build with operator test"  ON)
+
+# Add definitions by some options
+if(USE_OP_TEST)
+    add_definitions(-DUSE_OP_TEST)
+endif()
+    
 # Define project name
 project(dlex_cnn)
 set(PROJECT_NAME dlex_cnn)
 
-# add compiler flag
+# Add compiler flag
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
 CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
@@ -17,35 +26,44 @@ else()
     message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
-SET(CMAKE_BUILD_TYPE "Debug")
-SET(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb") 
-SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall") 
+set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb") 
+set(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall") 
 
-ADD_DEFINITIONS(-DCPU_ONLY)
+if(USE_CUDA)
+    find_package(CUDA REQUIRED)
+    set(CUDA_NVCC_FLAG_DEBUG "-g -G")
+    set(CUDA_NVCC_FLAG_RELEASE "-O3 -Wall")
+    add_definitions(-DUSE_CUDA)
+endif()
 
-# include
-SET(INCLUDE_LIST ${PROJECT_SOURCE_DIR}/../core/include
+# Include
+set(INCLUDE_LIST ${PROJECT_SOURCE_DIR}/../core/include
                  )
 
 include_directories(${INCLUDE_LIST})
 
 message(STATUS "include: ${INCLUDE_LIST}")
 
-# source
-file(GLOB_RECURSE COMPARE_SRC_LIST "${PROJECT_SOURCE_DIR}/../core/src/*.cpp"
-                                   "${PROJECT_SOURCE_DIR}/../core/src/*/*.cpp")
+# Source
+file(GLOB_RECURSE SRC_LIST "${PROJECT_SOURCE_DIR}/../core/src/*.cpp"
+                           "${PROJECT_SOURCE_DIR}/../core/src/*/*.cpp")
 
-message(STATUS "src: ${COMPARE_SRC_LIST}")
-
-# build
-add_library(${PROJECT_NAME} SHARED ${COMPARE_SRC_LIST}) 
+# Build
+if(USE_CUDA)
+    file(GLOB_RECURSE CUDA_SRC_LIST "${PROJECT_SOURCE_DIR}/../core/src/*.cu"
+                                    "${PROJECT_SOURCE_DIR}/../core/src/*/*.cu")
+    cuda_add_library(${PROJECT_NAME} SHARED ${SRC_LIST} ${CUDA_SRC_LIST}) 
+else()
+    add_library(${PROJECT_NAME} SHARED ${SRC_LIST}) 
+endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES output_name "utils") 
 
-#SET(LIBS_LIST ${3RDPARTY_DIR}/lib/opencv310/libopencv_core.so
+# Link libraries 
+#set(LIBS_LIST ${3RDPARTY_DIR}/lib/opencv310/libopencv_core.so
 #              )
+target_link_libraries(${PROJECT_NAME}) # ${LIBS_LIST}
 
-# Link your application with libraries 
-target_link_libraries(${PROJECT_NAME} -lpthread)# ${LIBS_LIST}
-
-SET(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
+# Set output path
+set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
