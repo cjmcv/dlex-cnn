@@ -110,31 +110,6 @@ namespace dlex_cnn
 		return 0;
 	}
 
-	//////
-	//void matrixShow_float(std::string name, float *data, int num, int channel, int height, int width)
-	//{
-	//	printf("Matrix :%s\n", name.c_str());
-	//	printf("(%d, %d, %d, %d \n", num, channel, height, width);
-	//	int c_size = height * width;
-	//	int n_size = channel * c_size;
-	//	for (int n = 0; n < num; n++)
-	//	{
-	//		for (int c = 0; c < channel; c++)
-	//		{
-	//			printf(" n - ch : %d (%d)\n", n, c);
-	//			for (int i = 0; i < height; i++)
-	//			{
-	//				for (int j = 0; j < width; j++)
-	//				{
-	//					printf("%f, ", *(data + n*n_size + c*c_size + i*width + j));
-	//				}
-	//				printf("\n");
-	//			}
-	//		}
-	//	}
-	//	printf(")\n");
-	//}
-	//////
 	template <typename Dtype>
 	void DeconvolutionOp<Dtype>::forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
 	{

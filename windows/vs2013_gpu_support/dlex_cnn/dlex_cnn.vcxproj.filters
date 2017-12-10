@@ -73,9 +73,6 @@
     <ClInclude Include="..\..\..\core\include\common.h">
       <Filter>源文件\include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\core\include\configure.h">
-      <Filter>源文件\include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\core\include\dlex_cnn.h">
       <Filter>源文件\include</Filter>
     </ClInclude>

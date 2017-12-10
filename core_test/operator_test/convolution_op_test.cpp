@@ -46,6 +46,10 @@ namespace dlex_cnn {
 		std::vector<std::shared_ptr<Tensor<float>>> in_data_vec;
 		conv1->allocBuf4Node(in_shape, out_shape, in_data_vec);
 
+		normal_distribution_init<float>(in_data_vec[1]->getSize()[tind::e4D], 0.0f, 0.1f, (float *)in_data_vec[1]->getCpuData());
+		if (conv1->param_.blas_enable)
+			dlex_set<float>(in_data_vec[2]->getSize()[tind::e4D], 0.0f, (float *)in_data_vec[2]->getCpuData());
+
 		// input (ic3, ih3, iw3)
 		float in_buffer[] = {1,2,0,1,1,3,0,2,2, 0,2,1,0,3,2,1,1,0, 1,2,1,0,1,3,3,3,2};
 		float *in_data = (float *)in_data_vec[0]->getCpuData();

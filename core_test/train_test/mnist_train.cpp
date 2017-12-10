@@ -358,7 +358,7 @@ namespace dlex_cnn
 		}
 	}
 
-	void MnistTrainTest::train()
+	void MnistTrainTest::train()	// Not fix, will be merged with trainWithPrefetcher
 	{
 		Task::set_mode(tind::Mode::CPU);
 		NetWork<float> network("netA");
@@ -493,7 +493,7 @@ namespace dlex_cnn
 
 		loadMnistData(tind::Test);
 
-		const int batch = 64;
+		const int batch = 128;
 		const int channels = validate_data_[0].first.channels;
 		const int width = validate_data_[0].first.width;
 		const int height = validate_data_[0].first.height;
@@ -505,6 +505,12 @@ namespace dlex_cnn
 		dlex_cnn::NetWork<float> network("netA");
 		network.loadStageModel(modelFilePath, iter);
 		printf("construct network done.\n");
+
+		std::vector<std::string> in_node_names;
+		in_node_names.push_back("input");
+		std::vector<std::string> out_node_names;
+		out_node_names.push_back("output");
+		network.setIONodeName(in_node_names, out_node_names);
 
 		//test
 		printf("begin test...\n");
