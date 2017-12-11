@@ -107,6 +107,16 @@ namespace dlex_cnn
 			}
 			else
 			{
+#ifdef USE_CUDA
+				if (data_vec.size() > 1)
+				{
+					dlex_gpu_rng_gaussian<Dtype>(data_vec[1]->getSize()[tind::e4D], 0.0f, 0.1f, (Dtype *)data_vec[1]->getGpuData());
+					if (data_vec.size() > 2)
+						dlex_gpu_set<Dtype>(data_vec[2]->getSize()[tind::e4D], 0.0f, (Dtype *)data_vec[2]->getGpuData());
+				}
+#else
+				DLOG_ERR("CUDA programs are invalid, Please open the marco USE_CUDA");
+#endif
 			}
 		}
 	}
@@ -274,8 +284,16 @@ namespace dlex_cnn
 			}
 
 			// The bottom data of forward is saved in the node that executing forward operation. 
-			nodes_[output_idx[0]]->getDataVec()[0]->setCpuZero();
-			inte_op_idx->forward(nodes_[idx]->getDataVec(), nodes_[output_idx[0]]->getDataVec());
+			if (Task::mode() == tind::CPU)
+			{
+				//nodes_[output_idx[0]]->getDataVec()[0]->setCpuZero();
+				inte_op_idx->forward(nodes_[idx]->getDataVec(), nodes_[output_idx[0]]->getDataVec());
+			}
+			else
+			{
+				nodes_[output_idx[0]]->getDataVec()[0]->setGpuZero();
+				inte_op_idx->forward_gpu(nodes_[idx]->getDataVec(), nodes_[output_idx[0]]->getDataVec());
+			}
 
 			//float *outdata0 = (float *)nodes_[idx]->getDataVec()[1]->getCpuData();
 			//for (int j = 0; j < nodes_[idx]->getDataVec()[1]->getSize()[3]; j++)
@@ -345,9 +363,19 @@ namespace dlex_cnn
 
 			// The bottom data of backward is saved in the node that executing backward operation. 
 			const std::vector<int> output_idx = nodes_[idx]->getOutputIdx();
-			inte_op_idx->getOpDiff()[0]->setCpuZero();
-			inte_op_idx->backward(data_idx, nodes_[output_idx[0]]->getDataVec(),
-				inte_op_idx->getOpDiff(), nodes_[output_idx[0]]->getInteOp()->getOpDiff());
+			if (Task::mode() == tind::CPU)
+			{
+				//inte_op_idx->getOpDiff()[0]->setCpuZero();
+				inte_op_idx->backward(data_idx, nodes_[output_idx[0]]->getDataVec(),
+					inte_op_idx->getOpDiff(), nodes_[output_idx[0]]->getInteOp()->getOpDiff());
+			}
+			else
+			{
+				inte_op_idx->getOpDiff()[0]->setGpuZero();
+				inte_op_idx->backward_gpu(data_idx, nodes_[output_idx[0]]->getDataVec(),
+					inte_op_idx->getOpDiff(), nodes_[output_idx[0]]->getInteOp()->getOpDiff());
+			}
+
 		}
 
 		//// 注意 当前为取[0]号输出，后面支持多输出（兼容前向？或在计算图模型中处理？）！！！

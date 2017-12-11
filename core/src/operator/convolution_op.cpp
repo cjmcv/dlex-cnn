@@ -151,6 +151,7 @@ namespace dlex_cnn
 
 		Dtype* col_data = (Dtype *)col_buffer_->getCpuData();
 
+		next[0]->setCpuZero();
 		for (int ni = 0; ni < prev_shape[tind::eNum]; ni++)
 		{
 			//printf("address: %d\n", col_data);
@@ -164,7 +165,9 @@ namespace dlex_cnn
 			//printf("address: %d\n", col_data);
 
 			//bool bTransA, bool bTransB, const int M, const int N, const int K, const float alpha, const Dtype* A, const Dtype* B, const float beta, Dtype* C
-			gemm(false, false, param_.kernel_num, col_width, col_height, 1, kernel_data, col_data, 0, next_data + ni * next_size[tind::e3D]);
+			gemm(false, false, param_.kernel_num, col_width, col_height, 
+				(Dtype)1, kernel_data, col_data, 
+				(Dtype)0, next_data + ni * next_size[tind::e3D]);
 		}
 
 		// kernel_num与输出channels一致，一个kernel对应一个bias，则以channels为下标，channel内使用同一个bias // chinese
@@ -213,8 +216,8 @@ namespace dlex_cnn
 		for (int i = 0; i < prev_diff_shape[tind::eNum]; i++)
 		{
 			gemm(true, false, kernel_size[tind::e3D], next_diff_size[tind::e2D], kernel_shape[tind::eNum],
-				1.0, kernel_data, next_diff_data + i * next_diff_size[tind::e3D],
-				0.0, col_data);
+				(Dtype)1.0, kernel_data, next_diff_data + i * next_diff_size[tind::e3D],
+				(Dtype)0.0, col_data);
 
 			col2im_cpu(col_data, prev_diff_shape[tind::eChannels],
 				prev_diff_shape[tind::eHeight], prev_diff_shape[tind::eWidth],
@@ -242,18 +245,18 @@ namespace dlex_cnn
 
 			// kernel_shape[tind::eNum] == next_shape[tind::eChannels]
 			gemm(false, true, kernel_shape[tind::eNum], kernel_size[tind::e3D], next_size[tind::e2D],
-				1.0, next_diff_data + ni * next_diff_size[tind::e3D], col_data,
-				1.0, kernel_gradient_data);
+				(Dtype)1.0, next_diff_data + ni * next_diff_size[tind::e3D], col_data,
+				(Dtype)1.0, kernel_gradient_data);
 
 		}
-		div_inplace((Dtype)next_shape[tind::eNum], kernel_size[tind::e4D], kernel_gradient_data);
+		div_inplace(kernel_size[tind::e4D], (Dtype)next_shape[tind::eNum], kernel_gradient_data);
 
 		//update bias gradient
 		gradient_[1]->setCpuZero();
 		Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getCpuData();
 
 		backward_bias(next_diff_shape[tind::eNum], next_diff_shape[tind::eChannels], next_diff_size[tind::e2D], next_diff_data, bias_gradient_data);
-		div_inplace((Dtype)next_shape[tind::eNum], bias_size[tind::e4D], bias_gradient_data);
+		div_inplace(bias_size[tind::e4D], (Dtype)next_shape[tind::eNum], bias_gradient_data);
 
 	}
 

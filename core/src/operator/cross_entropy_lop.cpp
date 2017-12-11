@@ -58,7 +58,9 @@ namespace dlex_cnn
 		return 0;
 	}
 	template <typename Dtype>
-	void CrossEntropyLossOp<Dtype>::forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
+	void CrossEntropyLossOp<Dtype>::forward(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
 	{
 		if (next[1]->getShape()[tind::eNum] != prev[0]->getShape()[tind::eNum] || next[1]->getShape()[tind::eChannels] != 1)
 		{
@@ -113,7 +115,6 @@ namespace dlex_cnn
 	{
 		// get diff: input(lastOutput/label), output(lastDiff)
 		//printf("start CrossEntropyLossOp backward:(%d, %d, %d, %d)\n", prev.size(), next.size(), prev_diff.size(), next_diff.size());
-		prev_diff[0]->setCpuZero();
 
 		// labels_ should be setted in forward operation, and in backward, it needn't to be converted again
 		const int output_size4D = next[0]->getSize()[tind::e4D];
@@ -131,6 +132,8 @@ namespace dlex_cnn
 
 		Dtype* label_data_base = (Dtype *)labels_->getCpuData();
 		Dtype* output_data_base = (Dtype *)next[0]->getCpuData();
+
+		prev_diff[0]->setCpuZero();
 		for (int on = 0; on < next[0]->getShape()[0]; on++)
 		{
 			const Dtype* label_data = label_data_base + on * labels_size3D;
@@ -143,6 +146,25 @@ namespace dlex_cnn
 			}
 		}
 	}
+
+#ifdef USE_CUDA
+	template <typename Dtype>
+	void CrossEntropyLossOp<Dtype>::forward_gpu(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
+	{
+		forward(prev, next);
+	}
+	template <typename Dtype>
+	void CrossEntropyLossOp<Dtype>::backward_gpu(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
+	{
+		backward(prev, next, prev_diff, next_diff);
+	}
+#endif
 
 	INSTANTIATE_CLASS(CrossEntropyLossOp);
 

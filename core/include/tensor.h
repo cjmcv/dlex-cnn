@@ -15,6 +15,7 @@
 #include <stdlib.h>
 
 #include "common.h"
+#include "util/math_functions.h"
 #include "util/device.h"
 
 #define MAX_SHAPE_SIZE 9999
@@ -26,44 +27,58 @@ namespace dlex_cnn
 		enum TensorSizeIndex  { e1D, e2D, e3D, e4D };
 		enum TensorShapeIndex { eNum, eChannels, eHeight, eWidth };
 		enum TensorCopyMode { eHost2Host, eHost2Device, eDevice2Device, eDevice2Host };
+		enum TensorMemHead { eUninitialized, eHeadAtCPU, eHeadAtGPU, eSynced };
 	}
 
 	template <typename Dtype>
 	class Tensor
 	{
 	public:
-		explicit Tensor() { cpu_data_ = NULL; };
+		explicit Tensor() { cpu_data_ = NULL; gpu_data_ = NULL; mem_head_ = tind::eUninitialized; };
 		explicit Tensor(const int num, const int channels, const int height, const int width);
 		explicit Tensor(const std::vector<int> &shape);
 		virtual ~Tensor();
 		
-		void checkCpuData();
-		void checkGpuData();
 		inline std::vector<int> &getSize() { return size_; };
-		inline std::vector<int> &getShape() { return shape_; };
+		inline std::vector<int> &getShape() { return shape_; };	
+		
+		inline void setMemHead(tind::TensorMemHead mem_head) { mem_head_ = mem_head; }
+
+		void checkCpuData();
 		inline void *getCpuData() {
 			checkCpuData();
 			return cpu_data_; 
 		}
+
+		inline void setCpuZero() { dlex_set(size_[tind::e4D], (Dtype)0, (Dtype *)getCpuData()); };
+		inline void setCpuValue(Dtype alpha) {
+			Dtype *dst = (Dtype *)getCpuData();
+			dlex_set(size_[tind::e4D], alpha, dst);
+		};
+
+		// Just copy data, without changing their size
+		void copyDataTo(Tensor<Dtype> &dst_tensor, tind::TensorCopyMode mode);
+
+#ifdef USE_CUDA
+		void checkGpuData();
 		inline void *getGpuData() {
 			checkGpuData();
 			return gpu_data_;
 		}
-		inline void setCpuZero() { memset(getCpuData(), 0, sizeof(Dtype) * size_[tind::e4D]); };
-		inline void setCpuValue(Dtype alpha) {
-			Dtype *dst = (Dtype *)getCpuData();
-			for (int i = 0; i < size_[tind::e4D]; ++i) {
-				dst[i] = alpha;
-			}
+
+		inline void setGpuZero() { dlex_gpu_set(size_[tind::e4D], (Dtype)0, (Dtype *)getGpuData()); };
+		inline void setGpuValue(Dtype alpha) {
+			Dtype *dst = (Dtype *)getGpuData();
+			dlex_gpu_set(size_[tind::e4D], alpha, dst);
 		};
-		// Just copy data, without changing their size
-		void copyDataTo(Tensor<Dtype> &dst_tensor, tind::TensorCopyMode mode);
-#ifdef USE_CUDA
+
 		// Push data from cpu to gpu.
 		void asyncCpy2GPU(const cudaStream_t& stream);
+		
+		void cpyInplace(tind::TensorCopyMode cp_mode);
 #endif
-
 	private:
+		int mem_head_;
 		void *cpu_data_;
 		void *gpu_data_;
 		int gpu_device_;

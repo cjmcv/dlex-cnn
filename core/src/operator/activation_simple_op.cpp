@@ -123,6 +123,7 @@ namespace dlex_cnn
 		float* prev_data = (float *)prev[0]->getCpuData();
 		float* next_data = (float *)next[0]->getCpuData();
 
+		next[0]->setCpuZero();
 		for (int n = 0; n < prev[0]->getShape()[tind::eNum]; n++)
 		{
 			float* prev_data_n = prev_data + n * prev_size[tind::e3D];
@@ -159,6 +160,7 @@ namespace dlex_cnn
 			act_len = next_size3D;
 		}
 
+		prev_diff[0]->setCpuZero();
 		for (int n = 0; n < prev[0]->getShape()[tind::eNum]; n++)
 		{
 			float* actx_n = act_x + n * act_len;

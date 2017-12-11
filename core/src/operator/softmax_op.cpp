@@ -79,9 +79,6 @@ namespace dlex_cnn
 			return -1;
 		}
 
-		//data.clear();
-		//data.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
-
 		diff_.clear();
 		diff_.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
 
@@ -102,6 +99,8 @@ namespace dlex_cnn
 		const int nextDataNum = next_data_shape[tind::eNum];
 		const int prevDataSize3D = prev_data_size[tind::e3D];
 		const int nextDataSize3D = next_data_size[tind::e3D];
+
+		next[0]->setCpuZero();
 		for (int nn = 0; nn < nextDataNum; nn++)
 		{
 			const Dtype* prev_data = prevDataBase + nn * prevDataSize3D;// *sizeof(float);
@@ -193,6 +192,25 @@ namespace dlex_cnn
 		//update this layer's param
 		//softmax layer : nop
 	}
+
+#ifdef USE_CUDA
+	template <typename Dtype>
+	void SoftmaxOp<Dtype>::forward_gpu(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
+	{
+		forward(prev, next);
+	}
+	template <typename Dtype>
+	void SoftmaxOp<Dtype>::backward_gpu(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
+	{
+		backward(prev, next, prev_diff, next_diff);
+	}
+#endif
 
 	INSTANTIATE_CLASS(SoftmaxOp);
 

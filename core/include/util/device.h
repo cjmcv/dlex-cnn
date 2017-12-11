@@ -14,6 +14,8 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 #include <curand.h>
+#include <cublas_v2.h>
+#include <ctime>
 
 namespace dlex_cnn
 {
@@ -40,13 +42,45 @@ namespace dlex_cnn
 		}\
 	} while (0)
 
-//#define CURAND_CHECK(condition) \
-//	do { \
-//		curandStatus_t status = condition; \
-//		DCHECK_EQ(status, CURAND_STATUS_SUCCESS) << " " \
-//	      << curandGetErrorString(status); \
-//	} while (0)
+#define CURAND_DCHECK(condition) \
+	do { \
+		curandStatus_t status = condition; \
+		if(status != CURAND_STATUS_SUCCESS) { \
+			DLOG_ERR("curand error code: %d\n", status); \
+			throw(CURAND_DCHECK_EXC);	\
+		} \
+	} while (0)
 
+#define CUBLAS_DCHECK(condition) \
+	do { \
+		cublasStatus_t status = condition; \
+		if(status != CUBLAS_STATUS_SUCCESS) { \
+			DLOG_ERR("cublas error code: %d\n", status); \
+			throw(CUBLAS_DCHECK_EXC);	\
+		} \
+    } while (0)
+
+	// curand
+	class CuHandleManager
+	{
+	public:
+		CuHandleManager();
+		~CuHandleManager();
+
+		static CuHandleManager& Get();
+		inline static cublasHandle_t cublas_handle() {
+			return Get().cublas_handle_;
+		}
+		inline static curandGenerator_t curand_generator() {
+			return Get().curand_generator_;
+		}
+
+	private:
+		long long seedgen();
+
+		cublasHandle_t cublas_handle_;
+		curandGenerator_t curand_generator_;
+	};
 }
 #endif	//USE_CUDA
 

@@ -47,7 +47,9 @@ namespace dlex_cnn
 
 // assert
 enum EN_ErrCode {
-	CUDA_DCHECK_EXC = 1
+	CUDA_DCHECK_EXC = 1,
+	CURAND_DCHECK_EXC = 2,
+	CUBLAS_DCHECK_EXC = 3
 };
 
 // string process

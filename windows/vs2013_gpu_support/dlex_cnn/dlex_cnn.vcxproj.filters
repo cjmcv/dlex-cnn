@@ -245,6 +245,9 @@
     <ClCompile Include="..\..\..\core\src\task.cpp">
       <Filter>源文件\src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\core\src\util\device.cpp">
+      <Filter>源文件\src\util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="..\..\..\core\src\util\math_functions.cu">

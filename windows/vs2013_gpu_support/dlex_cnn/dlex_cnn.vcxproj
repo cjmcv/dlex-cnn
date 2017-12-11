@@ -216,6 +216,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClCompile Include="..\..\..\core\src\trainer\typical_network\mix.cpp" />
     <ClCompile Include="..\..\..\core\src\trainer\typical_network\mlp.cpp" />
     <ClCompile Include="..\..\..\core\src\util\blocking_queue.cpp" />
+    <ClCompile Include="..\..\..\core\src\util\device.cpp" />
     <ClCompile Include="..\..\..\core\src\util\math_functions.cpp" />
     <ClCompile Include="..\..\..\core\src\util\thread_inner.cpp" />
     <ClCompile Include="..\..\..\core\src\util\thread_pool.cpp" />

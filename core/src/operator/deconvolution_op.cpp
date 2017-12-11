@@ -140,12 +140,12 @@ namespace dlex_cnn
 			col_buffer_.reset(new Tensor<Dtype>(1, 1, col_height, col_width));
 
 		Dtype* col_data = (Dtype *)col_buffer_->getCpuData();
-
+		next[0]->setCpuZero();
 		for (int ni = 0; ni < prev_shape[tind::eNum]; ni++)
 		{
 			gemm(true, false, kernel_size[tind::e3D], prev_size[tind::e2D], prev_shape[tind::eChannels],
-				1.0, kernel_data, prev_data + ni * prev_size[tind::e3D],
-				0.0, col_data);
+				(Dtype)1.0, kernel_data, prev_data + ni * prev_size[tind::e3D],
+				(Dtype)0.0, col_data);
 
 			//matrixShow_float("kernel", (float *)kernel_data, 1, 1, kernel_shape[tind::eNum], kernel_size[tind::e3D]);
 			//matrixShow_float("prev", (float *)prev_data, 1, 1, prev_shape[tind::eChannels], prev_size[tind::e2D]);
@@ -216,7 +216,9 @@ namespace dlex_cnn
 
 			// col_shape[tind::eHeight] == kernel_size[tind::e3D]
 			// kernel_num == prev channels
-			gemm(false, false, prev_shape[tind::eChannels], col_shape[tind::eWidth], col_shape[tind::eHeight], 1, kernel_data, col_data, 0, prev_diff_data + ni * prev_diff_size[tind::e3D]);
+			gemm(false, false, prev_shape[tind::eChannels], col_shape[tind::eWidth], col_shape[tind::eHeight], 
+				(Dtype)1, kernel_data, col_data, 
+				(Dtype)0, prev_diff_data + ni * prev_diff_size[tind::e3D]);
 		}
 
 		// update weight Diff
@@ -233,17 +235,17 @@ namespace dlex_cnn
 				col_data);
 
 			gemm(false, true, prev_shape[tind::eChannels], kernel_size[tind::e3D], prev_size[tind::e2D],
-				1.0, prev_data + ni * prev_size[tind::e3D], col_data,
-				1.0, kernel_gradient_data);
+				(Dtype)1.0, prev_data + ni * prev_size[tind::e3D], col_data,
+				(Dtype)1.0, kernel_gradient_data);
 		}
-		div_inplace((Dtype)next_shape[tind::eNum], kernel_size[tind::e4D], kernel_gradient_data);
+		div_inplace(kernel_size[tind::e4D], (Dtype)next_shape[tind::eNum], kernel_gradient_data);
 
 		//update bias gradient
 		gradient_[1]->setCpuZero();
 		Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getCpuData();
 
 		backward_bias(next_diff_shape[tind::eNum], next_diff_shape[tind::eChannels], next_diff_size[tind::e2D], next_diff_data, bias_gradient_data);
-		div_inplace((Dtype)next_shape[tind::eNum], bias_size[tind::e4D], bias_gradient_data);
+		div_inplace(bias_size[tind::e4D], (Dtype)next_shape[tind::eNum], bias_gradient_data);
 	}
 
 	INSTANTIATE_CLASS(DeconvolutionOp);

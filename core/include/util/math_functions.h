@@ -12,10 +12,10 @@
 #include <cmath>
 #include <random>
 #include <algorithm>
+#include "util/device.h"
 
 namespace dlex_cnn
 {
-	//all of these functions below is run on single thread, maybe they are SIMD optimized.
 	template <typename Dtype>
 	void normal_distribution_init(const int size, const Dtype mean_value, const Dtype standard_deviation, Dtype* data);
 
@@ -24,7 +24,7 @@ namespace dlex_cnn
 
 	//a /= b
 	template <typename Dtype>
-	void div_inplace(const Dtype b, const int len, Dtype* data);
+	void div_inplace(const int N, const Dtype alpha, Dtype* data);
 
 	template <typename Dtype>
 	void im2col_cpu(const Dtype* data_im, const int channels,
@@ -43,7 +43,7 @@ namespace dlex_cnn
 		Dtype* data_im);
 
 	template <typename Dtype>
-	void gemm(bool bTransA, bool bTransB, const int M, const int N, const int K, const float alpha, const Dtype* A, const Dtype* B, const float beta, Dtype* C);
+	void gemm(bool bTransA, bool bTransB, const int M, const int N, const int K, const Dtype alpha, const Dtype* A, const Dtype* B, const Dtype beta, Dtype* C);
 
 	template <typename Dtype>
 	void add_bias(const int num, const int len, const Dtype* bias, Dtype* dst);
@@ -58,6 +58,18 @@ namespace dlex_cnn
 #ifdef USE_CUDA
 	template <typename Dtype>
 	void dlex_gpu_set(const int N, const Dtype alpha, Dtype* data);
+
+	template <typename Dtype>
+	void div_inplace_gpu(const int N, const Dtype alpha, Dtype* data);
+
+	template <typename Dtype>
+	void dlex_gpu_rng_gaussian(const int n, const Dtype mu, const Dtype sigma, Dtype* r);
+
+	template <typename Dtype>
+	void gemm_gpu(cublasHandle_t cublas_handle, const bool TransA,
+		const bool TransB, const int M, const int N, const int K,
+		const Dtype alpha, const Dtype* A, const Dtype* B, const Dtype beta,
+		Dtype* C);
 #endif
 };
 #endif

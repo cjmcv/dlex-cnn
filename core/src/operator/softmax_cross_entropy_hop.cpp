@@ -163,6 +163,25 @@ namespace dlex_cnn
 		
 	}
 
+#ifdef USE_CUDA
+	template <typename Dtype>
+	void SoftmaxCrossEntropyLossHOp<Dtype>::forward_gpu(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
+	{
+		forward(prev, next);
+	}
+	template <typename Dtype>
+	void SoftmaxCrossEntropyLossHOp<Dtype>::backward_gpu(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
+	{
+		backward(prev, next, prev_diff, next_diff);
+	}
+#endif
+
 	INSTANTIATE_CLASS(SoftmaxCrossEntropyLossHOp);
 
 }//namespace
