@@ -41,7 +41,7 @@ namespace dlex_cnn
 		}
 
 		const int data_size = datum->getSize()[tind::e3D];
-		const Dtype *pdata_dst = (Dtype *)datum->getCpuData() + num_idx * data_size;
+		const Dtype *pdata_dst = (Dtype *)datum->getPushCpuData() + num_idx * data_size;
 
 		const unsigned char *pdata = image.pdata;
 		for (int i = 0; i < image.height; i++)
@@ -79,7 +79,7 @@ namespace dlex_cnn
 			return -1;
 		}
 
-		const Dtype *pdata_dst = (Dtype *)datum->getCpuData() + num_idx * datum->getSize()[tind::e3D];
+		const Dtype *pdata_dst = (Dtype *)datum->getPushCpuData() + num_idx * datum->getSize()[tind::e3D];
 		for (int i = 0; i < vec.size(); i++)
 			pdata_dst[i] = vec[i];
         */

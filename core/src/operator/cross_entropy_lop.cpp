@@ -77,11 +77,11 @@ namespace dlex_cnn
 			labels_.reset(new Tensor<Dtype>(prev[0]->getShape()));
 
 		// convert orgLabel format for classification task, save result in labels_
-		const Dtype* org_label_data = (Dtype *)next[1]->getCpuData();
+		const Dtype* org_label_data = (Dtype *)next[1]->getPushCpuData();
 		//for (int j = 0; j < next[1]->getSize()[tind::e4D]; j++)
 		//	printf("%f, ", org_label_data[j]);
 
-		Dtype* label_data = (Dtype *)labels_->getCpuData();
+		Dtype* label_data = (Dtype *)labels_->getPushCpuData();
 		memset(label_data, 0, sizeof(Dtype)*output_size4D);
 
 		//printf("%f, %d\n", org_label_data[0], next.size());
@@ -93,7 +93,7 @@ namespace dlex_cnn
 		//                is not similar with the origin formula. Please refer to
 		//				  http://blog.csdn.net/u012235274/article/details/51361290
 		// compute loss (for softmax)
-		const Dtype* output_data = (Dtype *)prev[0]->getCpuData();
+		const Dtype* output_data = (Dtype *)prev[0]->getPushCpuData();
 		Dtype loss = 0.0f;
 
 		//for (int batchId = 0; batchId < output_shape[tind::eNum]; batchId++)	// original type
@@ -104,7 +104,7 @@ namespace dlex_cnn
 			if (label_data[i] != 0)
 				loss -= label_data[i] * std::log(std::max(output_data[i], Dtype(FLT_MIN)));
 
-		*(Dtype *)next[2]->getCpuData() = loss / output_shape[tind::eNum];
+		*(Dtype *)next[2]->getPushCpuData() = loss / output_shape[tind::eNum];
 	}
 
 	template <typename Dtype>
@@ -124,21 +124,21 @@ namespace dlex_cnn
 			return ;
 		}
 
-		Dtype* label_data = (Dtype *)labels_->getCpuData();
+		Dtype* label_data = (Dtype *)labels_->getPushCpuData();
 		
 		const int labels_size3D = labels_->getSize()[tind::e3D];
 		const int output_size3D = next[0]->getSize()[tind::e3D];
 		const int diff_size3D = prev_diff[0]->getSize()[tind::e3D];
 
-		Dtype* label_data_base = (Dtype *)labels_->getCpuData();
-		Dtype* output_data_base = (Dtype *)next[0]->getCpuData();
+		Dtype* label_data_base = (Dtype *)labels_->getPushCpuData();
+		Dtype* output_data_base = (Dtype *)next[0]->getPushCpuData();
 
 		prev_diff[0]->setCpuZero();
 		for (int on = 0; on < next[0]->getShape()[0]; on++)
 		{
 			const Dtype* label_data = label_data_base + on * labels_size3D;
 			const Dtype* output_data = output_data_base + on * output_size3D;
-			Dtype* diff_data = (Dtype *)prev_diff[0]->getCpuData() + on * diff_size3D;
+			Dtype* diff_data = (Dtype *)prev_diff[0]->getPushCpuData() + on * diff_size3D;
 			for (int next_diff_idx = 0; next_diff_idx < diff_size3D; next_diff_idx++)
 			{
 				const int data_idx = next_diff_idx;

@@ -100,9 +100,9 @@ namespace dlex_cnn
 			{
 				if (data_vec.size() > 1)
 				{
-					normal_distribution_init<Dtype>(data_vec[1]->getSize()[tind::e4D], 0.0f, 0.1f, (Dtype *)data_vec[1]->getCpuData());
+					normal_distribution_init<Dtype>(data_vec[1]->getSize()[tind::e4D], 0.0f, 0.1f, (Dtype *)data_vec[1]->getPushCpuData());
 					if (data_vec.size() > 2)
-						dlex_set<Dtype>(data_vec[2]->getSize()[tind::e4D], 0.0f, (Dtype *)data_vec[2]->getCpuData());
+						set_cpu<Dtype>(data_vec[2]->getSize()[tind::e4D], 0.0f, (Dtype *)data_vec[2]->getPushCpuData());
 				}
 			}
 			else
@@ -110,9 +110,9 @@ namespace dlex_cnn
 #ifdef USE_CUDA
 				if (data_vec.size() > 1)
 				{
-					dlex_gpu_rng_gaussian<Dtype>(data_vec[1]->getSize()[tind::e4D], 0.0f, 0.1f, (Dtype *)data_vec[1]->getGpuData());
+					dlex_gpu_rng_gaussian<Dtype>(data_vec[1]->getSize()[tind::e4D], 0.0f, 0.1f, (Dtype *)data_vec[1]->getPushGpuData());
 					if (data_vec.size() > 2)
-						dlex_gpu_set<Dtype>(data_vec[2]->getSize()[tind::e4D], 0.0f, (Dtype *)data_vec[2]->getGpuData());
+						set_gpu<Dtype>(data_vec[2]->getSize()[tind::e4D], 0.0f, (Dtype *)data_vec[2]->getPushGpuData());
 				}
 #else
 				DLOG_ERR("CUDA programs are invalid, Please open the marco USE_CUDA");
@@ -295,7 +295,7 @@ namespace dlex_cnn
 				inte_op_idx->forward_gpu(nodes_[idx]->getDataVec(), nodes_[output_idx[0]]->getDataVec());
 			}
 
-			//float *outdata0 = (float *)nodes_[idx]->getDataVec()[1]->getCpuData();
+			//float *outdata0 = (float *)nodes_[idx]->getDataVec()[1]->getPushCpuData();
 			//for (int j = 0; j < nodes_[idx]->getDataVec()[1]->getSize()[3]; j++)
 			//	printf("%f,", outdata0[j]);
 			//printf("\n");
@@ -410,13 +410,13 @@ namespace dlex_cnn
 			DLOG_ERR("[ Graph::getLoss ]: The node with name < %s >, is not an output node.\n", node_name.c_str());
 			return -1;
 		}
-		loss = *(Dtype *)(nodes_[index]->getDataVec()[2]->getCpuData());
+		loss = *(Dtype *)(nodes_[index]->getDataVec()[2]->getPushCpuData());
 
 		return 0;
 	}
 
 	template <typename Dtype>
-	int Graph<Dtype>::getNodeData(const std::string &node_name, std::shared_ptr<Tensor<Dtype>> &cpuData)
+	int Graph<Dtype>::getNodeData(const std::string &node_name, std::shared_ptr<Tensor<Dtype>> &data)
 	{
 		int index = -1;
 		int ret = getNodeIndex(node_name, index);
@@ -425,7 +425,7 @@ namespace dlex_cnn
 			DLOG_ERR("[ Graph::getNodeData ]: Can not get node with name < %s >.\n", node_name.c_str());
 			return -1;
 		}
-		cpuData = nodes_[index]->getDataVec()[0];
+		data = nodes_[index]->getDataVec()[0];
 
 		return 0;
 	}
@@ -675,9 +675,9 @@ namespace dlex_cnn
 				int len = data_vec[j]->getSize()[tind::e4D];
 				fwrite(&len, sizeof(int), 1, fp);
 				//printf("w-len:%d\n", len);
-				fwrite(data_vec[j]->getCpuData(), sizeof(Dtype), len, fp);	//
+				fwrite(data_vec[j]->getPushCpuData(), sizeof(Dtype), len, fp);	//
 
-				//float *tdata = (float *)data_vec[j]->getCpuData();
+				//float *tdata = (float *)data_vec[j]->getPushCpuData();
 				//for (int jj = 0; jj < len; jj++)
 				//	printf("%f, ", *(tdata + jj));
 			}
@@ -719,9 +719,9 @@ namespace dlex_cnn
 					{
 						int len = 0;
 						fread(&len, sizeof(int), 1, fp);
-						fread(data_vec[k]->getCpuData(), sizeof(Dtype), len, fp);
+						fread(data_vec[k]->getPushCpuData(), sizeof(Dtype), len, fp);
 
-						//float *tdata = (float *)data_vec[k]->getCpuData();
+						//float *tdata = (float *)data_vec[k]->getPushCpuData();
 						//for (int jj = 0; jj < len; jj++)
 						//	printf("%f, ", *(tdata + jj));
 					}

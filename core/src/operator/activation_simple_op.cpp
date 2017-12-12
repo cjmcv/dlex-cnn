@@ -114,14 +114,16 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	void ActivationOp<Dtype>::forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
+	void ActivationOp<Dtype>::forward(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
 	{
 		//p_act = std::bind(&ActivationOp::relu, this, std::placeholders::_1);
 		//const std::vector<int> prev_shape = prev[0]->getShape();
 		const std::vector<int> prev_size = prev[0]->getSize();
 		const std::vector<int> next_size = next[0]->getSize();
-		float* prev_data = (float *)prev[0]->getCpuData();
-		float* next_data = (float *)next[0]->getCpuData();
+		float* prev_data = (float *)prev[0]->getPushCpuData();
+		float* next_data = (float *)next[0]->getPushCpuData();
 
 		next[0]->setCpuZero();
 		for (int n = 0; n < prev[0]->getShape()[tind::eNum]; n++)
@@ -136,17 +138,20 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	void ActivationOp<Dtype>::backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
+	void ActivationOp<Dtype>::backward(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
 	{
 		const int prev_size3D = prev[0]->getSize()[tind::e3D];
 		const int next_size3D = next[0]->getSize()[tind::e3D];
 		const int prev_diff_size3D = prev_diff[0]->getSize()[tind::e3D];
 		const int next_diff_size3D = next_diff[0]->getSize()[tind::e3D];
-		float* prev_data = (float *)prev[0]->getCpuData();
-		float* next_data = (float *)next[0]->getCpuData();
-		float* prev_diff_data = (float *)prev_diff[0]->getCpuData();
-		float* next_diff_data = (float *)next_diff[0]->getCpuData();
+		float* prev_data = (float *)prev[0]->getPushCpuData();
+		float* next_data = (float *)next[0]->getPushCpuData();
+		float* prev_diff_data = (float *)prev_diff[0]->getPushCpuData();
+		float* next_diff_data = (float *)next_diff[0]->getPushCpuData();
 
 		float* act_x = NULL;
 		int act_len = 0;
@@ -172,6 +177,25 @@ namespace dlex_cnn
 			}
 		}
 	}
+
+#ifdef USE_CUDA
+	template <typename Dtype>
+	void ActivationOp<Dtype>::forward_gpu(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
+	{
+		forward(prev, next);
+	}
+	template <typename Dtype>
+	void ActivationOp<Dtype>::backward_gpu(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
+	{
+		backward(prev, next, prev_diff, next_diff);
+	}
+#endif
 
 	INSTANTIATE_CLASS(ActivationOp);
 }//namespace

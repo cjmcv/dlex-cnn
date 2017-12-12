@@ -70,70 +70,6 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	void Tensor<Dtype>::checkCpuData()
-	{
-		switch (mem_head_)
-		{
-		case tind::eUninitialized:
-			cpu_data_ = (void *)malloc(sizeof(Dtype) * size_[tind::e4D]);	
-			if (cpu_data_ == NULL)
-			{
-				DLOG_ERR("[ Tensor::Tensor ]: Can not malloc for cpu_data_.\n");
-			}
-			dlex_set(size_[tind::e4D], (Dtype)0, (Dtype *)cpu_data_);
-			mem_head_ = tind::eHeadAtCPU;
-			break;
-		case tind::eHeadAtGPU:
-			if (cpu_data_ == NULL)
-				cpu_data_ = (void *)malloc(sizeof(Dtype) * size_[tind::e4D]);
-			if (cpu_data_ == NULL)
-			{
-				DLOG_ERR("[ Tensor::Tensor ]: Can not malloc for cpu_data_.\n");
-			}
-			cpyInplace(tind::eDevice2Host);
-			mem_head_ = tind::eHeadAtCPU;
-			break;
-		default:
-			break;
-		}
-	}
-
-#ifdef USE_CUDA
-	template <typename Dtype>
-	void Tensor<Dtype>::checkGpuData()
-	{
-		switch (mem_head_)
-		{
-		case tind::eUninitialized:
-			CUDA_DCHECK(cudaGetDevice(&gpu_device_));
-			CUDA_DCHECK(cudaMalloc(&gpu_data_, sizeof(Dtype) * size_[tind::e4D]));
-			if (gpu_data_ == NULL)
-			{
-				DLOG_ERR("[ Tensor::Tensor ]: Can not malloc for gpu_data_.\n");
-			}
-			CUDA_DCHECK(cudaMemset(gpu_data_, 0, sizeof(Dtype) * size_[tind::e4D]));
-			mem_head_ = tind::eHeadAtGPU;
-			break;
-		case tind::eHeadAtCPU:
-			if (gpu_data_ == NULL)
-			{
-				CUDA_DCHECK(cudaGetDevice(&gpu_device_));
-				CUDA_DCHECK(cudaMalloc(&gpu_data_, sizeof(Dtype) * size_[tind::e4D]));
-				if (gpu_data_ == NULL)
-				{
-					DLOG_ERR("[ Tensor::Tensor ]: Can not malloc for gpu_data_.\n");
-				}
-			}
-			cpyInplace(tind::eHost2Device);
-			mem_head_ = tind::eHeadAtGPU;
-			break;
-		default:
-			break;
-		}
-	}
-#endif
-
-	template <typename Dtype>
 	Tensor<Dtype>::~Tensor()
 	{
 		if (cpu_data_ != NULL)
@@ -147,6 +83,85 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
+	int Tensor<Dtype>::mallocCpuData()
+	{
+		if (cpu_data_ != NULL)
+		{
+			free(cpu_data_);
+			cpu_data_ = NULL;
+		}
+		cpu_data_ = (void *)malloc(sizeof(Dtype) * size_[tind::e4D]);
+		if (cpu_data_ == NULL)
+		{
+			DLOG_ERR("[ Tensor::mallocCpuData ]: Can not malloc for gpu_data_.\n");
+			return -1;
+		}
+		else
+			return 0;
+	}
+	template <typename Dtype>
+	void Tensor<Dtype>::checkPushCpuData()
+	{
+		switch (mem_head_)
+		{
+		case tind::eUninitialized:
+			mallocCpuData();
+			set_cpu(size_[tind::e4D], (Dtype)0, (Dtype *)cpu_data_);
+			mem_head_ = tind::eHeadAtCPU;
+			break;
+		case tind::eHeadAtGPU:
+			if (cpu_data_ == NULL)
+				mallocCpuData();
+			cpyInplace(tind::eDevice2Host);
+			mem_head_ = tind::eHeadAtCPU;
+			break;
+		default:
+			break;
+		}
+	}
+
+#ifdef USE_CUDA
+	template <typename Dtype>
+	int Tensor<Dtype>::mallocGpuData()
+	{
+		if (gpu_data_ != NULL)
+		{
+			cudaFree(gpu_data_);
+			gpu_data_ = NULL;
+		}
+		CUDA_DCHECK(cudaGetDevice(&gpu_device_));
+		CUDA_DCHECK(cudaMalloc(&gpu_data_, sizeof(Dtype) * size_[tind::e4D]));
+		if (gpu_data_ == NULL)
+		{
+			DLOG_ERR("[ Tensor::mallocGpuData ]: Can not malloc for gpu_data_.\n");
+			return -1;
+		}
+		else
+			return 0;
+	}
+	template <typename Dtype>
+	void Tensor<Dtype>::checkPushGpuData()
+	{
+		switch (mem_head_)
+		{
+		case tind::eUninitialized:
+			mallocGpuData();
+			CUDA_DCHECK(cudaMemset(gpu_data_, 0, sizeof(Dtype) * size_[tind::e4D]));
+			mem_head_ = tind::eHeadAtGPU;
+			break;
+		case tind::eHeadAtCPU:
+			if (gpu_data_ == NULL)
+				mallocGpuData();
+			cpyInplace(tind::eHost2Device);
+			mem_head_ = tind::eHeadAtGPU;
+			break;
+		default:
+			break;
+		}
+	}
+#endif
+
+	template <typename Dtype>
 	void Tensor<Dtype>::copyDataTo(Tensor<Dtype> &dst_tensor, tind::TensorCopyMode cp_mode)
 	{
 		if (dst_tensor.shape_ != this->shape_ || dst_tensor.size_ != this->size_)
@@ -157,17 +172,18 @@ namespace dlex_cnn
 		switch (cp_mode)
 		{
 		case tind::eHost2Host:
-			if (dst_tensor.getCpuData() == NULL || this->cpu_data_ == NULL)
+			if (dst_tensor.getPushCpuData() == NULL || this->cpu_data_ == NULL)
 			{
 				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getCpuData() == NULL || this->cpu_data_ == NULL.\n");
 				return;
 			}
+
 			memcpy(dst_tensor.cpu_data_, this->cpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D]);
 			dst_tensor.setMemHead(tind::eHeadAtCPU);
 			break;
 #ifdef USE_CUDA
 		case tind::eHost2Device:
-			if (dst_tensor.getGpuData() == NULL || this->cpu_data_ == NULL)
+			if (dst_tensor.getPushGpuData() == NULL || this->cpu_data_ == NULL)
 			{
 				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getGpuData() == NULL || this->cpu_data_ == NULL.\n");
 				return;
@@ -176,7 +192,7 @@ namespace dlex_cnn
 			dst_tensor.setMemHead(tind::eHeadAtGPU);
 			break;
 		case tind::eDevice2Device:
-			if (dst_tensor.getGpuData() == NULL || this->gpu_data_ == NULL)
+			if (dst_tensor.getPushGpuData() == NULL || this->gpu_data_ == NULL)
 			{
 				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getGpuData() == NULL || this->gpu_data_ == NULL.\n");
 				return;
@@ -185,7 +201,7 @@ namespace dlex_cnn
 			dst_tensor.setMemHead(tind::eHeadAtGPU);
 			break;
 		case tind::eDevice2Host:
-			if (dst_tensor.getCpuData() == NULL || this->gpu_data_ == NULL)
+			if (dst_tensor.getPushCpuData() == NULL || this->gpu_data_ == NULL)
 			{
 				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getCpuData() == NULL || this->gpu_data_ == NULL.\n");
 				return;
@@ -207,7 +223,7 @@ namespace dlex_cnn
 		if (!DCHECK(this->cpu_data_ != NULL))
 			DLOG_ERR("this->cpu_data_ == NULL");
 
-		CUDA_DCHECK(cudaMemcpyAsync(getGpuData(), cpu_data_, sizeof(Dtype) * size_[tind::e4D], cudaMemcpyHostToDevice, stream));
+		CUDA_DCHECK(cudaMemcpyAsync(getPushGpuData(), cpu_data_, sizeof(Dtype) * size_[tind::e4D], cudaMemcpyHostToDevice, stream));
 		mem_head_ = tind::eSynced;
 	}
 	template <typename Dtype>

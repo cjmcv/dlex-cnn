@@ -93,8 +93,8 @@ namespace dlex_cnn
 		//const std::vector<int> prev_data_shape = prev[0]->getShape();
 		const std::vector<int> next_data_shape = next[0]->getShape();
 
-		Dtype *prevDataBase = (Dtype *)prev[0]->getCpuData();
-		Dtype *nextDataBase = (Dtype *)next[0]->getCpuData();
+		Dtype *prevDataBase = (Dtype *)prev[0]->getPushCpuData();
+		Dtype *nextDataBase = (Dtype *)next[0]->getPushCpuData();
 
 		const int nextDataNum = next_data_shape[tind::eNum];
 		const int prevDataSize3D = prev_data_size[tind::e3D];
@@ -141,10 +141,10 @@ namespace dlex_cnn
 		const std::vector<int> prev_diff_shape = prev_diff[0]->getShape();
 		const std::vector<int> next_diff_shape = next_diff[0]->getShape();
 
-		Dtype *prevDataBase = (Dtype *)prev[0]->getCpuData();
-		Dtype *nextDataBase = (Dtype *)next[0]->getCpuData();
-		Dtype *prevDiffBase = (Dtype *)prev_diff[0]->getCpuData();
-		Dtype *nextDiffBase = (Dtype *)next_diff[0]->getCpuData();
+		Dtype *prevDataBase = (Dtype *)prev[0]->getPushCpuData();
+		Dtype *nextDataBase = (Dtype *)next[0]->getPushCpuData();
+		Dtype *prevDiffBase = (Dtype *)prev_diff[0]->getPushCpuData();
+		Dtype *nextDiffBase = (Dtype *)next_diff[0]->getPushCpuData();
 
 		if (prev_data_size[tind::e4D] != next_data_size[tind::e4D])
 		{

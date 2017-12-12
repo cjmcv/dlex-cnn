@@ -122,10 +122,10 @@ namespace dlex_cnn
 		const std::vector<int> kernel_shape = prev[1]->getShape();
 		const std::vector<int> kernel_size = prev[1]->getSize();
 
-		const Dtype* prev_data = (Dtype *)prev[0]->getCpuData();
-		const Dtype* kernel_data = (Dtype *)prev[1]->getCpuData();
-		const Dtype* bias_data = (Dtype *)prev[2]->getCpuData();
-		Dtype* next_data = (Dtype *)next[0]->getCpuData();
+		const Dtype* prev_data = (Dtype *)prev[0]->getPushCpuData();
+		const Dtype* kernel_data = (Dtype *)prev[1]->getPushCpuData();
+		const Dtype* bias_data = (Dtype *)prev[2]->getPushCpuData();
+		Dtype* next_data = (Dtype *)next[0]->getPushCpuData();
 
 		// (1, channels*kernel_h*kernel_w, output_h*output_w)
 		const int output_h = (prev_shape[tind::eHeight] - 1) * param_.stride_h + (param_.dilation_h * (param_.kernel_h - 1) + 1) - 2 * param_.pad_h;
@@ -139,11 +139,11 @@ namespace dlex_cnn
 		else if (col_buffer_->getSize()[tind::e4D] != 1 * 1 * col_height * col_width)
 			col_buffer_.reset(new Tensor<Dtype>(1, 1, col_height, col_width));
 
-		Dtype* col_data = (Dtype *)col_buffer_->getCpuData();
+		Dtype* col_data = (Dtype *)col_buffer_->getPushCpuData();
 		next[0]->setCpuZero();
 		for (int ni = 0; ni < prev_shape[tind::eNum]; ni++)
 		{
-			gemm(true, false, kernel_size[tind::e3D], prev_size[tind::e2D], prev_shape[tind::eChannels],
+			gemm_cpu(true, false, kernel_size[tind::e3D], prev_size[tind::e2D], prev_shape[tind::eChannels],
 				(Dtype)1.0, kernel_data, prev_data + ni * prev_size[tind::e3D],
 				(Dtype)0.0, col_data);
 
@@ -191,15 +191,15 @@ namespace dlex_cnn
 		//const std::vector<int> biasShape = prev[2]->getShape();
 		const std::vector<int> bias_size = prev[2]->getSize();
 
-		const Dtype* prev_data = (Dtype*)prev[0]->getCpuData();
-		const Dtype* next_data = (Dtype*)next[0]->getCpuData();
-		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getCpuData();
-		Dtype* next_diff_data = (Dtype*)next_diff[0]->getCpuData();
-		Dtype *kernel_data = (Dtype*)prev[1]->getCpuData();
-		//Dtype *bias_data = (Dtype*)prev[2]->getCpuData();
+		const Dtype* prev_data = (Dtype*)prev[0]->getPushCpuData();
+		const Dtype* next_data = (Dtype*)next[0]->getPushCpuData();
+		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getPushCpuData();
+		Dtype* next_diff_data = (Dtype*)next_diff[0]->getPushCpuData();
+		Dtype *kernel_data = (Dtype*)prev[1]->getPushCpuData();
+		//Dtype *bias_data = (Dtype*)prev[2]->getPushCpuData();
 
 		const std::vector<int> col_shape = col_buffer_->getShape();
-		Dtype* col_data = (Dtype *)col_buffer_->getCpuData();
+		Dtype* col_data = (Dtype *)col_buffer_->getPushCpuData();
 
 		// update prev_diff
 		prev_diff[0]->setCpuZero();
@@ -216,14 +216,14 @@ namespace dlex_cnn
 
 			// col_shape[tind::eHeight] == kernel_size[tind::e3D]
 			// kernel_num == prev channels
-			gemm(false, false, prev_shape[tind::eChannels], col_shape[tind::eWidth], col_shape[tind::eHeight], 
+			gemm_cpu(false, false, prev_shape[tind::eChannels], col_shape[tind::eWidth], col_shape[tind::eHeight], 
 				(Dtype)1, kernel_data, col_data, 
 				(Dtype)0, prev_diff_data + ni * prev_diff_size[tind::e3D]);
 		}
 
 		// update weight Diff
 		gradient_[0]->setCpuZero();
-		Dtype* kernel_gradient_data = (Dtype *)gradient_[0]->getCpuData();
+		Dtype* kernel_gradient_data = (Dtype *)gradient_[0]->getPushCpuData();
 		for (int ni = 0; ni < prev_diff_shape[tind::eNum]; ni++)
 		{
 			im2col_cpu<Dtype>(next_diff_data + ni*next_diff_size[tind::e3D], next_diff_shape[tind::eChannels],
@@ -234,18 +234,18 @@ namespace dlex_cnn
 				param_.dilation_h, param_.dilation_w,
 				col_data);
 
-			gemm(false, true, prev_shape[tind::eChannels], kernel_size[tind::e3D], prev_size[tind::e2D],
+			gemm_cpu(false, true, prev_shape[tind::eChannels], kernel_size[tind::e3D], prev_size[tind::e2D],
 				(Dtype)1.0, prev_data + ni * prev_size[tind::e3D], col_data,
 				(Dtype)1.0, kernel_gradient_data);
 		}
-		div_inplace(kernel_size[tind::e4D], (Dtype)next_shape[tind::eNum], kernel_gradient_data);
+		div_inplace_cpu(kernel_size[tind::e4D], (Dtype)next_shape[tind::eNum], kernel_gradient_data);
 
 		//update bias gradient
 		gradient_[1]->setCpuZero();
-		Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getCpuData();
+		Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getPushCpuData();
 
 		backward_bias(next_diff_shape[tind::eNum], next_diff_shape[tind::eChannels], next_diff_size[tind::e2D], next_diff_data, bias_gradient_data);
-		div_inplace(bias_size[tind::e4D], (Dtype)next_shape[tind::eNum], bias_gradient_data);
+		div_inplace_cpu(bias_size[tind::e4D], (Dtype)next_shape[tind::eNum], bias_gradient_data);
 	}
 
 	INSTANTIATE_CLASS(DeconvolutionOp);

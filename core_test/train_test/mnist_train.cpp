@@ -124,14 +124,14 @@ namespace dlex_cnn
 		for (int i = offset; i < actual_end_pos; i++)
 		{
 			//image data
-			float* input_data = (float *)input_data_tensor->getCpuData() + (i - offset)*size_per_image;//*sizeof(float)
+			float* input_data = (float *)input_data_tensor->getPushCpuData() + (i - offset)*size_per_image;//*sizeof(float)
 			const uint8_t* image_data = train_data_[i].first.pdata;
 			for (int j = 0; j < size_per_image; j++)
 			{
 				input_data[j] = (float)image_data[j] * scale_rate;
 			}
 			//label data
-			float* label_data = (float *)label_data_tensor->getCpuData() + (i - offset)*size_per_label;//*sizeof(float)
+			float* label_data = (float *)label_data_tensor->getPushCpuData() + (i - offset)*size_per_label;//*sizeof(float)
 			const uint8_t label = train_data_[i].second;
 			for (int j = 0; j < size_per_label; j++)
 			{
@@ -151,7 +151,7 @@ namespace dlex_cnn
 		std::shared_ptr<dlex_cnn::Tensor<float>> result(new dlex_cnn::Tensor<float>(number, size_per_label, 1, 1));
 		for (int i = start; i < start + len; i++)
 		{
-			float* label_data = (float *)result->getCpuData() + (i - start)*size_per_label;//*sizeof(float)
+			float* label_data = (float *)result->getPushCpuData() + (i - start)*size_per_label;//*sizeof(float)
 			const uint8_t label = test_data[i].second;
 			for (int j = 0; j < size_per_label; j++)
 			{
@@ -175,7 +175,7 @@ namespace dlex_cnn
 		for (int i = start; i < start + len; i++)
 		{
 			//image data
-			float* input_data = (float *)result->getCpuData() + (i - start)*size_per_image;
+			float* input_data = (float *)result->getPushCpuData() + (i - start)*size_per_image;
 			const uint8_t* image_data = test_data[i].first.pdata;
 			for (int j = 0; j < size_per_image; j++)
 			{
@@ -217,7 +217,7 @@ namespace dlex_cnn
 			std::shared_ptr<dlex_cnn::Tensor<float>> probDataTensor;
 			network.getNodeData("output", probDataTensor);
 
-			//float *pdata = (float *)probDataTensor->getCpuData();
+			//float *pdata = (float *)probDataTensor->getPushCpuData();
 			//for (int i = 0; i < probDataTensor->getSize()[dlex_cnn::tind::e4D]; i++)
 			//{
 			//	printf("%f, ", pdata[i]);
@@ -233,7 +233,7 @@ namespace dlex_cnn
 
 			//printf("ready to get acc\n");
 			const int label_size = probDataTensor->getSize()[dlex_cnn::tind::e3D];
-			const float* prob_data = (float *)probDataTensor->getCpuData();
+			const float* prob_data = (float *)probDataTensor->getPushCpuData();
 			for (int j = 0; j < len; j++)
 			{
 				const uint8_t real_prob = test_data[i + j].second;
@@ -296,7 +296,7 @@ namespace dlex_cnn
 		data_size_4D_ = batch_size_ * channels_ * width_ * height_;
 	
 		registerOpClass();
-		Task::set_mode(tind::Mode::CPU);
+		Task::set_mode(tind::Mode::GPU);
 
 		NetWork<float> network("netA");
 
@@ -337,14 +337,14 @@ namespace dlex_cnn
 			printf("batch[%d]->train_batch_loss: %f, learning_rate: %f\n", batch_idx, batch_loss, learning_rate_);
 			if (batch_idx && batch_idx % test_after_batches_ == 0)
 			{
-				network.switchPhase(dlex_cnn::tind::Phase::Test);
+				//network.switchPhase(dlex_cnn::tind::Phase::Test);
 				std::tie(val_accuracy, val_loss) = testInTrain(network, 128, validate_data_);	// 要注意最后一个batch为112，会修改掉所有节点的num维度，在下一轮训练过程中修改回来。
 				printf("sample : %d/%d , learning_rate : %f , train_avg_loss : %f , val_loss : %f , val_accuracy : %.4f%%\n",
 					batch_idx*batch_size_, train_data_.size(), learning_rate_, train_total_loss / train_batches, val_loss, val_accuracy*100.0f);
 
 				train_total_loss = 0.0f;
 				train_batches = 0;
-				network.switchPhase(dlex_cnn::tind::Phase::Train);
+				//network.switchPhase(dlex_cnn::tind::Phase::Train);
 			}
 			if (batch_idx && batch_idx % save_iter_ == 0)
 				network.saveStageModel(model_saved_path_, 1);
@@ -360,7 +360,7 @@ namespace dlex_cnn
 
 	void MnistTrainTest::train()	// Not fix, will be merged with trainWithPrefetcher
 	{
-		Task::set_mode(tind::Mode::CPU);
+		Task::set_mode(tind::Mode::GPU);
 		NetWork<float> network("netA");
 
 		//startPrefetchData(network);

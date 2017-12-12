@@ -44,32 +44,44 @@ namespace dlex_cnn
 		
 		inline void setMemHead(tind::TensorMemHead mem_head) { mem_head_ = mem_head; }
 
-		void checkCpuData();
+		int mallocCpuData();
 		inline void *getCpuData() {
-			checkCpuData();
+			if (cpu_data_ == NULL)
+				mallocCpuData();
+			return cpu_data_;
+		}
+		void checkPushCpuData();
+		inline void *getPushCpuData() {
+			checkPushCpuData();
 			return cpu_data_; 
 		}
 
-		inline void setCpuZero() { dlex_set(size_[tind::e4D], (Dtype)0, (Dtype *)getCpuData()); };
+		inline void setCpuZero() { set_cpu(size_[tind::e4D], (Dtype)0, (Dtype *)getCpuData()); };
 		inline void setCpuValue(Dtype alpha) {
 			Dtype *dst = (Dtype *)getCpuData();
-			dlex_set(size_[tind::e4D], alpha, dst);
+			set_cpu(size_[tind::e4D], alpha, dst);
 		};
 
 		// Just copy data, without changing their size
 		void copyDataTo(Tensor<Dtype> &dst_tensor, tind::TensorCopyMode mode);
 
 #ifdef USE_CUDA
-		void checkGpuData();
+		int mallocGpuData();
 		inline void *getGpuData() {
-			checkGpuData();
+			if (gpu_data_ == NULL)
+				mallocGpuData();
+			return gpu_data_;
+		}
+		void checkPushGpuData();
+		inline void *getPushGpuData() {
+			checkPushGpuData();
 			return gpu_data_;
 		}
 
-		inline void setGpuZero() { dlex_gpu_set(size_[tind::e4D], (Dtype)0, (Dtype *)getGpuData()); };
+		inline void setGpuZero() { set_gpu(size_[tind::e4D], (Dtype)0, (Dtype *)getGpuData()); };
 		inline void setGpuValue(Dtype alpha) {
 			Dtype *dst = (Dtype *)getGpuData();
-			dlex_gpu_set(size_[tind::e4D], alpha, dst);
+			set_gpu(size_[tind::e4D], alpha, dst);
 		};
 
 		// Push data from cpu to gpu.

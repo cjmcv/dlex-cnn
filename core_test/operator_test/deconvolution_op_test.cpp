@@ -46,25 +46,25 @@ namespace dlex_cnn {
 		std::vector<std::shared_ptr<Tensor<float>>> in_data_vec;
 		conv1->allocBuf4Node(in_shape, out_shape, in_data_vec);
 
-		normal_distribution_init<float>(in_data_vec[1]->getSize()[tind::e4D], 0.0f, 0.1f, (float *)in_data_vec[1]->getCpuData());
+		normal_distribution_init<float>(in_data_vec[1]->getSize()[tind::e4D], 0.0f, 0.1f, (float *)in_data_vec[1]->getPushCpuData());
 		if (conv1->param_.blas_enable)
-			dlex_set<float>(in_data_vec[2]->getSize()[tind::e4D], 0.0f, (float *)in_data_vec[2]->getCpuData());
+			set_cpu<float>(in_data_vec[2]->getSize()[tind::e4D], 0.0f, (float *)in_data_vec[2]->getPushCpuData());
 
 		// input (ic2, ih3, iw3)
 		float in_buffer[] = {1,2,0,1,1,3,0,2,2, 0,2,1,0,3,2,1,1,0}; //
 		//float in_buffer[] = {1,0,0,0, 0,1,0,0, 0,0,3,0, 0,0,0,1};
-		float *in_data = (float *)in_data_vec[0]->getCpuData();
+		float *in_data = (float *)in_data_vec[0]->getPushCpuData();
 		for (int i = 0; i < 1*2*3*3; i++)
 			in_data[i] = in_buffer[i];
 		// weight (kn2 = ic2, kc3, kh2, kw2) 
 		float w_buffer[] = {1,1,2,2, 1,1,1,1, 0,1,1,3,  1,0,0,1, 2,1,2,1, 1,2,2,0};	//2*3*2*2
 		//float w_buffer[] = {4,5,3,4};	//2*2*2*2
-		float *w_data = (float *)in_data_vec[1]->getCpuData();
+		float *w_data = (float *)in_data_vec[1]->getPushCpuData();
 		for (int i = 0; i < 2*3*2*2; i++)
 			w_data[i] = w_buffer[i];
 		// bias ()
 		//float b_buffer[] = { 1, 2, 0, 1, 1, 3, 0, 2, 2, 0, 2, 1, 0, 3, 2, 1, 1, 0, 1, 2, 1, 0, 1, 3, 3, 3, 2 };
-		//float *in_data = (float *)in_data_vec[0]->getCpuData();
+		//float *in_data = (float *)in_data_vec[0]->getPushCpuData();
 		//for (int i = 0; i < in_shape[0] * in_shape[1] * in_shape[2] * in_shape[3]; i++)
 		//	in_data[i] = in_buffer[i];
 
@@ -75,17 +75,17 @@ namespace dlex_cnn {
 
 		conv1->forward(in_data_vec, out_data_vec);
 
-		matrixShow_float("A", (float *)in_data_vec[0]->getCpuData(), 
+		matrixShow_float("A", (float *)in_data_vec[0]->getPushCpuData(), 
 			in_data_vec[0]->getShape()[tind::eNum], 
 			in_data_vec[0]->getShape()[tind::eChannels], 
 			in_data_vec[0]->getShape()[tind::eHeight],
 			in_data_vec[0]->getShape()[tind::eWidth]);
-		matrixShow_float("W", (float *)in_data_vec[1]->getCpuData(),
+		matrixShow_float("W", (float *)in_data_vec[1]->getPushCpuData(),
 			in_data_vec[1]->getShape()[tind::eNum],
 			in_data_vec[1]->getShape()[tind::eChannels],
 			in_data_vec[1]->getShape()[tind::eHeight],
 			in_data_vec[1]->getShape()[tind::eWidth]);
-		matrixShow_float("B", (float *)out_data_vec[0]->getCpuData(), 
+		matrixShow_float("B", (float *)out_data_vec[0]->getPushCpuData(), 
 			out_data_vec[0]->getShape()[tind::eNum], 
 			out_data_vec[0]->getShape()[tind::eChannels], 
 			out_data_vec[0]->getShape()[tind::eHeight], 
@@ -99,17 +99,17 @@ namespace dlex_cnn {
 
 		// set out here first.
 		conv1->backward(in_data_vec, out_data_vec, in_diff, out_data_vec);
-		matrixShow_float("C", (float *)in_diff[0]->getCpuData(), 
+		matrixShow_float("C", (float *)in_diff[0]->getPushCpuData(), 
 			in_shape[tind::eNum], in_shape[tind::eChannels], 
 			in_shape[tind::eHeight], in_shape[tind::eWidth]);
 
 		const std::vector<int> kernel_shape = in_data_vec[1]->getShape();
-		matrixShow_float("weight gradient", (float *)conv1->gradient_[0]->getCpuData(), 
+		matrixShow_float("weight gradient", (float *)conv1->gradient_[0]->getPushCpuData(), 
 			kernel_shape[tind::eNum], kernel_shape[tind::eChannels], 
 			kernel_shape[tind::eHeight], kernel_shape[tind::eWidth]);
 
 		const std::vector<int> bias_shape = in_data_vec[2]->getShape();
-		matrixShow_float("bias gradient", (float *)conv1->gradient_[1]->getCpuData(),
+		matrixShow_float("bias gradient", (float *)conv1->gradient_[1]->getPushCpuData(),
 			bias_shape[tind::eNum], bias_shape[tind::eChannels], 
 			bias_shape[tind::eHeight], bias_shape[tind::eWidth]);
 	}

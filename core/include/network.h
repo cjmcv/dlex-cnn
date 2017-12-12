@@ -48,7 +48,7 @@ namespace dlex_cnn
 		int feedDataByPrefetcher();
 		float trainBatch(const std::shared_ptr<Tensor<Dtype>> input_data_tensor = NULL, 
 			const std::shared_ptr<Tensor<Dtype>> label_data_tensor = NULL);
-		int getNodeData(const std::string &node_name, std::shared_ptr<Tensor<Dtype>> &cpuData);
+		int getNodeData(const std::string &node_name, std::shared_ptr<Tensor<Dtype>> &data);
 		inline const std::shared_ptr<Graph<Dtype>> getGraph() { return graph_; };
 
 		void addNode(const std::string &node_name, 

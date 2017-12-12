@@ -123,10 +123,10 @@ namespace dlex_cnn
 
 		//printf("into innerProduct forward:(%d, %d), (%d, %d)\n", prev3DSize, next3DSize, prev[1]->get4DSize(), prev[2]->get4DSize());
 
-		const Dtype* prev_data = (Dtype *)prev[0]->getCpuData();
-		Dtype* next_data = (Dtype *)next[0]->getCpuData();
-		const Dtype* weight_data = (Dtype *)prev[1]->getCpuData();
-		const Dtype* bias_data = param_.blas_enable ? (Dtype *)prev[2]->getCpuData() : nullptr;
+		const Dtype* prev_data = (Dtype *)prev[0]->getPushCpuData();
+		Dtype* next_data = (Dtype *)next[0]->getPushCpuData();
+		const Dtype* weight_data = (Dtype *)prev[1]->getPushCpuData();
+		const Dtype* bias_data = param_.blas_enable ? (Dtype *)prev[2]->getPushCpuData() : nullptr;
 
 		//for (int i = 0; i < prev[2]->get4DSize(); i++)
 		//{
@@ -134,7 +134,7 @@ namespace dlex_cnn
 		//}
 		next[0]->setCpuZero();
 		auto worker = [&](const int start, const int stop){
-			gemm(false, true, stop - start, next_data_size[tind::e3D], prev_data_size[tind::e3D], 
+			gemm_cpu(false, true, stop - start, next_data_size[tind::e3D], prev_data_size[tind::e3D], 
 				(Dtype)1.0, prev_data + start * prev_data_size[tind::e3D], weight_data, 
 				(Dtype)0.0, next_data + start * next_data_size[tind::e3D]);
 		};
@@ -149,48 +149,22 @@ namespace dlex_cnn
 		//for (int i = 0; i < prev[0]->getShape()[tind::eNum]; i++)
 		//	bias_multiplier[i] = 1;
 		//auto worker2 = [&](const int start, const int stop){
-		//	gemm(false, false, stop - start, next_data_size[tind::e3D], 1, 1.0, bias_multiplier, bias_data, 1.0, next_data + start * next_data_size[tind::e3D]);
+		//	gemm_cpu(false, false, stop - start, next_data_size[tind::e3D], 1, 1.0, bias_multiplier, bias_data, 1.0, next_data + start * next_data_size[tind::e3D]);
 		//};
 		//worker2(0, prev[0]->getShape()[0]);
 
 	}
-#ifdef USE_CUDA
-	template <typename Dtype>
-	void InnerProductOp<Dtype>::forward_gpu(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
-	{
-		//printf("InnerProductOp: prev = %d, next = %d\n", prev.size(), next.size());
-		const std::vector<int> prev_data_size = prev[0]->getSize();
-		const std::vector<int> next_data_size = next[0]->getSize();
 
-		//printf("into innerProduct forward:(%d, %d), (%d, %d)\n", prev3DSize, next3DSize, prev[1]->get4DSize(), prev[2]->get4DSize());
-
-		const Dtype* prev_data = (Dtype *)prev[0]->getGpuData();
-		Dtype* next_data = (Dtype *)next[0]->getGpuData();
-		const Dtype* weight_data = (Dtype *)prev[1]->getGpuData();
-		const Dtype* bias_data = param_.blas_enable ? (Dtype *)prev[2]->getGpuData() : nullptr;
-
-		next[0]->setGpuZero();
-		auto worker = [&](const int start, const int stop){
-			gemm_gpu(CuHandleManager::cublas_handle(), false, true, stop - start, next_data_size[tind::e3D], prev_data_size[tind::e3D],
-				(Dtype)1.0, prev_data + start * prev_data_size[tind::e3D], weight_data,
-				(Dtype)0.0, next_data + start * next_data_size[tind::e3D]);
-		};
-		worker(0, prev[0]->getShape()[tind::eNum]);
-
-		//if (param_.blas_enable)
-		//	add_bias(prev[0]->getShape()[tind::eNum], next_data_size[tind::e3D], bias_data, next_data);
-	}
-#endif
 	template <typename Dtype>
 	void InnerProductOp<Dtype>::backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
 		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
 	{
-		const Dtype* prev_data = (Dtype*)prev[0]->getCpuData();
-		const Dtype* next_data = (Dtype*)next[0]->getCpuData();
-		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getCpuData();
-		const Dtype* next_diff_data = (Dtype*)next_diff[0]->getCpuData();
-		const Dtype* weight_data = (Dtype*)prev[1]->getCpuData();
-		//const Dtype* bias_data = param_.blas_enable ? (Dtype*)prev[2]->getCpuData() : nullptr;
+		const Dtype* prev_data = (Dtype*)prev[0]->getPushCpuData();
+		const Dtype* next_data = (Dtype*)next[0]->getPushCpuData();
+		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getPushCpuData();
+		const Dtype* next_diff_data = (Dtype*)next_diff[0]->getPushCpuData();
+		const Dtype* weight_data = (Dtype*)prev[1]->getPushCpuData();
+		//const Dtype* bias_data = param_.blas_enable ? (Dtype*)prev[2]->getPushCpuData() : nullptr;
 
 		const std::vector<int> prev_diff_size = prev_diff[0]->getSize();
 		const std::vector<int> prev_data_size = prev[0]->getSize();
@@ -234,7 +208,7 @@ namespace dlex_cnn
 		// -> prev_diff(num, prev_diff_size[tind::e3D]) = next_diff(num, next_diff_size[tind::e3D]) * weight(next_diff_size[tind::e3D], in3DSize)
 		prev_diff[0]->setCpuZero();
 		auto worker = [&](const int start, const int stop){
-			gemm(false, false, stop - start, prev_diff_size[tind::e3D], next_diff_size[tind::e3D], 
+			gemm_cpu(false, false, stop - start, prev_diff_size[tind::e3D], next_diff_size[tind::e3D], 
 				(Dtype)1.0, next_diff_data + start * next_diff_size[tind::e3D], weight_data,
 				(Dtype)0.0, prev_diff_data + start * prev_diff_size[tind::e3D]);
 		};
@@ -246,12 +220,12 @@ namespace dlex_cnn
 		//update this layer's param
 		//get weight gradient
 		gradient_[0]->setCpuZero();
-		Dtype* weight_gradient_data = (Dtype *)gradient_[0]->getCpuData();
+		Dtype* weight_gradient_data = (Dtype *)gradient_[0]->getPushCpuData();
 		// next_diff(num, hidden_num) -> next_diff'(hidden_num, num)
 		// O(M,N) = weightGradient(hidden_num, in3DSize) = next_diff'(hidden_num, num) * prev_data(num, in3DSize)
 		// -> M=hidden_num, N=in3DSize, K=num
 		auto worker2 = [&](const int start, const int stop){
-			gemm(true, false, next_diff_size[tind::e3D], prev_data_size[tind::e3D], prev_data_shape[tind::eNum],
+			gemm_cpu(true, false, next_diff_size[tind::e3D], prev_data_size[tind::e3D], prev_data_shape[tind::eNum],
 				(Dtype)1.0, next_diff_data, prev_data,
 				(Dtype)1.0, weight_gradient_data);	//1.0
 		};
@@ -259,34 +233,60 @@ namespace dlex_cnn
 		worker2(0, prev_data_shape[tind::eNum]);
 
 		//div by batch size
-		div_inplace(weight_size[tind::e4D], (Dtype)next_data_shape[tind::eNum], weight_gradient_data);
+		div_inplace_cpu(weight_size[tind::e4D], (Dtype)next_data_shape[tind::eNum], weight_gradient_data);
 
 		////////////////////////////////////////////////////////////////////////
 		//update bias
 		if (param_.blas_enable)
 		{
 			//get bias diff	
-			Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getCpuData();
+			Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getPushCpuData();
 			const std::vector<int> biasGradSize = gradient_[1]->getSize();
 
 			gradient_[1]->setCpuZero();
 			backward_bias(next_data_shape[tind::eNum], biasGradSize[tind::e3D], next_diff_data, bias_gradient_data);
 
 			//div by batch size
-			div_inplace(biasGradSize[tind::e4D], (Dtype)next_data_shape[tind::eNum], bias_gradient_data);
+			div_inplace_cpu(biasGradSize[tind::e4D], (Dtype)next_data_shape[tind::eNum], bias_gradient_data);
 		}
 	}
 
 #ifdef USE_CUDA
 	template <typename Dtype>
+	void InnerProductOp<Dtype>::forward_gpu(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
+	{
+		//printf("InnerProductOp: prev = %d, next = %d\n", prev.size(), next.size());
+		const std::vector<int> prev_data_size = prev[0]->getSize();
+		const std::vector<int> next_data_size = next[0]->getSize();
+
+		//printf("into innerProduct forward:(%d, %d), (%d, %d)\n", prev3DSize, next3DSize, prev[1]->get4DSize(), prev[2]->get4DSize());
+
+		const Dtype* prev_data = (Dtype *)prev[0]->getPushGpuData();
+		Dtype* next_data = (Dtype *)next[0]->getPushGpuData();
+		const Dtype* weight_data = (Dtype *)prev[1]->getPushGpuData();
+		const Dtype* bias_data = param_.blas_enable ? (Dtype *)prev[2]->getPushGpuData() : nullptr;
+
+		next[0]->setGpuZero();
+		auto worker = [&](const int start, const int stop){
+			gemm_gpu(CuHandleManager::cublas_handle(), false, true, stop - start, next_data_size[tind::e3D], prev_data_size[tind::e3D],
+				(Dtype)1.0, prev_data + start * prev_data_size[tind::e3D], weight_data,
+				(Dtype)0.0, next_data + start * next_data_size[tind::e3D]);
+		};
+		worker(0, prev[0]->getShape()[tind::eNum]);
+
+		//if (param_.blas_enable)
+		//	add_bias(prev[0]->getShape()[tind::eNum], next_data_size[tind::e3D], bias_data, next_data);
+	}
+
+	template <typename Dtype>
 	void InnerProductOp<Dtype>::backward_gpu(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
 		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
 	{
-		const Dtype* prev_data = (Dtype*)prev[0]->getGpuData();
-		const Dtype* next_data = (Dtype*)next[0]->getGpuData();
-		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getGpuData();
-		const Dtype* next_diff_data = (Dtype*)next_diff[0]->getGpuData();
-		const Dtype* weight_data = (Dtype*)prev[1]->getGpuData();
+		const Dtype* prev_data = (Dtype*)prev[0]->getPushGpuData();
+		const Dtype* next_data = (Dtype*)next[0]->getPushGpuData();
+		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getPushGpuData();
+		const Dtype* next_diff_data = (Dtype*)next_diff[0]->getPushGpuData();
+		const Dtype* weight_data = (Dtype*)prev[1]->getPushGpuData();
 
 		const std::vector<int> prev_diff_size = prev_diff[0]->getSize();
 		const std::vector<int> prev_data_size = prev[0]->getSize();
@@ -341,8 +341,8 @@ namespace dlex_cnn
 		////////////////////////////////////////////////////////////////////////////
 		//update this layer's param
 		//get weight gradient
-		gradient_[0]->getGpuData();
-		Dtype* weight_gradient_data = (Dtype *)gradient_[0]->getGpuData();
+		gradient_[0]->getPushGpuData();
+		Dtype* weight_gradient_data = (Dtype *)gradient_[0]->getPushGpuData();
 		// next_diff(num, hidden_num) -> next_diff'(hidden_num, num)
 		// O(M,N) = weightGradient(hidden_num, in3DSize) = next_diff'(hidden_num, num) * prev_data(num, in3DSize)
 		// -> M=hidden_num, N=in3DSize, K=num
@@ -362,7 +362,7 @@ namespace dlex_cnn
 		//if (param_.blas_enable)
 		//{
 		//	//get bias diff	
-		//	Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getCpuData();
+		//	Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getPushCpuData();
 		//	const std::vector<int> biasGradSize = gradient_[1]->getSize();
 
 		//	gradient_[1]->setCpuZero();

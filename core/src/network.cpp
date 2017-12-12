@@ -70,18 +70,20 @@ namespace dlex_cnn {
 		else
 		{
 			int ret = 0;
+			if (Task::mode() == tind::GPU)
+				input_data_tensor->checkPushGpuData();
 			input_data_vec_.clear();
 			input_data_vec_.push_back(input_data_tensor);
 			ret = graph_->setInNode(input_data_vec_);
 
 			if (label_data_tensor != NULL)
 			{
+				if (Task::mode() == tind::GPU)
+					label_data_tensor->checkPushGpuData();
 				label_data_vec_.clear();
 				label_data_vec_.push_back(label_data_tensor);
 				ret += graph_->setOutNode(label_data_vec_);
-				//printf("finish set outnode\n");
 			}
-
 			if (ret != 0)
 				return -1;
 		}
@@ -101,7 +103,12 @@ namespace dlex_cnn {
 		{
 			std::string op_type = nodes[i]->getInteOp()->getOpType();
 			if (!(op_type == "Input" || op_type == "Output"))
-				optimizer_->update(nodes[i]);
+			{
+				if (Task::mode() == tind::CPU)
+					optimizer_->update(nodes[i]);
+				else
+					optimizer_->update_gpu(nodes[i]);
+			}
 		}
 		return 0;
 	}
@@ -181,9 +188,9 @@ namespace dlex_cnn {
 	}
 
 	template <typename Dtype>
-	int NetWork<Dtype>::getNodeData(const std::string &node_name, std::shared_ptr<Tensor<Dtype>> &cpu_data)
+	int NetWork<Dtype>::getNodeData(const std::string &node_name, std::shared_ptr<Tensor<Dtype>> &data)
 	{
-		graph_->getNodeData(node_name, cpu_data);
+		graph_->getNodeData(node_name, data);
 		return 0;
 	}
 	template <typename Dtype>

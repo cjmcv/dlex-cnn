@@ -45,7 +45,7 @@ namespace dlex_cnn
 		// Fetch loss that has been saved in one of the output nodes.
 		int getLoss(const std::string &node_name, Dtype &loss);
 		// Fetch data in the specified node.
-		int getNodeData(const std::string &node_name, std::shared_ptr<Tensor<Dtype>> &cpuData);
+		int getNodeData(const std::string &node_name, std::shared_ptr<Tensor<Dtype>> &data);
 
 		int graphShow();
 
