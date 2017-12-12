@@ -131,10 +131,10 @@ namespace dlex_cnn
 		//worker(0, prev_shape[tind::eNum]);
 		/////////////////////////////////////////////////////
 
-		const Dtype* prev_data = (Dtype *)prev[0]->getCpuData();
-		const Dtype* kernel_data = (Dtype *)prev[1]->getCpuData();
-		const Dtype* bias_data = (Dtype *)prev[2]->getCpuData();
-		Dtype* next_data = (Dtype *)next[0]->getCpuData();
+		const Dtype* prev_data = (Dtype *)prev[0]->getPushCpuData();
+		const Dtype* kernel_data = (Dtype *)prev[1]->getPushCpuData();
+		const Dtype* bias_data = (Dtype *)prev[2]->getPushCpuData();
+		Dtype* next_data = (Dtype *)next[0]->getPushCpuData();
 
 		// (1, channels*kernel_h*kernel_w, output_h*output_w)
 		const int output_h = (prev_shape[tind::eHeight] + 2 * param_.pad_h - (param_.dilation_h * (param_.kernel_h - 1) + 1)) / param_.stride_h + 1;
@@ -149,7 +149,7 @@ namespace dlex_cnn
 		else if (col_buffer_->getSize()[tind::e4D] != 1 * 1 * col_height * col_width)
 			col_buffer_.reset(new Tensor<Dtype>(1, 1, col_height, col_width));
 
-		Dtype* col_data = (Dtype *)col_buffer_->getCpuData();
+		Dtype* col_data = (Dtype *)col_buffer_->getPushCpuData();
 
 		next[0]->setCpuZero();
 		for (int ni = 0; ni < prev_shape[tind::eNum]; ni++)
@@ -165,7 +165,7 @@ namespace dlex_cnn
 			//printf("address: %d\n", col_data);
 
 			//bool bTransA, bool bTransB, const int M, const int N, const int K, const float alpha, const Dtype* A, const Dtype* B, const float beta, Dtype* C
-			gemm(false, false, param_.kernel_num, col_width, col_height, 
+			gemm_cpu(false, false, param_.kernel_num, col_width, col_height, 
 				(Dtype)1, kernel_data, col_data, 
 				(Dtype)0, next_data + ni * next_size[tind::e3D]);
 		}
@@ -201,21 +201,21 @@ namespace dlex_cnn
 		//const std::vector<int> biasShape = prev[2]->getShape();
 		const std::vector<int> bias_size = prev[2]->getSize();
 
-		const Dtype* prev_data = (Dtype*)prev[0]->getCpuData();
-		const Dtype* next_data = (Dtype*)next[0]->getCpuData();
-		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getCpuData();
-		Dtype* next_diff_data = (Dtype*)next_diff[0]->getCpuData();
-		Dtype *kernel_data = (Dtype*)prev[1]->getCpuData();
-		//Dtype *bias_data = (Dtype*)prev[2]->getCpuData();
+		const Dtype* prev_data = (Dtype*)prev[0]->getPushCpuData();
+		const Dtype* next_data = (Dtype*)next[0]->getPushCpuData();
+		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getPushCpuData();
+		Dtype* next_diff_data = (Dtype*)next_diff[0]->getPushCpuData();
+		Dtype *kernel_data = (Dtype*)prev[1]->getPushCpuData();
+		//Dtype *bias_data = (Dtype*)prev[2]->getPushCpuData();
 
-		Dtype* col_data = (Dtype *)col_buffer_->getCpuData();
+		Dtype* col_data = (Dtype *)col_buffer_->getPushCpuData();
 
 		
 		//update prev_diff
 		prev_diff[0]->setCpuZero();
 		for (int i = 0; i < prev_diff_shape[tind::eNum]; i++)
 		{
-			gemm(true, false, kernel_size[tind::e3D], next_diff_size[tind::e2D], kernel_shape[tind::eNum],
+			gemm_cpu(true, false, kernel_size[tind::e3D], next_diff_size[tind::e2D], kernel_shape[tind::eNum],
 				(Dtype)1.0, kernel_data, next_diff_data + i * next_diff_size[tind::e3D],
 				(Dtype)0.0, col_data);
 
@@ -231,7 +231,7 @@ namespace dlex_cnn
 		//update weight Diff
 		gradient_[0]->setCpuZero();
 		//const std::vector<int> kernelGradientSize = gradient_[0]->getSize();
-		Dtype* kernel_gradient_data = (Dtype *)gradient_[0]->getCpuData();
+		Dtype* kernel_gradient_data = (Dtype *)gradient_[0]->getPushCpuData();
 
 		for (int ni = 0; ni < prev_diff_shape[tind::eNum]; ni++)
 		{
@@ -244,22 +244,162 @@ namespace dlex_cnn
 				col_data);
 
 			// kernel_shape[tind::eNum] == next_shape[tind::eChannels]
-			gemm(false, true, kernel_shape[tind::eNum], kernel_size[tind::e3D], next_size[tind::e2D],
+			gemm_cpu(false, true, kernel_shape[tind::eNum], kernel_size[tind::e3D], next_size[tind::e2D],
 				(Dtype)1.0, next_diff_data + ni * next_diff_size[tind::e3D], col_data,
 				(Dtype)1.0, kernel_gradient_data);
 
 		}
-		div_inplace(kernel_size[tind::e4D], (Dtype)next_shape[tind::eNum], kernel_gradient_data);
+		div_inplace_cpu(kernel_size[tind::e4D], (Dtype)next_shape[tind::eNum], kernel_gradient_data);
 
 		//update bias gradient
 		gradient_[1]->setCpuZero();
-		Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getCpuData();
+		Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getPushCpuData();
 
 		backward_bias(next_diff_shape[tind::eNum], next_diff_shape[tind::eChannels], next_diff_size[tind::e2D], next_diff_data, bias_gradient_data);
-		div_inplace(bias_size[tind::e4D], (Dtype)next_shape[tind::eNum], bias_gradient_data);
+		div_inplace_cpu(bias_size[tind::e4D], (Dtype)next_shape[tind::eNum], bias_gradient_data);
 
 	}
 
+#ifdef USE_CUDA
+	template <typename Dtype>
+	void ConvolutionOp<Dtype>::forward_gpu(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
+	{
+		const std::vector<int> prev_shape = prev[0]->getShape();
+		const std::vector<int> next_shape = next[0]->getShape();
+
+		const std::vector<int> prev_size = prev[0]->getSize();
+		const std::vector<int> next_size = next[0]->getSize();
+
+		const std::vector<int> kernel_shape = prev[1]->getShape();
+
+		const Dtype* prev_data = (Dtype *)prev[0]->getPushGpuData();
+		const Dtype* kernel_data = (Dtype *)prev[1]->getPushGpuData();
+		const Dtype* bias_data = (Dtype *)prev[2]->getPushGpuData();
+		Dtype* next_data = (Dtype *)next[0]->getPushGpuData();
+
+		// (1, channels*kernel_h*kernel_w, output_h*output_w)
+		const int output_h = (prev_shape[tind::eHeight] + 2 * param_.pad_h - (param_.dilation_h * (param_.kernel_h - 1) + 1)) / param_.stride_h + 1;
+		const int output_w = (prev_shape[tind::eWidth] + 2 * param_.pad_w - (param_.dilation_w * (param_.kernel_w - 1) + 1)) / param_.stride_w + 1;
+
+		// The dimension of col_buffer is relevent to "prev". -> From prev to col_buffer.
+		// prev channel num is equal to kernel's channel num.
+		int col_height = prev_shape[tind::eChannels] * param_.kernel_h * param_.kernel_w;
+		int col_width = output_h * output_w;
+		if (col_buffer_ == NULL)
+			col_buffer_ = std::make_shared<Tensor<Dtype>>(1, 1, col_height, col_width);
+		else if (col_buffer_->getSize()[tind::e4D] != 1 * 1 * col_height * col_width)
+			col_buffer_.reset(new Tensor<Dtype>(1, 1, col_height, col_width));
+
+		Dtype* col_data = (Dtype *)col_buffer_->getPushGpuData();
+
+		next[0]->setGpuZero();
+		for (int ni = 0; ni < prev_shape[tind::eNum]; ni++)
+		{
+			//printf("address: %d\n", col_data);
+			im2col_gpu<Dtype>(prev_data + ni*prev_size[tind::e3D], prev_shape[tind::eChannels],
+				prev_shape[tind::eHeight], prev_shape[tind::eWidth],
+				param_.kernel_h, param_.kernel_w,
+				param_.pad_h, param_.pad_w,
+				param_.stride_h, param_.stride_w,
+				param_.dilation_h, param_.dilation_w,
+				col_data);
+
+			gemm_gpu(CuHandleManager::cublas_handle(), false, false, param_.kernel_num, col_width, col_height,
+				(Dtype)1, kernel_data, col_data,
+				(Dtype)0, next_data + ni * next_size[tind::e3D]);
+		}
+
+		//// kernel_num与输出channels一致，一个kernel对应一个bias，则以channels为下标，channel内使用同一个bias // chinese
+		//if (param_.blas_enable)
+		//	add_bias(next_shape[tind::eNum], next_shape[tind::eChannels], next_size[tind::e2D], bias_data, next_data);
+	}
+
+	template <typename Dtype>
+	void ConvolutionOp<Dtype>::backward_gpu(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
+	{
+		printf("get into ConvolutionOp<Dtype>::backward_gpu\n");
+		// data
+		const std::vector<int> prev_shape = prev[0]->getShape();
+		const std::vector<int> next_shape = next[0]->getShape();
+
+		const std::vector<int> prev_size = prev[0]->getSize();
+		const std::vector<int> next_size = next[0]->getSize();
+
+		// diff
+		const std::vector<int> prev_diff_shape = prev_diff[0]->getShape();
+		const std::vector<int> next_diff_shape = next_diff[0]->getShape();
+
+		const std::vector<int> prev_diff_size = prev_diff[0]->getSize();
+		const std::vector<int> next_diff_size = next_diff[0]->getSize();
+
+		// weight
+		const std::vector<int> kernel_shape = prev[1]->getShape();
+		const std::vector<int> kernel_size = prev[1]->getSize();
+
+		// bias
+		//const std::vector<int> biasShape = prev[2]->getShape();
+		const std::vector<int> bias_size = prev[2]->getSize();
+
+		const Dtype* prev_data = (Dtype*)prev[0]->getPushGpuData();
+		const Dtype* next_data = (Dtype*)next[0]->getPushGpuData();
+		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getPushGpuData();
+		Dtype* next_diff_data = (Dtype*)next_diff[0]->getPushGpuData();
+		Dtype *kernel_data = (Dtype*)prev[1]->getPushGpuData();
+		//Dtype *bias_data = (Dtype*)prev[2]->getPushGpuData();
+
+		Dtype* col_data = (Dtype *)col_buffer_->getPushGpuData();
+
+
+		//update prev_diff
+		prev_diff[0]->setGpuZero();
+		for (int i = 0; i < prev_diff_shape[tind::eNum]; i++)
+		{
+			gemm_gpu(CuHandleManager::cublas_handle(), true, false, kernel_size[tind::e3D], next_diff_size[tind::e2D], kernel_shape[tind::eNum],
+				(Dtype)1.0, kernel_data, next_diff_data + i * next_diff_size[tind::e3D],
+				(Dtype)0.0, col_data);
+
+			col2im_gpu(col_data, prev_diff_shape[tind::eChannels],
+				prev_diff_shape[tind::eHeight], prev_diff_shape[tind::eWidth],
+				param_.kernel_h, param_.kernel_w,
+				param_.pad_h, param_.pad_w,
+				param_.stride_h, param_.stride_w,
+				param_.dilation_h, param_.dilation_w,
+				prev_diff_data + i * prev_diff_size[tind::e3D]);
+		}
+
+		//update weight Diff
+		gradient_[0]->setGpuZero();
+		//const std::vector<int> kernelGradientSize = gradient_[0]->getSize();
+		Dtype* kernel_gradient_data = (Dtype *)gradient_[0]->getPushGpuData();
+
+		for (int ni = 0; ni < prev_diff_shape[tind::eNum]; ni++)
+		{
+			im2col_gpu<Dtype>(prev_data + ni*prev_size[tind::e3D], prev_shape[tind::eChannels],
+				prev_shape[tind::eHeight], prev_shape[tind::eWidth],
+				param_.kernel_h, param_.kernel_w,
+				param_.pad_h, param_.pad_w,
+				param_.stride_h, param_.stride_w,
+				param_.dilation_h, param_.dilation_w,
+				col_data);
+
+			// kernel_shape[tind::eNum] == next_shape[tind::eChannels]
+			gemm_gpu(CuHandleManager::cublas_handle(), false, true, kernel_shape[tind::eNum], kernel_size[tind::e3D], next_size[tind::e2D],
+				(Dtype)1.0, next_diff_data + ni * next_diff_size[tind::e3D], col_data,
+				(Dtype)1.0, kernel_gradient_data);
+
+		}
+		div_inplace_gpu(kernel_size[tind::e4D], (Dtype)next_shape[tind::eNum], kernel_gradient_data);
+
+		////update bias gradient
+		//gradient_[1]->setGpuZero();
+		//Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getPushGpuData();
+
+		//backward_bias(next_diff_shape[tind::eNum], next_diff_shape[tind::eChannels], next_diff_size[tind::e2D], next_diff_data, bias_gradient_data);
+		//div_inplace_gpu(bias_size[tind::e4D], (Dtype)next_shape[tind::eNum], bias_gradient_data);
+
+	}
+#endif
 	INSTANTIATE_CLASS(ConvolutionOp);
 
 }//namespace

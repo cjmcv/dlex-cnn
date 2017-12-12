@@ -37,7 +37,7 @@ namespace dlex_cnn
 	do { \
 		cudaError_t error = condition; \
 		if(error != cudaSuccess) { \
-			DLOG_ERR(cudaGetErrorString(error)); \
+			DLOG_ERR("CUDA_DCHECK: %s", cudaGetErrorString(error)); \
 			throw(CUDA_DCHECK_EXC);	\
 		}\
 	} while (0)
@@ -59,6 +59,9 @@ namespace dlex_cnn
 			throw(CUBLAS_DCHECK_EXC);	\
 		} \
     } while (0)
+
+	// CUDA: check for error after kernel execution and exit loudly if there is one.
+#define CUDA_POST_KERNEL_CHECK CUDA_DCHECK(cudaPeekAtLastError())
 
 	// curand
 	class CuHandleManager

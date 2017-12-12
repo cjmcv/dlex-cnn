@@ -24,7 +24,7 @@ namespace dlex_cnn
 	template void normal_distribution_init<double>(const int size, const double mean_value, const double standard_deviation, double* data);
 
 	template <typename Dtype>
-	void dlex_set(const int N, const Dtype alpha, Dtype* data)
+	void set_cpu(const int N, const Dtype alpha, Dtype* data)
 	{
 		if (alpha == 0) 
 		{
@@ -34,27 +34,27 @@ namespace dlex_cnn
 		for (int i = 0; i < N; ++i) 
 			data[i] = alpha;
 	}
-	template void dlex_set<int>(const int N, const int alpha, int* data);
-	template void dlex_set<float>(const int N, const float alpha, float* data);
-	template void dlex_set<double>(const int N, const double alpha, double* data);
+	template void set_cpu<int>(const int N, const int alpha, int* data);
+	template void set_cpu<float>(const int N, const float alpha, float* data);
+	template void set_cpu<double>(const int N, const double alpha, double* data);
 
 	//a /= b
 	template <typename Dtype>
-	void div_inplace(const int N, const Dtype alpha, Dtype* data)
+	void div_inplace_cpu(const int N, const Dtype alpha, Dtype* data)
 	{
 		for (int i = 0; i < N; i++)
 		{
 			data[i] /= alpha;
 		}
 	}
-	template void div_inplace<int>(const int N, const int alpha, int* data);
-	template void div_inplace<float>(const int N, const float alpha, float* data);
-	template void div_inplace<double>(const int N, const double alpha, double* data);
+	template void div_inplace_cpu<int>(const int N, const int alpha, int* data);
+	template void div_inplace_cpu<float>(const int N, const float alpha, float* data);
+	template void div_inplace_cpu<double>(const int N, const double alpha, double* data);
 
 
 	// A(M,K) * B(K, N) = C(M, N)
 	template <typename Dtype>
-	void gemm(bool bTransA, bool bTransB, const int M, const int N, const int K, const Dtype alpha, const Dtype* A, const Dtype* B, const Dtype beta, Dtype* C)
+	void gemm_cpu(bool bTransA, bool bTransB, const int M, const int N, const int K, const Dtype alpha, const Dtype* A, const Dtype* B, const Dtype beta, Dtype* C)
 	{
 		int i, j, t;
 		int lda = (bTransA == false) ? K : M;
@@ -110,8 +110,8 @@ namespace dlex_cnn
 			}
 		}
 	}
-	template void gemm<float>(bool bTransA, bool bTransB, const int M, const int N, const int K, const float alpha, const float* A, const float* B, const float beta, float* C);
-	template void gemm<double>(bool bTransA, bool bTransB, const int M, const int N, const int K, const double alpha, const double* A, const double* B, const double beta, double* C);
+	template void gemm_cpu<float>(bool bTransA, bool bTransB, const int M, const int N, const int K, const float alpha, const float* A, const float* B, const float beta, float* C);
+	template void gemm_cpu<double>(bool bTransA, bool bTransB, const int M, const int N, const int K, const double alpha, const double* A, const double* B, const double beta, double* C);
 
 	template <typename Dtype>
 	void add_bias(const int num, const int len, const Dtype* bias, Dtype* dst)
