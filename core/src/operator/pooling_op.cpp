@@ -113,17 +113,18 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	void PoolingOp<Dtype>::forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
+	void PoolingOp<Dtype>::forward(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
 	{
 		const std::vector<int> prev_size = prev[0]->getSize();
 		const std::vector<int> prev_shape = prev[0]->getShape();
 		const std::vector<int> next_shape = next[0]->getShape();
 
-		Dtype* prev_data = (Dtype *)prev[0]->getCpuData();	//bottom_data
-		Dtype* next_data = (Dtype *)next[0]->getCpuData();	//top_data
+		Dtype* prev_data = (Dtype *)prev[0]->getPushCpuData();	//bottom_data
+		Dtype* next_data = (Dtype *)next[0]->getPushCpuData();	//top_data
 
 		const std::vector<int> next_size = next[0]->getSize(); // 4d = top_count
-		const bool use_top_mask = next.size() > 1;
 
 		int* mask = NULL;
 		bool mflag = true;
@@ -131,12 +132,12 @@ namespace dlex_cnn
 		{
 		case tind::eMAX:
 			// Initialize
-			if (max_idx_map_ == NULL)
+			if (max_idx_map_ == NULL)	// max_idx_map_ only works in training phase for pooling's backward.
 				mflag = false;
 			else if (max_idx_map_->getSize()[tind::e4D] != next_size[tind::e4D])
 				max_idx_map_.reset(new Tensor<int>(next_shape));
 				
-			mask = (int *)max_idx_map_->getCpuData();
+			mask = (int *)max_idx_map_->getPushCpuData();
 			max_idx_map_->setCpuValue(Dtype(-1));
 
 			next[0]->setCpuZero();
@@ -212,10 +213,12 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	void PoolingOp<Dtype>::backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
+	void PoolingOp<Dtype>::backward(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
 	{
-
 		const std::vector<int> prev_diff_size = prev_diff[0]->getSize();
 		const std::vector<int> next_diff_size = next_diff[0]->getSize();
 		const std::vector<int> prev_diff_shape = prev_diff[0]->getShape();
@@ -226,8 +229,8 @@ namespace dlex_cnn
 		const std::vector<int> prev_shape = prev[0]->getShape();
 		const std::vector<int> next_shape = next[0]->getShape();
 
-		Dtype* prev_diff_data = (Dtype *)prev_diff[0]->getCpuData();	//bottom_data
-		Dtype* next_diff_data = (Dtype *)next_diff[0]->getCpuData();	//top_data
+		Dtype* prev_diff_data = (Dtype *)prev_diff[0]->getPushCpuData();	//bottom_data
+		Dtype* next_diff_data = (Dtype *)next_diff[0]->getPushCpuData();	//top_data
 
 		prev_diff[0]->setCpuZero();
 
@@ -235,7 +238,7 @@ namespace dlex_cnn
 		switch (this->param_.pooling_type) {
 		case tind::eMAX:
 			// The main loop
-			mask = (int *)max_idx_map_->getCpuData();
+			mask = (int *)max_idx_map_->getPushCpuData();
 			
 			for (int n = 0; n < next_shape[tind::eNum]; ++n) {
 				for (int c = 0; c < next_shape[tind::eChannels]; ++c) {
@@ -290,6 +293,25 @@ namespace dlex_cnn
 			DLOG_ERR("[ PoolingOp::backward ]: Unknown pooling method.\n");
 		}
 	}
+
+#ifdef USE_CUDA
+	//template <typename Dtype>
+	//void PoolingOp<Dtype>::forward_gpu(
+	//	const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
+	//	const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
+	//{
+	//	forward_gpu(prev, next);
+	//}
+	//template <typename Dtype>
+	//void PoolingOp<Dtype>::backward_gpu(
+	//	const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
+	//	const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+	//	const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff,
+	//	const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
+	//{
+	//	backward(prev, next, prev_diff, next_diff);
+	//}
+#endif
 
 	INSTANTIATE_CLASS(PoolingOp);
 

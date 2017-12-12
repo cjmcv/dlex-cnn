@@ -32,22 +32,25 @@ namespace dlex_cnn
 
 		const std::shared_ptr<Op<Dtype>> inteOp = node->getInteOp();
 
-		Dtype* weight_data = (Dtype *)node_data[1]->getCpuData();
+		Dtype* weight_data = (Dtype *)node_data[1]->getPushCpuData();
 		const std::vector<int> weight_data_size = node_data[1]->getSize();
-		const Dtype* w_gradient_data = (Dtype *)(inteOp->getOpGradient())[0]->getCpuData();
+		const Dtype* w_gradient_data = (Dtype *)(inteOp->getOpGradient())[0]->getPushCpuData();
 		for (int i = 0; i < weight_data_size[tind::e4D]; i++)
 			weight_data[i] -= Optimizer<Dtype>::lr_*w_gradient_data[i];
 
 		if (node_data.size() >= 2 && inteOp->getOpGradient().size() >= 2)
 		{
-			Dtype* blas_data = (Dtype *)node_data[2]->getCpuData();
+			Dtype* blas_data = (Dtype *)node_data[2]->getPushCpuData();
 			const std::vector<int> blas_data_size = node_data[2]->getSize();
-			const Dtype* b_gradient_data = (Dtype *)(inteOp->getOpGradient())[1]->getCpuData();
+			const Dtype* b_gradient_data = (Dtype *)(inteOp->getOpGradient())[1]->getPushCpuData();
 			for (int i = 0; i < blas_data_size[tind::e4D]; i++)
 				blas_data[i] -= Optimizer<Dtype>::lr_*b_gradient_data[i];
 		}
+		////
+		//node_data[1]->cpyInplace(tind::eHost2Device);
+		//(inteOp->getOpGradient())[0]->cpyInplace(tind::eHost2Device);
+		//node_data[2]->cpyInplace(tind::eHost2Device);
+		//(inteOp->getOpGradient())[1]->cpyInplace(tind::eHost2Device);
 	}
-
-	//INSTANTIATE_CLASS(Optimizer);
 	INSTANTIATE_CLASS(SGD);
 }//namespace

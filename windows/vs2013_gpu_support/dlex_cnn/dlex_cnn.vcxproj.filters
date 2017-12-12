@@ -253,5 +253,11 @@
     <CudaCompile Include="..\..\..\core\src\util\math_functions.cu">
       <Filter>源文件\src\util</Filter>
     </CudaCompile>
+    <CudaCompile Include="..\..\..\core\src\optimizer\optimizer.cu">
+      <Filter>源文件\src\optimizer</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\..\..\core\src\operator\pooling_op.cu">
+      <Filter>源文件\src\operator</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>
