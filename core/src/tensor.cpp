@@ -20,8 +20,8 @@ namespace dlex_cnn
 		else if (num > MAX_SHAPE_SIZE || height > MAX_SHAPE_SIZE || width > MAX_SHAPE_SIZE)
 		{
 			DLOG_ERR("[ Tensor::Tensor ]: num(%d) > MAX_SHAPE_SIZE || \
-					 height(%d) > MAX_SHAPE_SIZE || width(%d) > MAX_SHAPE_SIZE.\n",
-					 num, height, width);
+					 					 height(%d) > MAX_SHAPE_SIZE || width(%d) > MAX_SHAPE_SIZE.\n",
+										 num, height, width);
 		}
 
 		shape_.clear();
@@ -52,8 +52,8 @@ namespace dlex_cnn
 		else if (shape[0] > MAX_SHAPE_SIZE || shape[2] > MAX_SHAPE_SIZE || shape[3] > MAX_SHAPE_SIZE)
 		{
 			DLOG_ERR("[ Tensor::Tensor ]: num(%d) > MAX_SHAPE_SIZE || \
-					 height(%d) > MAX_SHAPE_SIZE || width(%d) > MAX_SHAPE_SIZE.\n",
-					 shape[0], shape[2], shape[3]);
+					 					 height(%d) > MAX_SHAPE_SIZE || width(%d) > MAX_SHAPE_SIZE.\n",
+										 shape[0], shape[2], shape[3]);
 		}
 
 		shape_.clear();
@@ -85,11 +85,6 @@ namespace dlex_cnn
 	template <typename Dtype>
 	int Tensor<Dtype>::mallocCpuData()
 	{
-		if (cpu_data_ != NULL)
-		{
-			free(cpu_data_);
-			cpu_data_ = NULL;
-		}
 		cpu_data_ = (void *)malloc(sizeof(Dtype) * size_[tind::e4D]);
 		if (cpu_data_ == NULL)
 		{
@@ -124,11 +119,6 @@ namespace dlex_cnn
 	template <typename Dtype>
 	int Tensor<Dtype>::mallocGpuData()
 	{
-		if (gpu_data_ != NULL)
-		{
-			cudaFree(gpu_data_);
-			gpu_data_ = NULL;
-		}
 		CUDA_DCHECK(cudaGetDevice(&gpu_device_));
 		CUDA_DCHECK(cudaMalloc(&gpu_data_, sizeof(Dtype) * size_[tind::e4D]));
 		if (gpu_data_ == NULL)
@@ -172,7 +162,7 @@ namespace dlex_cnn
 		switch (cp_mode)
 		{
 		case tind::eHost2Host:
-			if (dst_tensor.getPushCpuData() == NULL || this->cpu_data_ == NULL)
+			if (dst_tensor.getCpuData() == NULL || this->cpu_data_ == NULL)
 			{
 				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getCpuData() == NULL || this->cpu_data_ == NULL.\n");
 				return;
@@ -183,7 +173,7 @@ namespace dlex_cnn
 			break;
 #ifdef USE_CUDA
 		case tind::eHost2Device:
-			if (dst_tensor.getPushGpuData() == NULL || this->cpu_data_ == NULL)
+			if (dst_tensor.getGpuData() == NULL || this->cpu_data_ == NULL)
 			{
 				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getGpuData() == NULL || this->cpu_data_ == NULL.\n");
 				return;
@@ -192,7 +182,7 @@ namespace dlex_cnn
 			dst_tensor.setMemHead(tind::eHeadAtGPU);
 			break;
 		case tind::eDevice2Device:
-			if (dst_tensor.getPushGpuData() == NULL || this->gpu_data_ == NULL)
+			if (dst_tensor.getGpuData() == NULL || this->gpu_data_ == NULL)
 			{
 				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getGpuData() == NULL || this->gpu_data_ == NULL.\n");
 				return;
@@ -201,7 +191,7 @@ namespace dlex_cnn
 			dst_tensor.setMemHead(tind::eHeadAtGPU);
 			break;
 		case tind::eDevice2Host:
-			if (dst_tensor.getPushCpuData() == NULL || this->gpu_data_ == NULL)
+			if (dst_tensor.getCpuData() == NULL || this->gpu_data_ == NULL)
 			{
 				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getCpuData() == NULL || this->gpu_data_ == NULL.\n");
 				return;

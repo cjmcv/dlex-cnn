@@ -77,7 +77,7 @@ namespace dlex_cnn
 			checkPushGpuData();
 			return gpu_data_;
 		}
-
+	
 		inline void setGpuZero() { set_gpu(size_[tind::e4D], (Dtype)0, (Dtype *)getGpuData()); };
 		inline void setGpuValue(Dtype alpha) {
 			Dtype *dst = (Dtype *)getGpuData();

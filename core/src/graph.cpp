@@ -175,6 +175,7 @@ namespace dlex_cnn
 				input_data[i]->copyDataTo(*nodes_[index]->getDataVec()[0], tind::eHost2Host);
 			else
 				input_data[i]->copyDataTo(*nodes_[index]->getDataVec()[0], tind::eDevice2Device);
+			CUDA_DCHECK(cudaStreamSynchronize(cudaStreamDefault));
 		}
 		return 0;
 	}
@@ -220,13 +221,11 @@ namespace dlex_cnn
 			if (nodes_[index]->getDataVec()[1]->getSize()[tind::e4D] != label_data[i]->getSize()[tind::e4D])
 				nodes_[index]->resetDataSize(1, label_data[i]->getShape());
 
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> cpu_data = nodes_[index]->getDataVec();
-
 			if (Task::mode() == tind::CPU)
-				label_data[i]->copyDataTo(*cpu_data[1], tind::eHost2Host);
+				label_data[i]->copyDataTo(*nodes_[index]->getDataVec()[1], tind::eHost2Host);
 			else
-				label_data[i]->copyDataTo(*cpu_data[1], tind::eDevice2Device);
-
+				label_data[i]->copyDataTo(*nodes_[index]->getDataVec()[1], tind::eDevice2Device);
+			CUDA_DCHECK(cudaStreamSynchronize(cudaStreamDefault));
 			//printf("finish set out node\n");
 		}
 		return 0;
