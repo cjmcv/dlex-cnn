@@ -19,6 +19,9 @@
 
 namespace dlex_cnn
 {
+	const char* cublasGetErrorString(cublasStatus_t error);
+	const char* curandGetErrorString(curandStatus_t error);
+
 	// CUDA: use 512 threads per block
 	const int DLEX_CUDA_NUM_THREADS = 512;
 
@@ -46,7 +49,7 @@ namespace dlex_cnn
 	do { \
 		curandStatus_t status = condition; \
 		if(status != CURAND_STATUS_SUCCESS) { \
-			DLOG_ERR("curand error code: %d\n", status); \
+			DLOG_ERR("CURAND_DCHECK: %s", curandGetErrorString(status)); \
 			throw(CURAND_DCHECK_EXC);	\
 		} \
 	} while (0)
@@ -55,7 +58,7 @@ namespace dlex_cnn
 	do { \
 		cublasStatus_t status = condition; \
 		if(status != CUBLAS_STATUS_SUCCESS) { \
-			DLOG_ERR("cublas error code: %d\n", status); \
+			DLOG_ERR("CUBLAS_DCHECK: %s", cublasGetErrorString(status)); \
 			throw(CUBLAS_DCHECK_EXC);	\
 		} \
     } while (0)
