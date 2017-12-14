@@ -30,9 +30,9 @@ namespace dlex_cnn
 		int stride_h = 1, stride_w = 1;
 		int pad_h = 0, pad_w = 0;
 		//int channels;
-		//int height_, width_;	//输入图像数据大小
-		//int pooled_height_, pooled_width_;	//实际池化输出大小，static_cast<int>(ceil(static_cast<float>(height_ + 2 * pad_h_ - kernel_h_) / stride_h_)) + 1;
-		bool global_pooling = false;	//为true时，kernel大小为输入大小
+		//int height_, width_;					// Input dimension (prev)
+		//int pooled_height_, pooled_width_;	// Input dimension(after pooling, next)
+		bool global_pooling = false;			// Kernel size is equal to Input's if it is ture;
 	};
 
 	template <typename Dtype>
@@ -65,16 +65,26 @@ namespace dlex_cnn
 		// Refer to Caffe
 		// In max pooling, it should mark the location(index) of max number in each sliding window.
 		// In average pooling, just get the mean value;
-		virtual void forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
+		virtual void forward(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
 		// In max pooling, According to the mask we have got in forward, we just only update the points which is the max of each sliding windows in forward.
 		// In average pooling, each next value will be divided by kernel size, and fill the relevant sliding window with the quotient;
 		// If sliding windows are overlap, the output will be accumulated.
-		virtual void backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
+		virtual void backward(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
 #ifdef USE_CUDA
-		virtual void forward_gpu(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
-		virtual void backward_gpu(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
+		virtual void forward_gpu(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
+		virtual void backward_gpu(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff,
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
 #endif
 
 	private:

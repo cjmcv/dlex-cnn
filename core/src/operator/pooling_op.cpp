@@ -237,11 +237,10 @@ namespace dlex_cnn
 		const int* mask = NULL;  // suppress warnings about uninitialized variables
 		switch (this->param_.pooling_type) {
 		case tind::eMAX:
-			// The main loop
+			// The main loop (loop parameter -> num, channels, pooled_height, pooled_width)
 			mask = (int *)max_idx_map_->getPushCpuData();
-			
-			for (int n = 0; n < next_shape[tind::eNum]; ++n) {
-				for (int c = 0; c < next_shape[tind::eChannels]; ++c) {
+			for (int n = 0; n < prev_shape[tind::eNum]; ++n) {
+				for (int c = 0; c < prev_shape[tind::eChannels]; ++c) {
 					for (int ph = 0; ph < next_shape[tind::eHeight]; ++ph) {
 						for (int pw = 0; pw < next_shape[tind::eWidth]; ++pw) {
 							const int index = ph * next_shape[tind::eWidth] + pw;
@@ -258,9 +257,9 @@ namespace dlex_cnn
 			}
 			break;
 		case tind::eAVE:
-			// The main loop
-			for (int n = 0; n < next_shape[tind::eNum]; ++n) {
-				for (int c = 0; c < next_shape[tind::eChannels]; ++c) {
+			// The main loop (loop parameter -> num, channels, pooled_height, pooled_width)
+			for (int n = 0; n < prev_shape[tind::eNum]; ++n) {
+				for (int c = 0; c < prev_shape[tind::eChannels]; ++c) {
 					for (int ph = 0; ph < next_shape[tind::eHeight]; ++ph) {
 						for (int pw = 0; pw < next_shape[tind::eWidth]; ++pw) {
 							int hstart = ph * param_.stride_h - param_.pad_h;

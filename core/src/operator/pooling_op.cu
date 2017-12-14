@@ -203,7 +203,6 @@ namespace dlex_cnn
 		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff
 		) 
 	{
-		printf("get into PoolingOp<Dtype>::backward_gpu\n");
 		const std::vector<int> prev_diff_size = prev_diff[0]->getSize();
 		const std::vector<int> next_diff_size = next_diff[0]->getSize();
 		const std::vector<int> prev_diff_shape = prev_diff[0]->getShape();
@@ -224,18 +223,16 @@ namespace dlex_cnn
 		switch (this->param_.pooling_type) {
 		case tind::eMAX:
 			mask = (int *)max_idx_map_->getPushGpuData();
-			// NOLINT_NEXT_LINE(whitespace/operators)
 			MaxPoolBackward<Dtype> << <DLEX_GET_BLOCKS(prev_diff_size[tind::e4D]), DLEX_CUDA_NUM_THREADS >> >(
-				prev_diff_size[tind::e4D], next_diff_data, mask, next_shape[tind::eNum], next_shape[tind::eChannels],
-				next_shape[tind::eHeight], next_shape[tind::eWidth], next_shape[tind::eHeight], next_shape[tind::eWidth],
+				prev_diff_size[tind::e4D], next_diff_data, mask, prev_shape[tind::eNum], prev_shape[tind::eChannels],
+				prev_shape[tind::eHeight], prev_shape[tind::eWidth], next_shape[tind::eHeight], next_shape[tind::eWidth],
 				param_.kernel_h, param_.kernel_w, param_.stride_h, param_.stride_w, param_.pad_h, param_.pad_w,
 				prev_diff_data);
 			break;
 		case tind::eAVE:
-			// NOLINT_NEXT_LINE(whitespace/operators)
 			AvePoolBackward<Dtype> << <DLEX_GET_BLOCKS(prev_diff_size[tind::e4D]), DLEX_CUDA_NUM_THREADS >> >(
-				prev_diff_size[tind::e4D], next_diff_data, next_shape[tind::eNum], next_shape[tind::eChannels],
-				next_shape[tind::eHeight], next_shape[tind::eWidth], next_shape[tind::eHeight], next_shape[tind::eWidth],
+				prev_diff_size[tind::e4D], next_diff_data, prev_shape[tind::eNum], prev_shape[tind::eChannels],
+				prev_shape[tind::eHeight], prev_shape[tind::eWidth], next_shape[tind::eHeight], next_shape[tind::eWidth],
 				param_.kernel_h, param_.kernel_w, param_.stride_h, param_.stride_w, param_.pad_h, param_.pad_w, prev_diff_data);
 			break;
 		default:
