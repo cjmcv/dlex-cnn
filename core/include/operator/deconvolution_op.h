@@ -21,7 +21,7 @@ namespace dlex_cnn
 	struct DeconvolutionOpParam : public OpParam
 	{
 		bool blas_enable = true;
-		//int kernel_num = 1;	// kernel_num is equal to input channels.
+		//int kernel_num = 1;			// kernel_num in here is equal to the input channels.
 		int kernel_channels = 1;
 		int kernel_h = 3, kernel_w = 3;
 		int stride_h = 1, stride_w = 1;
@@ -70,7 +70,9 @@ namespace dlex_cnn
 		// col(kc*kh*kw, ph*pw) = kernel'(kc*kh*kw, kn=pc) * prev(pc, ph*pw)
 		// col2im(nc=kc, nh*nw) = col(kc*kh*kw, ph*pw)
 		// ps: nh/nw, refer to inferOutShape.
-		virtual void forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
+		virtual void forward(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
 
 		// 1, update prev_diff
 		//    col2im(nc=kc, nh*nw) = col(kc*kh*kw, ph*pw)
@@ -80,8 +82,22 @@ namespace dlex_cnn
 		//    kernelGradient(kn=pc, kc*kh*kw) = prev(pc, ph*pw) * nextDiff_col'(ph*pw, kc*kh*kw);
 		//    ps: in conv -> kernelGradient = next_diff * bottom_col'
 		//
-		virtual void backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
+		virtual void backward(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
+
+#ifdef USE_CUDA
+		virtual void forward_gpu(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
+		virtual void backward_gpu(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
+#endif
 
 	private:
 		std::string op_type_;
