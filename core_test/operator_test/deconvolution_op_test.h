@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief  
+// > brief  Test Deconvolution operator.
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
@@ -16,7 +16,6 @@ namespace dlex_cnn
 	template <typename Dtype>
 	class DeconvolutionOpTest
 	{
-		//template <float> friend class DeconvolutionOp;//
 		template<typename T> friend class DeconvolutionOp;
 
 	public:
@@ -24,8 +23,7 @@ namespace dlex_cnn
 		virtual ~DeconvolutionOpTest() {};
 
 	public:
-		void forward();
-		void backward();
+		void exec();
 	};
 }
 void testDeconv();

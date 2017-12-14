@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief  
+// > brief  Test Deconvolution operator.
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
@@ -15,8 +15,9 @@
 namespace dlex_cnn {
 
 	template <typename Dtype>
-	void DeconvolutionOpTest<Dtype>::forward()
+	void DeconvolutionOpTest<Dtype>::exec()
 	{
+		bool isTestGpu = false;
 		registerOpClass();
 
 		std::shared_ptr<dlex_cnn::Op<float>> conv1_s = dlex_cnn::OpFactory<float>::getInstance().createOpByType("Deconvolution");
@@ -70,10 +71,20 @@ namespace dlex_cnn {
 
 		conv1->allocOpBuf4Train(in_shape, out_shape);
 
+		// Test forward.
 		std::vector<std::shared_ptr<Tensor<float>>> out_data_vec;
 		out_data_vec.push_back(std::make_shared<Tensor<float>>(out_shape));
 
-		conv1->forward(in_data_vec, out_data_vec);
+		if (isTestGpu)
+		{
+#ifdef USE_CUDA
+			conv1->forward_gpu(in_data_vec, out_data_vec);
+#else
+			DLOG_ERR("The marco USE_CUDA is closed, please open it for testing in GPU.");
+#endif
+		}
+		else
+			conv1->forward(in_data_vec, out_data_vec);
 
 		matrixShow_float("A", (float *)in_data_vec[0]->getPushCpuData(), 
 			in_data_vec[0]->getShape()[tind::eNum], 
@@ -91,15 +102,24 @@ namespace dlex_cnn {
 			out_data_vec[0]->getShape()[tind::eHeight], 
 			out_data_vec[0]->getShape()[tind::eWidth]);
 
-		//反向传播，对比，矩阵手动计算对比
-		std::vector<std::shared_ptr<Tensor<Dtype>>> in_diff;
-		in_diff.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
+		// Test backward.
+		std::vector<std::shared_ptr<Tensor<Dtype>>> in_diff_vec;
+		in_diff_vec.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
 		std::vector<std::shared_ptr<Tensor<Dtype>>> out_diff;
 		out_diff.push_back(std::make_shared<Tensor<Dtype>>(out_shape));
 
-		// set out here first.
-		conv1->backward(in_data_vec, out_data_vec, in_diff, out_data_vec);
-		matrixShow_float("C", (float *)in_diff[0]->getPushCpuData(), 
+		if (isTestGpu)
+		{
+#ifdef USE_CUDA
+			conv1->backward_gpu(in_data_vec, out_data_vec, in_diff_vec, out_data_vec);
+#else
+			DLOG_ERR("The marco USE_CUDA is closed, please open it for testing in GPU.");
+#endif
+		}
+		else
+			conv1->backward(in_data_vec, out_data_vec, in_diff_vec, out_data_vec);
+
+		matrixShow_float("C", (float *)in_diff_vec[0]->getPushCpuData(),
 			in_shape[tind::eNum], in_shape[tind::eChannels], 
 			in_shape[tind::eHeight], in_shape[tind::eWidth]);
 
@@ -119,7 +139,7 @@ namespace dlex_cnn {
 void testDeconv()
 {
 	dlex_cnn::DeconvolutionOpTest<float> deconv_test;
-	deconv_test.forward();
+	deconv_test.exec();
 	system("pause");
 }
 #endif

@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief  
+// > brief  Test Pooling operator.
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
@@ -23,8 +23,7 @@ namespace dlex_cnn
 		virtual ~PoolingOpTest() {};
 
 	public:
-		void forward();
-		void backward();
+		void exec();
 	};
 }
 void testPool();

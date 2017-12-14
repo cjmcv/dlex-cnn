@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief  
+// > brief  Test Convolution operator.
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
@@ -16,7 +16,6 @@ namespace dlex_cnn
 	template <typename Dtype>
 	class ConvolutionOpTest
 	{
-		//template <float> friend class ConvolutionOp;//
 		template<typename T> friend class ConvolutionOp;
 
 	public:
@@ -24,8 +23,7 @@ namespace dlex_cnn
 		virtual ~ConvolutionOpTest() {};
 
 	public:
-		void forward();
-		void backward();
+		void exec();
 	};
 }
 void testConv();

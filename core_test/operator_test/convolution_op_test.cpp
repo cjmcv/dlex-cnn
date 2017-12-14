@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief  
+// > brief  Test Convolution operator.
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
@@ -15,8 +15,9 @@
 namespace dlex_cnn {
 
 	template <typename Dtype>
-	void ConvolutionOpTest<Dtype>::forward()
+	void ConvolutionOpTest<Dtype>::exec()
 	{
+		bool isTestGpu = true;
 		registerOpClass();
 
 		std::shared_ptr<dlex_cnn::Op<float>> conv1_s = dlex_cnn::OpFactory<float>::getInstance().createOpByType("Convolution");
@@ -68,36 +69,72 @@ namespace dlex_cnn {
 
 		conv1->allocOpBuf4Train(in_shape, out_shape);
 
+		// Test forward.
 		std::vector<std::shared_ptr<Tensor<float>>> out_data_vec;
 		out_data_vec.push_back(std::make_shared<Tensor<float>>(out_shape));
 
-		conv1->forward(in_data_vec, out_data_vec);
+		if (isTestGpu)
+		{
+#ifdef USE_CUDA
+			conv1->forward_gpu(in_data_vec, out_data_vec);
+#else
+			DLOG_ERR("The marco USE_CUDA is closed, please open it for testing in GPU.");
+#endif
+		}
+		else
+			conv1->forward(in_data_vec, out_data_vec);
 
-		//matrixShow_float("A", (float *)in_data_vec[0]->getPushCpuData(), in_data_vec[0]->getShape()[tind::eNum], in_data_vec[0]->getShape()[tind::eChannels], in_data_vec[0]->getShape()[tind::eHeight], in_data_vec[0]->getShape()[tind::eWidth]);
-		//matrixShow_float("B", (float *)out_data_vec[0]->getPushCpuData(), out_data_vec[0]->getShape()[tind::eNum], out_data_vec[0]->getShape()[tind::eChannels], out_data_vec[0]->getShape()[tind::eHeight], out_data_vec[0]->getShape()[tind::eWidth]);
+		matrixShow_float("A", (float *)in_data_vec[0]->getPushCpuData(), 
+			in_data_vec[0]->getShape()[tind::eNum], 
+			in_data_vec[0]->getShape()[tind::eChannels],
+			in_data_vec[0]->getShape()[tind::eHeight],
+			in_data_vec[0]->getShape()[tind::eWidth]);
+		matrixShow_float("B", (float *)out_data_vec[0]->getPushCpuData(), 
+			out_data_vec[0]->getShape()[tind::eNum], 
+			out_data_vec[0]->getShape()[tind::eChannels], 
+			out_data_vec[0]->getShape()[tind::eHeight], 
+			out_data_vec[0]->getShape()[tind::eWidth]);
 
-		//反向传播，对比，矩阵手动计算对比
-		std::vector<std::shared_ptr<Tensor<Dtype>>> in_diff;
-		in_diff.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
-		std::vector<std::shared_ptr<Tensor<Dtype>>> out_diff;
-		out_diff.push_back(std::make_shared<Tensor<Dtype>>(out_shape));
+		// Test backward.
+		std::vector<std::shared_ptr<Tensor<Dtype>>> in_diff_vec;
+		in_diff_vec.push_back(std::make_shared<Tensor<Dtype>>(in_shape));
+		std::vector<std::shared_ptr<Tensor<Dtype>>> out_diff_vec;
+		out_diff_vec.push_back(std::make_shared<Tensor<Dtype>>(out_shape));
 
-		// set out here first.
-		conv1->backward(in_data_vec, out_data_vec, in_diff, out_data_vec);
-		matrixShow_float("C", (float *)in_diff[0]->getPushCpuData(), in_shape[tind::eNum], in_shape[tind::eChannels], in_shape[tind::eHeight], in_shape[tind::eWidth]);
+		if (isTestGpu)
+		{
+#ifdef USE_CUDA
+			conv1->backward_gpu(in_data_vec, out_data_vec, in_diff_vec, out_data_vec);
+#else
+			DLOG_ERR("The marco USE_CUDA is closed, please open it for testing in GPU.");
+#endif
+		}
+		else
+			conv1->backward(in_data_vec, out_data_vec, in_diff_vec, out_data_vec);
+
+		matrixShow_float("C", (float *)in_diff_vec[0]->getPushCpuData(),
+			in_shape[tind::eNum], in_shape[tind::eChannels], 
+			in_shape[tind::eHeight], in_shape[tind::eWidth]);
 
 		const std::vector<int> kernel_shape = in_data_vec[1]->getShape();
-		matrixShow_float("weight gradient", (float *)conv1->gradient_[0]->getPushCpuData(), kernel_shape[tind::eNum], kernel_shape[tind::eChannels], kernel_shape[tind::eHeight], kernel_shape[tind::eWidth]);
+		matrixShow_float("weight gradient", (float *)conv1->gradient_[0]->getPushCpuData(), 
+			kernel_shape[tind::eNum], 
+			kernel_shape[tind::eChannels], 
+			kernel_shape[tind::eHeight], 
+			kernel_shape[tind::eWidth]);
 
 		const std::vector<int> bias_shape = in_data_vec[2]->getShape();
-		matrixShow_float("bias gradient", (float *)conv1->gradient_[1]->getPushCpuData(), bias_shape[tind::eNum], bias_shape[tind::eChannels], bias_shape[tind::eHeight], bias_shape[tind::eWidth]);
+		matrixShow_float("bias gradient", (float *)conv1->gradient_[1]->getPushCpuData(), 
+			bias_shape[tind::eNum], 
+			bias_shape[tind::eChannels], 
+			bias_shape[tind::eHeight], 
+			bias_shape[tind::eWidth]);
 	}
-
 }
 
 void testConv()
 {
 	dlex_cnn::ConvolutionOpTest<float> conv_test;
-	conv_test.forward();
+	conv_test.exec();
 }
 #endif
