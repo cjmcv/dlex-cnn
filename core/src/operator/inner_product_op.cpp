@@ -115,7 +115,9 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	void InnerProductOp<Dtype>::forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
+	void InnerProductOp<Dtype>::forward(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
 	{
 		//printf("InnerProductOp: prev = %d, next = %d\n", prev.size(), next.size());
 		const std::vector<int> prev_data_size = prev[0]->getSize();
@@ -134,7 +136,8 @@ namespace dlex_cnn
 		//}
 		next[0]->setCpuZero();
 		auto worker = [&](const int start, const int stop){
-			gemm_cpu(false, true, stop - start, next_data_size[tind::e3D], prev_data_size[tind::e3D], 
+			gemm_cpu(false, true, stop - start, 
+				next_data_size[tind::e3D], prev_data_size[tind::e3D], 
 				(Dtype)1.0, prev_data + start * prev_data_size[tind::e3D], weight_data, 
 				(Dtype)0.0, next_data + start * next_data_size[tind::e3D]);
 		};
@@ -156,8 +159,11 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	void InnerProductOp<Dtype>::backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
+	void InnerProductOp<Dtype>::backward(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
 	{
 		const Dtype* prev_data = (Dtype*)prev[0]->getPushCpuData();
 		const Dtype* next_data = (Dtype*)next[0]->getPushCpuData();
@@ -208,7 +214,8 @@ namespace dlex_cnn
 		// -> prev_diff(num, prev_diff_size[tind::e3D]) = next_diff(num, next_diff_size[tind::e3D]) * weight(next_diff_size[tind::e3D], in3DSize)
 		prev_diff[0]->setCpuZero();
 		auto worker = [&](const int start, const int stop){
-			gemm_cpu(false, false, stop - start, prev_diff_size[tind::e3D], next_diff_size[tind::e3D], 
+			gemm_cpu(false, false, stop - start, 
+				prev_diff_size[tind::e3D], next_diff_size[tind::e3D], 
 				(Dtype)1.0, next_diff_data + start * next_diff_size[tind::e3D], weight_data,
 				(Dtype)0.0, prev_diff_data + start * prev_diff_size[tind::e3D]);
 		};
@@ -225,7 +232,8 @@ namespace dlex_cnn
 		// O(M,N) = weightGradient(hidden_num, in3DSize) = next_diff'(hidden_num, num) * prev_data(num, in3DSize)
 		// -> M=hidden_num, N=in3DSize, K=num
 		auto worker2 = [&](const int start, const int stop){
-			gemm_cpu(true, false, next_diff_size[tind::e3D], prev_data_size[tind::e3D], prev_data_shape[tind::eNum],
+			gemm_cpu(true, false, next_diff_size[tind::e3D], 
+				prev_data_size[tind::e3D], prev_data_shape[tind::eNum],
 				(Dtype)1.0, next_diff_data, prev_data,
 				(Dtype)1.0, weight_gradient_data);	//1.0
 		};
@@ -244,7 +252,10 @@ namespace dlex_cnn
 			const std::vector<int> biasGradSize = gradient_[1]->getSize();
 
 			gradient_[1]->setCpuZero();
-			backward_bias(next_data_shape[tind::eNum], biasGradSize[tind::e3D], next_diff_data, bias_gradient_data);
+			backward_bias(
+				next_data_shape[tind::eNum],
+				biasGradSize[tind::e3D], 
+				next_diff_data, bias_gradient_data);
 
 			//div by batch size
 			div_inplace_cpu(biasGradSize[tind::e4D], (Dtype)next_data_shape[tind::eNum], bias_gradient_data);
@@ -253,7 +264,9 @@ namespace dlex_cnn
 
 #ifdef USE_CUDA
 	template <typename Dtype>
-	void InnerProductOp<Dtype>::forward_gpu(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
+	void InnerProductOp<Dtype>::forward_gpu(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
 	{
 		//printf("InnerProductOp: prev = %d, next = %d\n", prev.size(), next.size());
 		const std::vector<int> prev_data_size = prev[0]->getSize();
@@ -268,7 +281,8 @@ namespace dlex_cnn
 
 		next[0]->setGpuZero();
 		auto worker = [&](const int start, const int stop){
-			gemm_gpu(CuHandleManager::cublas_handle(), false, true, stop - start, next_data_size[tind::e3D], prev_data_size[tind::e3D],
+			gemm_gpu(CuHandleManager::cublas_handle(), false, true, stop - start, 
+				next_data_size[tind::e3D], prev_data_size[tind::e3D],
 				(Dtype)1.0, prev_data + start * prev_data_size[tind::e3D], weight_data,
 				(Dtype)0.0, next_data + start * next_data_size[tind::e3D]);
 		};
@@ -279,8 +293,11 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	void InnerProductOp<Dtype>::backward_gpu(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
+	void InnerProductOp<Dtype>::backward_gpu(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
 	{
 		const Dtype* prev_data = (Dtype*)prev[0]->getPushGpuData();
 		const Dtype* next_data = (Dtype*)next[0]->getPushGpuData();

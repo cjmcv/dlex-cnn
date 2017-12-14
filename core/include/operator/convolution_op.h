@@ -82,7 +82,9 @@ namespace dlex_cnn
 		//
 		// output(2,4)->kernel(2,12)*input(12,4)     14 20 15 24   ->  in memory (needn't to be transposed):  14 20 15 24 , 12 24 17 26 ...
 		//                                           12 24 17 26
-		virtual void forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
+		virtual void forward(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
 
 		// 1, update prev_diff
 		//    prevDiff_img() = prevDiff_col(kc*kh*kw, nh*nw) = kernel'(kc*kh*kw, kn) * next_diff(nc, nh*nw)
@@ -92,13 +94,21 @@ namespace dlex_cnn
 		// 2, update weight Diff
 		//    weightGradient(kn, kc*kh*kw) = next_diff(nc=kn, nh*nw) * prevData_col'(nh*nw, kc*kh*kw)
 		//
-		virtual void backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
+		virtual void backward(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
 
 #ifdef USE_CUDA
-		virtual void forward_gpu(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
-		virtual void backward_gpu(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
+		virtual void forward_gpu(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
+		virtual void backward_gpu(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
 #endif
 
 	private:

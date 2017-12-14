@@ -58,7 +58,9 @@ namespace dlex_cnn
 		// note: In caffe, there has a variable "transpose_". 
 		//		 If the variable is "true", assume transposed weights, that means weights have been saved like W(K,N). The formula should be O = I * W + B.
 		//       Or if it is "false", then weights have been saved like W(K,N), and the formula will be changed to O = I * W' + B.
-		virtual void forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
+		virtual void forward(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
 
 		// 1¡¢Update prev_diff, according to next_diff and weight.
 		// prev_diff(num, in3DSize) = next_diff(num, hidden_num) * weight(hidden_num, in3DSize).
@@ -70,13 +72,21 @@ namespace dlex_cnn
 		// -> M=hidden_num, N=in3DSize, K=num.
 		//
 		// 3¡¢update bias, just accumulate next_diff_data.
-		virtual void backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
+		virtual void backward(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
 
 #ifdef USE_CUDA
-		virtual void forward_gpu(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
-		virtual void backward_gpu(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
+		virtual void forward_gpu(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
+		virtual void backward_gpu(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
 #endif
 
 	private:

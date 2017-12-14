@@ -59,13 +59,23 @@ namespace dlex_cnn
 		virtual const std::string &getOpType() const { return " "; };
 		virtual const int getOpCategory() const { return tind::eNormOp; };
 
-		virtual void forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) {};
-		virtual void backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) {};
+		virtual void forward(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) {};
+		virtual void backward(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) {};
 #ifdef USE_CUDA
-		virtual void forward_gpu(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) {};
-		virtual void backward_gpu(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) {};
+		virtual void forward_gpu(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) {};
+		virtual void backward_gpu(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff,
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) {};
 #endif
 
 	private:

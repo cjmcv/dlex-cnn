@@ -95,14 +95,19 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	void OutputOp<Dtype>::forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
+	void OutputOp<Dtype>::forward(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
 	{
 		// the forward operation in output node should not be called
 	}
 
 	template <typename Dtype>
-	void OutputOp<Dtype>::backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
+	void OutputOp<Dtype>::backward(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
 	{
 		// the backward operation in output node should not be called
 	}

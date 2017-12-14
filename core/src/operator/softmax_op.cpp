@@ -86,7 +86,9 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	void SoftmaxOp<Dtype>::forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
+	void SoftmaxOp<Dtype>::forward(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
 	{
 		const std::vector<int> prev_data_size = prev[0]->getSize();
 		const std::vector<int> next_data_size = next[0]->getSize();
@@ -128,8 +130,11 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	void SoftmaxOp<Dtype>::backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
+	void SoftmaxOp<Dtype>::backward(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
 	{
 		const std::vector<int> prev_data_size = prev[0]->getSize();
 		const std::vector<int> next_data_size = next[0]->getSize();
@@ -180,11 +185,13 @@ namespace dlex_cnn
 				{
 					if (next_diff_idx == prevDiffIdx)
 					{
-						prev_diff_data[prevDiffIdx] += next_data[prevDiffIdx] * (1.0f - next_data[prevDiffIdx]) * next_diff_data[next_diff_idx];
+						prev_diff_data[prevDiffIdx] += next_data[prevDiffIdx] 
+							* (1.0f - next_data[prevDiffIdx]) * next_diff_data[next_diff_idx];
 					}
 					else
 					{
-						prev_diff_data[prevDiffIdx] -= next_data[prevDiffIdx] * next_data[next_diff_idx] * next_diff_data[next_diff_idx];
+						prev_diff_data[prevDiffIdx] -= next_data[prevDiffIdx] 
+							* next_data[next_diff_idx] * next_diff_data[next_diff_idx];
 					}
 				}
 			}

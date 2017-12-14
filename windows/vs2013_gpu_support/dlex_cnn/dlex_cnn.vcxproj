@@ -170,7 +170,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClInclude Include="..\..\..\core\include\operator\input_op.h" />
     <ClInclude Include="..\..\..\core\include\operator\operator_base.h" />
     <ClInclude Include="..\..\..\core\include\operator\operator_hybrid.h" />
-    <ClInclude Include="..\..\..\core\include\operator\operator_loss.h" />
     <ClInclude Include="..\..\..\core\include\operator\output_op.h" />
     <ClInclude Include="..\..\..\core\include\operator\pooling_op.h" />
     <ClInclude Include="..\..\..\core\include\operator\softmax_cross_entropy_hop.h" />
@@ -204,7 +203,6 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClCompile Include="..\..\..\core\src\operator\input_op.cpp" />
     <ClCompile Include="..\..\..\core\src\operator\operator_base.cpp" />
     <ClCompile Include="..\..\..\core\src\operator\operator_hybrid.cpp" />
-    <ClCompile Include="..\..\..\core\src\operator\operator_loss.cpp" />
     <ClCompile Include="..\..\..\core\src\operator\output_op.cpp" />
     <ClCompile Include="..\..\..\core\src\operator\pooling_op.cpp" />
     <ClCompile Include="..\..\..\core\src\operator\softmax_cross_entropy_hop.cpp" />

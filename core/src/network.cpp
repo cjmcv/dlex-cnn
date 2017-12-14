@@ -51,6 +51,12 @@ namespace dlex_cnn {
 		label_data_vec_.push_back(batch->second);
 		ret += graph_->setOutNode(label_data_vec_);
 
+#ifdef USE_CUDA
+		// Here is processed by the main thread, which is not the prefetcher one.
+		// Ensure the copy is synchronous, so that the next batch is not copied in meanwhile.
+		if (Task::mode() == tind::GPU)
+			CUDA_DCHECK(cudaStreamSynchronize(cudaStreamDefault));
+#endif
 		prefetcher_.refillBuffer(&batch);
 
 		if (ret != 0)

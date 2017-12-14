@@ -55,9 +55,6 @@
     <ClInclude Include="..\..\..\core\include\operator\operator_hybrid.h">
       <Filter>源文件\include\operator</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\core\include\operator\operator_loss.h">
-      <Filter>源文件\include\operator</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\core\include\operator\output_op.h">
       <Filter>源文件\include\operator</Filter>
     </ClInclude>
@@ -180,9 +177,6 @@
       <Filter>源文件\src\operator</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\core\src\operator\operator_hybrid.cpp">
-      <Filter>源文件\src\operator</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\core\src\operator\operator_loss.cpp">
       <Filter>源文件\src\operator</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\core\src\operator\output_op.cpp">

@@ -86,11 +86,13 @@ namespace dlex_cnn
 		if (HybridOp<Dtype>::sub_ops_.size() == 0)
 		{
 			// can set sub_ops's params by loading inteOp's params
-			std::shared_ptr<dlex_cnn::Op<Dtype>> sm_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Softmax");
+			std::shared_ptr<dlex_cnn::Op<Dtype>> sm_s 
+				= dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("Softmax");
 			//dlex_cnn::SoftmaxOpParam softmaxParam;
 			//dynamic_cast<dlex_cnn::SoftmaxOp<Dtype> *>(sm_s.get())->setOpParam(softmaxParam);
 
-			std::shared_ptr<dlex_cnn::Op<Dtype>> cel_s = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("CrossEntropyLoss");
+			std::shared_ptr<dlex_cnn::Op<Dtype>> cel_s 
+				= dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType("CrossEntropyLoss");
 			//dlex_cnn::CrossEntropyLossOpParam CELParam;
 			//dynamic_cast<dlex_cnn::CrossEntropyLossOp<Dtype> *>(cel_s.get())->setOpParam(CELParam);
 
@@ -102,18 +104,22 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	void SoftmaxCrossEntropyLossHOp<Dtype>::forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
+	void SoftmaxCrossEntropyLossHOp<Dtype>::forward(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
 	{
 		//printf("start SoftmaxCrossEntropyLossHOp\n");
 		int op_ind[2] = { -1 };
 		bool flag = false;
-		if (HybridOp<Dtype>::sub_ops_[0]->getOpType() == "Softmax" && HybridOp<Dtype>::sub_ops_[1]->getOpType() == "CrossEntropyLoss")
+		if (HybridOp<Dtype>::sub_ops_[0]->getOpType() == "Softmax" 
+			&& HybridOp<Dtype>::sub_ops_[1]->getOpType() == "CrossEntropyLoss")
 		{
 			op_ind[0] = 0;
 			op_ind[1] = 1;
 			flag = true;
 		}
-		else if (HybridOp<Dtype>::sub_ops_[0]->getOpType() == "CrossEntropyLoss" && HybridOp<Dtype>::sub_ops_[1]->getOpType() == "Softmax")
+		else if (HybridOp<Dtype>::sub_ops_[0]->getOpType() == "CrossEntropyLoss" 
+			&& HybridOp<Dtype>::sub_ops_[1]->getOpType() == "Softmax")
 		{
 			op_ind[0] = 1;
 			op_ind[1] = 0;
@@ -131,8 +137,11 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	void SoftmaxCrossEntropyLossHOp<Dtype>::backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
+	void SoftmaxCrossEntropyLossHOp<Dtype>::backward(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, 
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
 	{
 		int op_ind[2] = { -1 };
 		bool flag = false;
@@ -141,13 +150,15 @@ namespace dlex_cnn
 			DLOG_ERR("[ SoftmaxCrossEntropyLossHOp::forward ]:  sub_ops_.size() != 2 \n");
 			return;
 		}
-		if (HybridOp<Dtype>::sub_ops_[0]->getOpType() == "Softmax" && HybridOp<Dtype>::sub_ops_[1]->getOpType() == "CrossEntropyLoss")
+		if (HybridOp<Dtype>::sub_ops_[0]->getOpType() == "Softmax" 
+			&& HybridOp<Dtype>::sub_ops_[1]->getOpType() == "CrossEntropyLoss")
 		{
 			op_ind[0] = 0;
 			op_ind[1] = 1;
 			flag = true;
 		}
-		else if (HybridOp<Dtype>::sub_ops_[0]->getOpType() == "CrossEntropyLoss" && HybridOp<Dtype>::sub_ops_[1]->getOpType() == "Softmax")
+		else if (HybridOp<Dtype>::sub_ops_[0]->getOpType() == "CrossEntropyLoss" 
+			&& HybridOp<Dtype>::sub_ops_[1]->getOpType() == "Softmax")
 		{
 			op_ind[0] = 1;
 			op_ind[1] = 0;
@@ -158,7 +169,8 @@ namespace dlex_cnn
 			DLOG_ERR("[ SoftmaxCrossEntropyLossHOp::forward ]:  the type of sub_ops_ are not (Softmax + CrossEntropyLoss) \n");
 			return;
 		}
-		HybridOp<Dtype>::sub_ops_[op_ind[1]]->backward(prev, next, next_diff, next_diff);	//lastOutput in next[0], lastDiff will be generated in next_diff
+		//lastOutput in next[0], lastDiff will be generated in next_diff
+		HybridOp<Dtype>::sub_ops_[op_ind[1]]->backward(prev, next, next_diff, next_diff);	
 		HybridOp<Dtype>::sub_ops_[op_ind[0]]->backward(prev, next, prev_diff, next_diff);
 		
 	}

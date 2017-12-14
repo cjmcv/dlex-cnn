@@ -68,8 +68,10 @@ namespace dlex_cnn
 		out_shape.push_back(in_shape[tind::eNum]);
 		out_shape.push_back(in_shape[tind::eChannels]);
 
-		out_shape.push_back(static_cast<int>(ceil(static_cast<float>(in_shape[tind::eHeight] + 2 * param_.pad_h - param_.kernel_h) / param_.stride_h)) + 1);
-		out_shape.push_back(static_cast<int>(ceil(static_cast<float>(in_shape[tind::eWidth] + 2 * param_.pad_w - param_.kernel_w) / param_.stride_w)) + 1);
+		out_shape.push_back(static_cast<int>(ceil(static_cast<float>(in_shape[tind::eHeight] + 
+			2 * param_.pad_h - param_.kernel_h) / param_.stride_h)) + 1);
+		out_shape.push_back(static_cast<int>(ceil(static_cast<float>(in_shape[tind::eWidth] + 
+			2 * param_.pad_w - param_.kernel_w) / param_.stride_w)) + 1);
 
 		return 0;
 	}
@@ -292,25 +294,6 @@ namespace dlex_cnn
 			DLOG_ERR("[ PoolingOp::backward ]: Unknown pooling method.\n");
 		}
 	}
-
-#ifdef USE_CUDA
-	//template <typename Dtype>
-	//void PoolingOp<Dtype>::forward_gpu(
-	//	const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
-	//	const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
-	//{
-	//	forward_gpu(prev, next);
-	//}
-	//template <typename Dtype>
-	//void PoolingOp<Dtype>::backward_gpu(
-	//	const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
-	//	const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-	//	const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff,
-	//	const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
-	//{
-	//	backward(prev, next, prev_diff, next_diff);
-	//}
-#endif
 
 	INSTANTIATE_CLASS(PoolingOp);
 

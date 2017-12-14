@@ -9,18 +9,17 @@
 #define DLEX_OP_CROSS_ENTROPY_HPP_
 
 #include "operator_base.h"
-#include "operator_loss.h"
 #include "tensor.h"
 
 namespace dlex_cnn
 {
-	struct CrossEntropyLossOpParam : public LossOpParam
+	struct CrossEntropyLossOpParam : public OpParam
 	{
 
 	};
 
 	template <typename Dtype>
-	class CrossEntropyLossOp : public LossOp<Dtype>
+	class CrossEntropyLossOp : public Op<Dtype>
 	{
 	public:
 		CrossEntropyLossOp();
@@ -49,18 +48,28 @@ namespace dlex_cnn
 		// prev[0] -> outdata of the last node (activation node).
 		// next[1] -> org_label_data, has been fetched from label file, will be converted to fit this loss operation.
 		// next[2] -> ouput loss.
-		virtual void forward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
+		virtual void forward(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
 		
 		// prev_diff[0] -> gradients for backward.
 		// next[0] -> outdata of the last node.
 		// prev and next_diff is inactive in this function.
-		virtual void backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
+		virtual void backward(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
 
 #ifdef USE_CUDA
-		virtual void forward_gpu(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
-		virtual void backward_gpu(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
+		virtual void forward_gpu(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) override;
+		virtual void backward_gpu(
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, 
+			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) override;
 #endif
 
 	private:

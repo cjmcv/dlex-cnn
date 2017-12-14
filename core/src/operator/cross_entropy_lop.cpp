@@ -108,7 +108,8 @@ namespace dlex_cnn
 	}
 
 	template <typename Dtype>
-	void CrossEntropyLossOp<Dtype>::backward(const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
+	void CrossEntropyLossOp<Dtype>::backward(
+		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
 		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
 		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff,
 		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)

@@ -175,7 +175,6 @@ namespace dlex_cnn
 				input_data[i]->copyDataTo(*nodes_[index]->getDataVec()[0], tind::eHost2Host);
 			else
 				input_data[i]->copyDataTo(*nodes_[index]->getDataVec()[0], tind::eDevice2Device);
-			CUDA_DCHECK(cudaStreamSynchronize(cudaStreamDefault));
 		}
 		return 0;
 	}
@@ -225,8 +224,6 @@ namespace dlex_cnn
 				label_data[i]->copyDataTo(*nodes_[index]->getDataVec()[1], tind::eHost2Host);
 			else
 				label_data[i]->copyDataTo(*nodes_[index]->getDataVec()[1], tind::eDevice2Device);
-			CUDA_DCHECK(cudaStreamSynchronize(cudaStreamDefault));
-			//printf("finish set out node\n");
 		}
 		return 0;
 	}

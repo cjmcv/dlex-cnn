@@ -1,3 +1,4 @@
+#ifdef USE_CUDA
 #include "operator/pooling_op.h"
 #include <sstream>
 
@@ -257,3 +258,4 @@ namespace dlex_cnn
 		const std::vector<std::shared_ptr<Tensor<double>>> &prev_diff,
 		const std::vector<std::shared_ptr<Tensor<double>>> &next_diff);
 }//namespace
+#endif
