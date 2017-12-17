@@ -4,9 +4,6 @@
     <ClInclude Include="..\..\..\core\include\io\dataloader.h">
       <Filter>源文件\include\io</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\core\include\io\preprocessor.h">
-      <Filter>源文件\include\io</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\core\include\util\device.h">
       <Filter>源文件\include\util</Filter>
     </ClInclude>
@@ -150,9 +147,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\core\src\io\dataloader.cpp">
-      <Filter>源文件\src\io</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\core\src\io\preprocessor.cpp">
       <Filter>源文件\src\io</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\core\src\operator\activation_simple_op.cpp">
