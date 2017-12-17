@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief  
+// > brief  A common file for cuda.
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 #ifdef USE_CUDA
@@ -10,6 +10,7 @@
 
 namespace dlex_cnn
 {
+	// One object is enough for one thread in one gpu.
 	static CuHandleManager *gHandleManager = NULL;
 	CuHandleManager& CuHandleManager::Get()
 	{
@@ -21,6 +22,7 @@ namespace dlex_cnn
 	CuHandleManager::CuHandleManager() :
 		cublas_handle_(NULL), curand_generator_(NULL)
 	{
+		// Try to create a cublas handler.
 		if (cublasCreate(&cublas_handle_) != CUBLAS_STATUS_SUCCESS) {
 			DLOG_ERR("Cannot create Cublas handle. Cublas won't be available.");
 		}
@@ -38,6 +40,7 @@ namespace dlex_cnn
 			CURAND_DCHECK(curandDestroyGenerator(curand_generator_));
 	}
 
+	// Generate a seed for curand.
 	long long CuHandleManager::seedgen()
 	{
 		long long s, seed;

@@ -1,11 +1,10 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief  
+// > brief  Hide data copy delay between CPU and GPU.
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
-// 多线程数据预存, batch中暂先使用内存池
 #ifndef DLEX_PREFETCH_HPP_
 #define DLEX_PREFETCH_HPP_
 
@@ -27,17 +26,23 @@ namespace dlex_cnn
 		virtual ~DataPrefetcher();
 
 	public:
+		// Prefetch up to 3 batches.
 		static const int PREFETCH_COUNT = 3;
-
+		// Set instance for calling the member of other class. 
 		inline void setInstantiation(void *ptr) { instant_ = ptr; }
-		void *instant_ = NULL;
+		// Batch loader, implemented by other class function.
 		bool(*batch_loader_pfunc_)(void *, TensorPair*) = NULL;
 		bool loadBatch(TensorPair* batch);
+		// Get batch data from prefetcher to network.
 		inline void feedBatchOut(TensorPair** batch) { full_.wait_and_pop(batch); }
+		// Recycle buffer.
 		inline void refillBuffer(TensorPair** batch) { free_.push(*batch); }
+		// The entry of an inner thread, works in ThreadInner.
 		virtual void entryInnerThread();
 
 	private:
+		void *instant_ = NULL;
+		// Buffer for prefetch.
 		TensorPair base_storage_[PREFETCH_COUNT];
 		BlockingQueue < TensorPair* > free_;
 		BlockingQueue < TensorPair* > full_;

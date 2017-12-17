@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief  
+// > brief  A common file for cuda.
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
@@ -63,10 +63,10 @@ namespace dlex_cnn
 		} \
     } while (0)
 
-	// CUDA: check for error after kernel execution and exit loudly if there is one.
+	// Check for error after kernel execution and exit loudly if there is one.
 #define CUDA_POST_KERNEL_CHECK CUDA_DCHECK(cudaPeekAtLastError())
 
-	// curand
+	// Handle manager for cublas and curand.
 	class CuHandleManager
 	{
 	public:
