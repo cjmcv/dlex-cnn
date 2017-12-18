@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief  
+// > brief  Simple activation functions.
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
@@ -27,15 +27,11 @@ namespace dlex_cnn
 
 		// relu
 		float negative_slope = 0;
-
-		// prelu
-		//
 	};
 
 	template <typename Dtype>
 	class ActivationOp : public Op<Dtype>
 	{
-		//FRIEND_WITH_NETWORK
 	public:
 		ActivationOp();
 		ActivationOp(ActivationOpParam param);

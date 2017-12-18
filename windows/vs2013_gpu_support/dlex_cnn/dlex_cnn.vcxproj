@@ -218,6 +218,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
     <ClCompile Include="..\..\..\core\src\util\thread_pool.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <CudaCompile Include="..\..\..\core\src\operator\activation_simple_op.cu" />
     <CudaCompile Include="..\..\..\core\src\operator\pooling_op.cu" />
     <CudaCompile Include="..\..\..\core\src\optimizer\optimizer.cu" />
     <CudaCompile Include="..\..\..\core\src\util\math_functions.cu" />

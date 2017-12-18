@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief  
+// > brief  Simple activation functions.
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
@@ -173,29 +173,10 @@ namespace dlex_cnn
 			float* next_diff_data_n = next_diff_data + n * next_diff_size3D;
 			for (int i = 0; i < act_len; i++)
 			{
-				p_rev_act(actx_n[i], next_diff_data_n[i]);
+				prev_diff_data_n[i] = p_rev_act(actx_n[i], next_diff_data_n[i]);//
 			}
 		}
 	}
-
-#ifdef USE_CUDA
-	template <typename Dtype>
-	void ActivationOp<Dtype>::forward_gpu(
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
-	{
-		forward(prev, next);
-	}
-	template <typename Dtype>
-	void ActivationOp<Dtype>::backward_gpu(
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
-	{
-		backward(prev, next, prev_diff, next_diff);
-	}
-#endif
 
 	INSTANTIATE_CLASS(ActivationOp);
 }//namespace

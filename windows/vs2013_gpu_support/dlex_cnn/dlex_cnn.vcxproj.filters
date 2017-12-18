@@ -247,5 +247,8 @@
     <CudaCompile Include="..\..\..\core\src\operator\pooling_op.cu">
       <Filter>源文件\src\operator</Filter>
     </CudaCompile>
+    <CudaCompile Include="..\..\..\core\src\operator\activation_simple_op.cu">
+      <Filter>源文件\src\operator</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

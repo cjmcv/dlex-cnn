@@ -43,7 +43,7 @@ namespace dlex_cnn
 		std::string fc1_name = "fc1";
 		creator.createInnerProductNode(pool2_name, fc1_name, fc1_params, network);
 
-		std::string act1_params = "activation_type:0, negative_slope:0, ";
+		std::string act1_params = "activation_type:1, negative_slope:0, ";
 		std::string act1_name = "act1";
 		creator.createActivationNode(fc1_name, act1_name, act1_params, network);
 
