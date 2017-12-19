@@ -46,11 +46,6 @@ namespace dlex_cnn
 			for (int i = 0; i < blas_data_size[tind::e4D]; i++)
 				blas_data[i] -= Optimizer<Dtype>::lr_*b_gradient_data[i];
 		}
-		////
-		//node_data[1]->cpyInplace(tind::eHost2Device);
-		//(inteOp->getOpGradient())[0]->cpyInplace(tind::eHost2Device);
-		//node_data[2]->cpyInplace(tind::eHost2Device);
-		//(inteOp->getOpGradient())[1]->cpyInplace(tind::eHost2Device);
 	}
 	INSTANTIATE_CLASS(SGD);
 }//namespace

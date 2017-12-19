@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief  
+// > brief  Load mnist data.
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
@@ -11,7 +11,7 @@
 
 namespace dlex_cnn
 {
-	//注意IMAGE_DATUM的内存释放！
+	// Notice the memory release of IMAGE_DATUM.
 	bool MnistLoader::load_mnist_images(const std::string& file_path, std::vector<dlex_cnn::IMAGE_DATUM>& images)
 	{
 		images.clear();

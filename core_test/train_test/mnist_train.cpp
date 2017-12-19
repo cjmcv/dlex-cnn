@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief  
+// > brief  Train with mnist data.
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
@@ -24,7 +24,7 @@ namespace dlex_cnn
 		learning_rate_ = 0.1f;
 		decay_rate_ = 0.8f;
 		min_learning_rate_ = 0.001f;
-		test_after_batches_ = 60;
+		test_after_batches_ = 50;
 		max_batches_ = 10000;
 		lr_setp_ = 200;
 		save_iter_ = 19;
@@ -308,7 +308,7 @@ namespace dlex_cnn
 		else
 		{
 			TypicalNet typicalNet;
-			typicalNet.mlp<float>(batch_size_, channels_, height_, width_, network);
+			typicalNet.lenet<float>(batch_size_, channels_, height_, width_, network);
 			network.netParamsInit();
 		}
 		printf("Finish loading network structure.\n");

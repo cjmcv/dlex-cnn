@@ -1,3 +1,10 @@
+////////////////////////////////////////////////////////////////
+// > Copyright (c) 2017 by Contributors. 
+// > https://github.com/cjmcv
+// > brief  Test for thread pool.
+// > author Jianming Chen
+////////////////////////////////////////////////////////////////
+
 #include "util_test.h"
 
 void compTest(int *a, int *b, int len)

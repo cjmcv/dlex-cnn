@@ -1,3 +1,10 @@
+////////////////////////////////////////////////////////////////
+// > Copyright (c) 2017 by Contributors. 
+// > https://github.com/cjmcv
+// > brief  Print.
+// > author Jianming Chen
+////////////////////////////////////////////////////////////////
+
 #include "common/tools.h"
 
 void matrixShow_float(std::string name, float *data, int num, int channel, int height, int width)
