@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief  
+// > brief  Softmax.
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
@@ -95,34 +95,34 @@ namespace dlex_cnn
 		//const std::vector<int> prev_data_shape = prev[0]->getShape();
 		const std::vector<int> next_data_shape = next[0]->getShape();
 
-		Dtype *prevDataBase = (Dtype *)prev[0]->getPushCpuData();
-		Dtype *nextDataBase = (Dtype *)next[0]->getPushCpuData();
+		Dtype *prev_data_base = (Dtype *)prev[0]->getPushCpuData();
+		Dtype *next_data_base = (Dtype *)next[0]->getPushCpuData();
 
-		const int nextDataNum = next_data_shape[tind::eNum];
-		const int prevDataSize3D = prev_data_size[tind::e3D];
-		const int nextDataSize3D = next_data_size[tind::e3D];
+		const int next_data_num = next_data_shape[tind::eNum];
+		const int prev_data_size3D = prev_data_size[tind::e3D];
+		const int next_data_size3D = next_data_size[tind::e3D];
 
 		next[0]->setCpuZero();
-		for (int nn = 0; nn < nextDataNum; nn++)
+		for (int nn = 0; nn < next_data_num; nn++)
 		{
-			const Dtype* prev_data = prevDataBase + nn * prevDataSize3D;// *sizeof(float);
-			Dtype* next_data = nextDataBase + nn * nextDataSize3D;// *sizeof(float);
+			const Dtype* prev_data = prev_data_base + nn * prev_data_size3D;
+			Dtype* next_data = next_data_base + nn * next_data_size3D;
 
 			//step1 : find max value
 			Dtype maxVal = prev_data[0];
-			for (int prevDataIdx = 0; prevDataIdx < prevDataSize3D; prevDataIdx++)
+			for (int prevDataIdx = 0; prevDataIdx < prev_data_size3D; prevDataIdx++)
 			{
 				maxVal = std::max(maxVal, prev_data[prevDataIdx]);
 			}
 			//step2 : sum
 			Dtype sum = 0;
-			for (int prevDataIdx = 0; prevDataIdx < prevDataSize3D; prevDataIdx++)
+			for (int prevDataIdx = 0; prevDataIdx < prev_data_size3D; prevDataIdx++)
 			{
 				next_data[prevDataIdx] = std::exp(prev_data[prevDataIdx] - maxVal);
 				sum += next_data[prevDataIdx];
 			}
 			//step3 : div
-			for (int prevDataIdx = 0; prevDataIdx < prevDataSize3D; prevDataIdx++)
+			for (int prevDataIdx = 0; prevDataIdx < prev_data_size3D; prevDataIdx++)
 			{
 				next_data[prevDataIdx] = next_data[prevDataIdx] / sum;
 			}
@@ -146,10 +146,10 @@ namespace dlex_cnn
 		const std::vector<int> prev_diff_shape = prev_diff[0]->getShape();
 		const std::vector<int> next_diff_shape = next_diff[0]->getShape();
 
-		Dtype *prevDataBase = (Dtype *)prev[0]->getPushCpuData();
-		Dtype *nextDataBase = (Dtype *)next[0]->getPushCpuData();
-		Dtype *prevDiffBase = (Dtype *)prev_diff[0]->getPushCpuData();
-		Dtype *nextDiffBase = (Dtype *)next_diff[0]->getPushCpuData();
+		Dtype *prev_data_base = (Dtype *)prev[0]->getPushCpuData();
+		Dtype *next_data_base = (Dtype *)next[0]->getPushCpuData();
+		Dtype *prev_diff_base = (Dtype *)prev_diff[0]->getPushCpuData();
+		Dtype *next_diff_base = (Dtype *)next_diff[0]->getPushCpuData();
 
 		if (prev_data_size[tind::e4D] != next_data_size[tind::e4D])
 		{
@@ -169,55 +169,35 @@ namespace dlex_cnn
 
 		//update prev_diff
 		prev_diff[0]->setCpuZero();
-		const int prevDataSize3D = prev_data_size[tind::e3D];
-		const int nextDataSize3D = next_data_size[tind::e3D];
+		const int prev_data_size3D = prev_data_size[tind::e3D];
+		const int next_data_size3D = next_data_size[tind::e3D];
 		const int prev_diff_size3D = prev_diff_size[tind::e3D];
 		const int next_diff_size3D = next_diff_size[tind::e3D];
 		for (int pn = 0; pn < prev_data_shape[tind::eNum]; pn++)
 		{
-			const Dtype* prev_data = prevDataBase + pn * prevDataSize3D;
-			const Dtype* next_data = nextDataBase + pn * nextDataSize3D;
-			const Dtype* next_diff_data = nextDiffBase + pn * next_diff_size3D;
-			Dtype* prev_diff_data = prevDiffBase + pn * prev_diff_size3D;
-			for (int prevDiffIdx = 0; prevDiffIdx < prev_diff_size3D; prevDiffIdx++)
+			const Dtype* prev_data = prev_data_base + pn * prev_data_size3D;
+			const Dtype* next_data = next_data_base + pn * next_data_size3D;
+			const Dtype* next_diff = next_diff_base + pn * next_diff_size3D;
+			Dtype* prev_diff = prev_diff_base + pn * prev_diff_size3D;
+
+			for (int prev_diff_idx = 0; prev_diff_idx < prev_diff_size3D; prev_diff_idx++)
 			{
+				const Dtype val_next_data = next_data[prev_diff_idx];
+				Dtype val = prev_diff[prev_diff_idx];
 				for (int next_diff_idx = 0; next_diff_idx < next_diff_size3D; next_diff_idx++)
 				{
-					if (next_diff_idx == prevDiffIdx)
-					{
-						prev_diff_data[prevDiffIdx] += next_data[prevDiffIdx] 
-							* (1.0f - next_data[prevDiffIdx]) * next_diff_data[next_diff_idx];
-					}
-					else
-					{
-						prev_diff_data[prevDiffIdx] -= next_data[prevDiffIdx] 
-							* next_data[next_diff_idx] * next_diff_data[next_diff_idx];
-					}
+					val -= val_next_data * next_data[next_diff_idx] * next_diff[next_diff_idx];
 				}
+				prev_diff[prev_diff_idx] = val;
+			}
+
+			for (int idx = 0; idx < prev_diff_size3D; idx++)
+			{
+				Dtype val2 = next_data[idx] * next_diff[idx];
+				prev_diff[idx] += val2;
 			}
 		}
-		//update this layer's param
-		//softmax layer : nop
 	}
-
-#ifdef USE_CUDA
-	template <typename Dtype>
-	void SoftmaxOp<Dtype>::forward_gpu(
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
-	{
-		forward(prev, next);
-	}
-	template <typename Dtype>
-	void SoftmaxOp<Dtype>::backward_gpu(
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
-	{
-		backward(prev, next, prev_diff, next_diff);
-	}
-#endif
 
 	INSTANTIATE_CLASS(SoftmaxOp);
 

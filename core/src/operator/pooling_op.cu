@@ -1,3 +1,10 @@
+////////////////////////////////////////////////////////////////
+// > Copyright (c) 2017 by Contributors. 
+// > https://github.com/cjmcv
+// > brief  Pooling.
+// > author Jianming Chen
+////////////////////////////////////////////////////////////////
+
 #ifdef USE_CUDA
 #include "operator/pooling_op.h"
 #include <sstream>
@@ -38,9 +45,6 @@ namespace dlex_cnn
 			if (mask) {
 				mask[index] = maxidx;
 			}
-			//else {
-			//	top_mask[index] = maxidx;
-			//}
 		}
 	}
 
