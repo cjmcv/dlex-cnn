@@ -69,7 +69,7 @@ namespace dlex_cnn
 		cublasOperation_t cuTransB =
 			(TransB == false) ? CUBLAS_OP_N : CUBLAS_OP_T;
 		CUBLAS_DCHECK(cublasSgemm(cublas_handle, cuTransB, cuTransA,
-			N, M, K, &alpha, B, ldb, A, lda, &beta, C, N));//Caffe::Layer<Dtype>::cublas_handle()
+			N, M, K, &alpha, B, ldb, A, lda, &beta, C, N));
 	}
 
 	template <>
@@ -85,7 +85,7 @@ namespace dlex_cnn
 		cublasOperation_t cuTransB =
 			(TransB == false) ? CUBLAS_OP_N : CUBLAS_OP_T;
 		CUBLAS_DCHECK(cublasDgemm(cublas_handle, cuTransB, cuTransA,
-			N, M, K, &alpha, B, ldb, A, lda, &beta, C, N));//Caffe::Layer<Dtype>::cublas_handle()
+			N, M, K, &alpha, B, ldb, A, lda, &beta, C, N));
 	}
 
 	///////////////////// im2col ///////////////////////
