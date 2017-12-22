@@ -183,19 +183,16 @@ namespace dlex_cnn
 			for (int prev_diff_idx = 0; prev_diff_idx < prev_diff_size3D; prev_diff_idx++)
 			{
 				const Dtype val_next_data = next_data[prev_diff_idx];
-				Dtype val = prev_diff[prev_diff_idx];
+				Dtype val_prev_diff = prev_diff[prev_diff_idx];
 				for (int next_diff_idx = 0; next_diff_idx < next_diff_size3D; next_diff_idx++)
 				{
-					val -= val_next_data * next_data[next_diff_idx] * next_diff[next_diff_idx];
+					val_prev_diff -= val_next_data * next_data[next_diff_idx] * next_diff[next_diff_idx];
 				}
-				prev_diff[prev_diff_idx] = val;
+				prev_diff[prev_diff_idx] = val_prev_diff;
 			}
 
 			for (int idx = 0; idx < prev_diff_size3D; idx++)
-			{
-				Dtype val2 = next_data[idx] * next_diff[idx];
-				prev_diff[idx] += val2;
-			}
+				prev_diff[idx] += next_data[idx] * next_diff[idx];
 		}
 	}
 

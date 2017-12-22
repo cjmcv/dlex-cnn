@@ -64,6 +64,7 @@ namespace dlex_cnn
 		SoftmaxOpParam param_;
 		std::vector<std::shared_ptr<Tensor<Dtype>>> diff_;
 		
+		Dtype* gpu_num_temp_ = NULL;
 	};
 
 	/////////////////////////////  Creator   /////////////////////////////////

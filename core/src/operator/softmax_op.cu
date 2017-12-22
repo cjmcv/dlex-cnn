@@ -11,59 +11,47 @@
 namespace dlex_cnn
 {
 	template <typename Dtype>
-	__global__ void FindMax(const int n, const Dtype* arr, Dtype &max_val) 
+	__global__ void MaxPerNum(const int num, const int size, Dtype* arr, Dtype* out)
 	{
-		CUDA_KERNEL_LOOP(index, n) 
+		CUDA_KERNEL_LOOP(index, num)
 		{
-			int tid = threadIdx.x;
-			extern __shared__ float shared_data[];
-			shared_data[tid] = arr[index];
-			__syncthreads();
-
-			for (unsigned int s = blockDim.x / 2; s>0; s >>= 1)
-			{
-				if (tid<s)
-					shared_data[tid] = max(shared_data[tid], shared_data[tid + s]);
-				__syncthreads();
-			}
-
-			if (tid == 0)
-				max_val = shared_data[tid];	//max_val[blockIdx.x] = shared_data[tid];	need to reduce
+			Dtype *base = arr + index * size;
+			Dtype maxval = -FLT_MAX;
+			for (int i = 0; i < size; i++)
+				maxval = max(maxval, base[i]);
+			out[index] = maxval;
 		}
 	}
 	template <typename Dtype>
-	__global__ void SubExp(const int n, const Dtype* in_data, const Dtype val, Dtype* out_data) {
-		CUDA_KERNEL_LOOP(index, n) {
-			out_data[index] = exp(in_data[index] - val);
+	__global__ void SubExpPerNum(const int num, const int size, Dtype* in_data, const Dtype* val, Dtype* out_data) {
+		CUDA_KERNEL_LOOP(index, num) {
+			Dtype *in_base = in_data + index * size;
+			Dtype *out_base =out_data + index * size;
+			for (int i = 0; i < size; i++)
+				out_base[i] = exp(in_base[i] - val[index]);
 		}
 	}
 	template <typename Dtype>
-	__global__ void GetSum(const int n, const Dtype* arr, Dtype &sum)
+	__global__ void SumPerNum(const int n, const int size, Dtype* arr, Dtype* out)
 	{
 		CUDA_KERNEL_LOOP(index, n)
 		{
-			int tid = threadIdx.x;
-			extern __shared__ float shared_data[];
-			shared_data[tid] = arr[index];
-			__syncthreads();
-
-			for (unsigned int s = blockDim.x / 2; s>0; s >>= 1)
-			{
-				if (tid<s)
-					shared_data[tid] += shared_data[tid + s];
-				__syncthreads();
-			}
-
-			if (tid == 0)
-				sum = shared_data[tid];
+			Dtype *base = arr + index * size;
+			Dtype sum = 0;
+			for (int i = 0; i < size; i++)
+				sum += base[i];
+			out[index] = sum;
 		}
 	}
 	template <typename Dtype>
-	__global__ void DivInplace(const int n, const Dtype val, Dtype* data) {
-		CUDA_KERNEL_LOOP(index, n) {
-			data[index] = data[index] / val;
+	__global__ void DivInplacePerNum(const int num, const int size, const Dtype *val, Dtype* data) {
+		CUDA_KERNEL_LOOP(index, num) {
+			Dtype *arr = data + index * size;
+			for (int i = 0; i < size; i++)
+				arr[i] = arr[i] / val[index];
 		}
 	}
+
 	template <typename Dtype>
 	void SoftmaxOp<Dtype>::forward_gpu(
 		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
@@ -83,27 +71,21 @@ namespace dlex_cnn
 
 		next[0]->setGpuZero();
 
-		for (int nn = 0; nn < next_data_num; nn++)
-		{
-			const Dtype* prev_data = prev_data_base + nn * prev_data_size3D;
-			Dtype* next_data = next_data_base + nn * next_data_size3D;
+		if (gpu_num_temp_ == NULL)
+			CUDA_DCHECK(cudaMalloc(&gpu_num_temp_, sizeof(Dtype) * next_data_num));
 
-			//step1 : find max value
-			Dtype max_val = prev_data[0];
-			FindMax<Dtype> << <DLEX_GET_BLOCKS(prev_data_size3D), DLEX_CUDA_NUM_THREADS >> >(
-				prev_data_size3D, prev_data, max_val);
+		CUDA_DCHECK(cudaMemset(gpu_num_temp_, 0, sizeof(Dtype) * next_data_num));
 
-			//step2 : sum
-			Dtype sum = 0;
-			SubExp<Dtype> << <DLEX_GET_BLOCKS(prev_data_size3D), DLEX_CUDA_NUM_THREADS >> >(
-				prev_data_size3D, prev_data, max_val, next_data);
-			GetSum<Dtype> << <DLEX_GET_BLOCKS(prev_data_size3D), DLEX_CUDA_NUM_THREADS >> >(
-				prev_data_size3D, next_data, sum);
+		MaxPerNum<Dtype> << <DLEX_GET_BLOCKS(next_data_num), DLEX_CUDA_NUM_THREADS >> >(
+			next_data_num, prev_data_size3D, prev_data_base, gpu_num_temp_);
 
-			//step3 : div
-			DivInplace<Dtype> << <DLEX_GET_BLOCKS(prev_data_size3D), DLEX_CUDA_NUM_THREADS >> >(
-				prev_data_size3D, sum, next_data);
-		}
+		SubExpPerNum<Dtype> << <DLEX_GET_BLOCKS(next_data_num), DLEX_CUDA_NUM_THREADS >> >(
+			next_data_num, prev_data_size3D, prev_data_base, gpu_num_temp_, next_data_base);
+		SumPerNum<Dtype> << <DLEX_GET_BLOCKS(next_data_num), DLEX_CUDA_NUM_THREADS >> >(
+			next_data_num, prev_data_size3D, next_data_base, gpu_num_temp_);
+
+		DivInplacePerNum<Dtype> << <DLEX_GET_BLOCKS(next_data_num), DLEX_CUDA_NUM_THREADS >> >(
+			next_data_num, prev_data_size3D, gpu_num_temp_, next_data_base);
 
 		CUDA_POST_KERNEL_CHECK;
 	}
@@ -114,21 +96,19 @@ namespace dlex_cnn
 		CUDA_KERNEL_LOOP(index, n)
 		{
 			const Dtype val_next_data = next_data[index];
-			Dtype val = prev_diff[index];
+			Dtype val_prev_diff = prev_diff[index];
 			for (int next_diff_idx = 0; next_diff_idx < n; next_diff_idx++)
 			{
-				val -= val_next_data * next_data[next_diff_idx] * next_diff[next_diff_idx];
+				val_prev_diff -= val_next_data * next_data[next_diff_idx] * next_diff[next_diff_idx];
 			}
-			prev_diff[index] = val;
+			prev_diff[index] = val_prev_diff;
 		}
 	}
 	template <typename Dtype>
 	__global__ void SoftmaxBackwardKernel2(const int n, const Dtype* next_data, const Dtype* next_diff, Dtype *prev_diff)
 	{
-		CUDA_KERNEL_LOOP(index, n)
-		{
-			Dtype val = next_data[index] * next_diff[index];
-			prev_diff[index] += val;
+		CUDA_KERNEL_LOOP(index, n) {
+			prev_diff[index] += next_data[index] * next_diff[index];
 		}
 	}
 	template <typename Dtype>
@@ -189,6 +169,7 @@ namespace dlex_cnn
 			SoftmaxBackwardKernel2<Dtype> << <DLEX_GET_BLOCKS(prev_diff_size3D), DLEX_CUDA_NUM_THREADS >> >(
 				prev_diff_size3D, next_data, next_diff, prev_diff);
 		}
+		next_diff_base = (Dtype *)next_diff[0]->getPushCpuData();
 	}
 	template void SoftmaxOp<float>::forward_gpu(
 		const std::vector<std::shared_ptr<Tensor<float>>> &prev,
