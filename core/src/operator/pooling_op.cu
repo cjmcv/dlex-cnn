@@ -91,8 +91,10 @@ namespace dlex_cnn
 		const std::vector<int> next_shape = next[0]->getShape();
 
 		Dtype* prev_data = (Dtype *)prev[0]->getPushGpuData();
-		Dtype* next_data = (Dtype *)next[0]->getPushGpuData();
+		Dtype* next_data = (Dtype *)next[0]->getGpuData();
 		const std::vector<int> next_size = next[0]->getSize();
+
+		next[0]->setGpuZero();
 
 		int* mask = NULL;
 		bool mflag = true;
@@ -218,7 +220,7 @@ namespace dlex_cnn
 		const std::vector<int> prev_shape = prev[0]->getShape();
 		const std::vector<int> next_shape = next[0]->getShape();
 
-		Dtype* prev_diff_data = (Dtype *)prev_diff[0]->getPushGpuData();	//bottom_data
+		Dtype* prev_diff_data = (Dtype *)prev_diff[0]->getGpuData();	//bottom_data
 		Dtype* next_diff_data = (Dtype *)next_diff[0]->getPushGpuData();	//top_data
 
 		prev_diff[0]->setGpuZero();

@@ -39,7 +39,7 @@ namespace dlex_cnn
 		const int prev_size3D = prev[0]->getSize()[tind::e3D];
 		const int next_size3D = next[0]->getSize()[tind::e3D];
 		Dtype* prev_data = (Dtype *)prev[0]->getPushGpuData();
-		Dtype* next_data = (Dtype *)next[0]->getPushGpuData();
+		Dtype* next_data = (Dtype *)next[0]->getGpuData();
 
 		next[0]->setGpuZero();
 		for (int n = 0; n < prev[0]->getShape()[tind::eNum]; n++)
@@ -109,7 +109,7 @@ namespace dlex_cnn
 		const int next_diff_size3D = next_diff[0]->getSize()[tind::e3D];
 		Dtype* prev_data = (Dtype *)prev[0]->getPushGpuData();
 		Dtype* next_data = (Dtype *)next[0]->getPushGpuData();
-		Dtype* prev_diff_data = (Dtype *)prev_diff[0]->getPushGpuData();
+		Dtype* prev_diff_data = (Dtype *)prev_diff[0]->getGpuData();
 		Dtype* next_diff_data = (Dtype *)next_diff[0]->getPushGpuData();
 
 		prev_diff[0]->setGpuZero();

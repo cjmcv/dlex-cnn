@@ -47,10 +47,8 @@ namespace dlex_cnn
 		int mallocCpuData();
 		inline void *getCpuData() {
 			if (cpu_data_ == NULL)
-			{
 				mallocCpuData();
-				mem_head_ = tind::eHeadAtCPU;
-			}
+			mem_head_ = tind::eHeadAtCPU;
 			return cpu_data_;
 		}
 		void checkPushCpuData();
@@ -72,10 +70,8 @@ namespace dlex_cnn
 		int mallocGpuData();
 		inline void *getGpuData() {
 			if (gpu_data_ == NULL)
-			{
 				mallocGpuData();
-				mem_head_ = tind::eHeadAtGPU;
-			}
+			mem_head_ = tind::eHeadAtGPU;
 			return gpu_data_;
 		}
 		void checkPushGpuData();

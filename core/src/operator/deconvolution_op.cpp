@@ -137,7 +137,7 @@ namespace dlex_cnn
 		const Dtype* prev_data = (Dtype *)prev[0]->getPushCpuData();
 		const Dtype* kernel_data = (Dtype *)prev[1]->getPushCpuData();
 		const Dtype* bias_data = (Dtype *)prev[2]->getPushCpuData();
-		Dtype* next_data = (Dtype *)next[0]->getPushCpuData();
+		Dtype* next_data = (Dtype *)next[0]->getCpuData();
 
 		// (1, channels*kernel_h*kernel_w, output_h*output_w)
 		const int output_h = (prev_shape[tind::eHeight] - 1) * param_.stride_h + 
@@ -215,7 +215,7 @@ namespace dlex_cnn
 
 		const Dtype* prev_data = (Dtype*)prev[0]->getPushCpuData();
 		const Dtype* next_data = (Dtype*)next[0]->getPushCpuData();
-		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getPushCpuData();
+		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getCpuData();
 		Dtype* next_diff_data = (Dtype*)next_diff[0]->getPushCpuData();
 		Dtype *kernel_data = (Dtype*)prev[1]->getPushCpuData();
 		//Dtype *bias_data = (Dtype*)prev[2]->getPushCpuData();
@@ -246,7 +246,7 @@ namespace dlex_cnn
 
 		// update weight Diff
 		gradient_[0]->setCpuZero();
-		Dtype* kernel_gradient_data = (Dtype *)gradient_[0]->getPushCpuData();
+		Dtype* kernel_gradient_data = (Dtype *)gradient_[0]->getCpuData();
 		for (int ni = 0; ni < prev_diff_shape[tind::eNum]; ni++)
 		{
 			im2col_cpu<Dtype>(next_diff_data + ni*next_diff_size[tind::e3D], next_diff_shape[tind::eChannels],
@@ -266,7 +266,7 @@ namespace dlex_cnn
 
 		//update bias gradient
 		gradient_[1]->setCpuZero();
-		Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getPushCpuData();
+		Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getCpuData();
 
 		backward_bias(
 			next_diff_shape[tind::eNum],
@@ -294,7 +294,7 @@ namespace dlex_cnn
 		const Dtype* prev_data = (Dtype *)prev[0]->getPushGpuData();
 		const Dtype* kernel_data = (Dtype *)prev[1]->getPushGpuData();
 		const Dtype* bias_data = (Dtype *)prev[2]->getPushGpuData();
-		Dtype* next_data = (Dtype *)next[0]->getPushGpuData();
+		Dtype* next_data = (Dtype *)next[0]->getGpuData();
 
 		// (1, channels*kernel_h*kernel_w, output_h*output_w)
 		const int output_h = (prev_shape[tind::eHeight] - 1) * param_.stride_h + 
@@ -361,7 +361,7 @@ namespace dlex_cnn
 
 		const Dtype* prev_data = (Dtype*)prev[0]->getPushGpuData();
 		const Dtype* next_data = (Dtype*)next[0]->getPushGpuData();
-		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getPushGpuData();
+		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getGpuData();
 		Dtype* next_diff_data = (Dtype*)next_diff[0]->getPushGpuData();
 		Dtype *kernel_data = (Dtype*)prev[1]->getPushGpuData();
 		//Dtype *bias_data = (Dtype*)prev[2]->getPushGpuData();
@@ -392,7 +392,7 @@ namespace dlex_cnn
 
 		// update weight Diff
 		gradient_[0]->setGpuZero();
-		Dtype* kernel_gradient_data = (Dtype *)gradient_[0]->getPushGpuData();
+		Dtype* kernel_gradient_data = (Dtype *)gradient_[0]->getGpuData();
 		for (int ni = 0; ni < prev_diff_shape[tind::eNum]; ni++)
 		{
 			im2col_gpu<Dtype>(next_diff_data + ni*next_diff_size[tind::e3D], next_diff_shape[tind::eChannels],
@@ -412,7 +412,7 @@ namespace dlex_cnn
 
 		//update bias gradient
 		gradient_[1]->setGpuZero();
-		Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getPushGpuData();
+		Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getGpuData();
 
 		//backward_bias(next_diff_shape[tind::eNum], next_diff_shape[tind::eChannels], next_diff_size[tind::e2D], next_diff_data, bias_gradient_data);
 		//div_inplace_gpu(bias_size[tind::e4D], (Dtype)next_shape[tind::eNum], bias_gradient_data);

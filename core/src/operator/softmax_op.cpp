@@ -96,7 +96,7 @@ namespace dlex_cnn
 		const std::vector<int> next_data_shape = next[0]->getShape();
 
 		Dtype *prev_data_base = (Dtype *)prev[0]->getPushCpuData();
-		Dtype *next_data_base = (Dtype *)next[0]->getPushCpuData();
+		Dtype *next_data_base = (Dtype *)next[0]->getCpuData();
 
 		const int next_data_num = next_data_shape[tind::eNum];
 		const int prev_data_size3D = prev_data_size[tind::e3D];
@@ -148,7 +148,7 @@ namespace dlex_cnn
 
 		Dtype *prev_data_base = (Dtype *)prev[0]->getPushCpuData();
 		Dtype *next_data_base = (Dtype *)next[0]->getPushCpuData();
-		Dtype *prev_diff_base = (Dtype *)prev_diff[0]->getPushCpuData();
+		Dtype *prev_diff_base = (Dtype *)prev_diff[0]->getCpuData();
 		Dtype *next_diff_base = (Dtype *)next_diff[0]->getPushCpuData();
 
 		if (prev_data_size[tind::e4D] != next_data_size[tind::e4D])

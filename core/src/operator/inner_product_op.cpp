@@ -126,7 +126,7 @@ namespace dlex_cnn
 		//printf("into innerProduct forward:(%d, %d), (%d, %d)\n", prev3DSize, next3DSize, prev[1]->get4DSize(), prev[2]->get4DSize());
 
 		const Dtype* prev_data = (Dtype *)prev[0]->getPushCpuData();
-		Dtype* next_data = (Dtype *)next[0]->getPushCpuData();
+		Dtype* next_data = (Dtype *)next[0]->getCpuData();
 		const Dtype* weight_data = (Dtype *)prev[1]->getPushCpuData();
 		const Dtype* bias_data = param_.blas_enable ? (Dtype *)prev[2]->getPushCpuData() : nullptr;
 
@@ -167,7 +167,7 @@ namespace dlex_cnn
 	{
 		const Dtype* prev_data = (Dtype*)prev[0]->getPushCpuData();
 		const Dtype* next_data = (Dtype*)next[0]->getPushCpuData();
-		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getPushCpuData();
+		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getCpuData();
 		const Dtype* next_diff_data = (Dtype*)next_diff[0]->getPushCpuData();
 		const Dtype* weight_data = (Dtype*)prev[1]->getPushCpuData();
 		//const Dtype* bias_data = param_.blas_enable ? (Dtype*)prev[2]->getPushCpuData() : nullptr;
@@ -227,7 +227,7 @@ namespace dlex_cnn
 		//update this layer's param
 		//get weight gradient
 		gradient_[0]->setCpuZero();
-		Dtype* weight_gradient_data = (Dtype *)gradient_[0]->getPushCpuData();
+		Dtype* weight_gradient_data = (Dtype *)gradient_[0]->getCpuData();
 		// next_diff(num, hidden_num) -> next_diff'(hidden_num, num)
 		// O(M,N) = weightGradient(hidden_num, in3DSize) = next_diff'(hidden_num, num) * prev_data(num, in3DSize)
 		// -> M=hidden_num, N=in3DSize, K=num
@@ -247,11 +247,11 @@ namespace dlex_cnn
 		//update bias
 		if (param_.blas_enable)
 		{
-			//get bias diff	
-			Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getPushCpuData();
+			//get bias diff		
+			gradient_[1]->setCpuZero();
+			Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getCpuData();
 			const std::vector<int> biasGradSize = gradient_[1]->getSize();
 
-			gradient_[1]->setCpuZero();
 			backward_bias(
 				next_data_shape[tind::eNum],
 				biasGradSize[tind::e3D], 
@@ -275,7 +275,7 @@ namespace dlex_cnn
 		//printf("into innerProduct forward:(%d, %d), (%d, %d)\n", prev3DSize, next3DSize, prev[1]->get4DSize(), prev[2]->get4DSize());
 
 		const Dtype* prev_data = (Dtype *)prev[0]->getPushGpuData();
-		Dtype* next_data = (Dtype *)next[0]->getPushGpuData();
+		Dtype* next_data = (Dtype *)next[0]->getGpuData();
 		const Dtype* weight_data = (Dtype *)prev[1]->getPushGpuData();
 		const Dtype* bias_data = param_.blas_enable ? (Dtype *)prev[2]->getPushGpuData() : nullptr;
 
@@ -301,7 +301,7 @@ namespace dlex_cnn
 	{
 		const Dtype* prev_data = (Dtype*)prev[0]->getPushGpuData();
 		const Dtype* next_data = (Dtype*)next[0]->getPushGpuData();
-		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getPushGpuData();
+		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getGpuData();
 		const Dtype* next_diff_data = (Dtype*)next_diff[0]->getPushGpuData();
 		const Dtype* weight_data = (Dtype*)prev[1]->getPushGpuData();
 
@@ -358,8 +358,8 @@ namespace dlex_cnn
 		////////////////////////////////////////////////////////////////////////////
 		//update this layer's param
 		//get weight gradient
-		gradient_[0]->getPushGpuData();
-		Dtype* weight_gradient_data = (Dtype *)gradient_[0]->getPushGpuData();
+		gradient_[0]->setGpuZero();
+		Dtype* weight_gradient_data = (Dtype *)gradient_[0]->getGpuData();
 		// next_diff(num, hidden_num) -> next_diff'(hidden_num, num)
 		// O(M,N) = weightGradient(hidden_num, in3DSize) = next_diff'(hidden_num, num) * prev_data(num, in3DSize)
 		// -> M=hidden_num, N=in3DSize, K=num

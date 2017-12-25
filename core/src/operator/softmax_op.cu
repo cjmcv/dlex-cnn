@@ -63,7 +63,7 @@ namespace dlex_cnn
 		const std::vector<int> next_data_shape = next[0]->getShape();
 
 		Dtype *prev_data_base = (Dtype *)prev[0]->getPushGpuData();
-		Dtype *next_data_base = (Dtype *)next[0]->getPushGpuData();
+		Dtype *next_data_base = (Dtype *)next[0]->getGpuData();
 
 		const int next_data_num = next_data_shape[tind::eNum];
 		const int prev_data_size3D = prev_data_size[tind::e3D];
@@ -131,7 +131,7 @@ namespace dlex_cnn
 
 		Dtype *prev_data_base = (Dtype *)prev[0]->getPushGpuData();
 		Dtype *next_data_base = (Dtype *)next[0]->getPushGpuData();
-		Dtype *prev_diff_base = (Dtype *)prev_diff[0]->getPushGpuData();
+		Dtype *prev_diff_base = (Dtype *)prev_diff[0]->getGpuData();
 		Dtype *next_diff_base = (Dtype *)next_diff[0]->getPushGpuData();
 
 		if (prev_data_size[tind::e4D] != next_data_size[tind::e4D])
@@ -169,7 +169,6 @@ namespace dlex_cnn
 			SoftmaxBackwardKernel2<Dtype> << <DLEX_GET_BLOCKS(prev_diff_size3D), DLEX_CUDA_NUM_THREADS >> >(
 				prev_diff_size3D, next_data, next_diff, prev_diff);
 		}
-		next_diff_base = (Dtype *)next_diff[0]->getPushCpuData();
 	}
 	template void SoftmaxOp<float>::forward_gpu(
 		const std::vector<std::shared_ptr<Tensor<float>>> &prev,

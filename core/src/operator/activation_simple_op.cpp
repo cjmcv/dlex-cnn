@@ -123,7 +123,7 @@ namespace dlex_cnn
 		const std::vector<int> prev_size = prev[0]->getSize();
 		const std::vector<int> next_size = next[0]->getSize();
 		float* prev_data = (float *)prev[0]->getPushCpuData();
-		float* next_data = (float *)next[0]->getPushCpuData();
+		float* next_data = (float *)next[0]->getCpuData();
 
 		next[0]->setCpuZero();
 		for (int n = 0; n < prev[0]->getShape()[tind::eNum]; n++)
@@ -150,7 +150,7 @@ namespace dlex_cnn
 		const int next_diff_size3D = next_diff[0]->getSize()[tind::e3D];
 		float* prev_data = (float *)prev[0]->getPushCpuData();
 		float* next_data = (float *)next[0]->getPushCpuData();
-		float* prev_diff_data = (float *)prev_diff[0]->getPushCpuData();
+		float* prev_diff_data = (float *)prev_diff[0]->getCpuData();
 		float* next_diff_data = (float *)next_diff[0]->getPushCpuData();
 
 		float* act_x = NULL;
