@@ -7,6 +7,7 @@
 #ifdef USE_CUDA
 #include "operator/softmax_op.h"
 #include <sstream>
+#include <float.h>
 
 namespace dlex_cnn
 {

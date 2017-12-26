@@ -8,6 +8,7 @@
 #ifdef USE_CUDA
 #include "operator/pooling_op.h"
 #include <sstream>
+#include <float.h>
 
 namespace dlex_cnn
 {

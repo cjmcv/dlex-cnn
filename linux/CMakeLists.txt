@@ -60,10 +60,14 @@ endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES output_name "utils") 
 
-# Link libraries 
-#set(LIBS_LIST ${3RDPARTY_DIR}/lib/opencv310/libopencv_core.so
-#              )
-target_link_libraries(${PROJECT_NAME}) # ${LIBS_LIST}
+if(USE_CUDA)
+    set(CUDA_LIBS_LIST /usr/local/cuda/lib64/libcublas.so 
+                       /usr/local/cuda/lib64/libcurand.so)
+    target_link_libraries(${PROJECT_NAME} ${CUDA_LIBS_LIST})
+else()
+    target_link_libraries(${PROJECT_NAME})
+endif()
+
 
 # Set output path
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build)
