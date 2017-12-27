@@ -219,6 +219,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="..\..\..\core\src\operator\activation_simple_op.cu" />
+    <CudaCompile Include="..\..\..\core\src\operator\cross_entropy_lop.cu" />
     <CudaCompile Include="..\..\..\core\src\operator\pooling_op.cu" />
     <CudaCompile Include="..\..\..\core\src\operator\softmax_op.cu" />
     <CudaCompile Include="..\..\..\core\src\optimizer\optimizer.cu" />

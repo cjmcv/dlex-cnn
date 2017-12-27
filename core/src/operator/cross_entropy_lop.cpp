@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief  
+// > brief  CrossEntropyLossOp. Only for softmax for now.
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
@@ -79,7 +79,7 @@ namespace dlex_cnn
 		// convert orgLabel format for classification task, save result in labels_
 		const Dtype* org_label_data = (Dtype *)next[1]->getPushCpuData();
 
-		Dtype* label_data = (Dtype *)labels_->getPushCpuData();
+		Dtype* label_data = (Dtype *)labels_->getCpuData();
 		memset(label_data, 0, sizeof(Dtype)*output_size4D);
 
 		const int class_num = labels_->getShape()[1];	//channels = class num
@@ -92,10 +92,6 @@ namespace dlex_cnn
 		// compute loss (for softmax)
 		const Dtype* output_data = (Dtype *)prev[0]->getPushCpuData();
 		Dtype loss = 0.0f;
-
-		//for (int batchId = 0; batchId < output_shape[tind::eNum]; batchId++)	// original type
-		//	for (int i = 0; i < output_size3D; i++)
-		//			loss -= label_data[batchId*output_size3D + i] * std::log(std::max(output_data[batchId*output_size3D + i], Dtype(FLT_MIN)));
 
 		for (int i = 0; i < output_size4D; i++)
 			if (label_data[i] != 0)
@@ -112,8 +108,6 @@ namespace dlex_cnn
 		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
 	{
 		// get diff: input(lastOutput/label), output(lastDiff)
-		//printf("start CrossEntropyLossOp backward:(%d, %d, %d, %d)\n", prev.size(), next.size(), prev_diff.size(), next_diff.size());
-
 		// labels_ should be setted in forward operation, and in backward, it needn't to be converted again
 		const int output_size4D = next[0]->getSize()[tind::e4D];
 		if (labels_ == NULL || labels_->getSize()[tind::e4D] != output_size4D)
@@ -130,13 +124,14 @@ namespace dlex_cnn
 
 		Dtype* label_data_base = (Dtype *)labels_->getPushCpuData();
 		Dtype* output_data_base = (Dtype *)next[0]->getPushCpuData();
+		Dtype* prev_diff_base = (Dtype *)prev_diff[0]->getCpuData();
 
 		prev_diff[0]->setCpuZero();
-		for (int on = 0; on < next[0]->getShape()[0]; on++)
+		for (int on = 0; on < next[0]->getShape()[tind::eNum]; on++)
 		{
 			const Dtype* label_data = label_data_base + on * labels_size3D;
 			const Dtype* output_data = output_data_base + on * output_size3D;
-			Dtype* diff_data = (Dtype *)prev_diff[0]->getCpuData() + on * diff_size3D;
+			Dtype* diff_data = prev_diff_base + on * diff_size3D;
 			for (int next_diff_idx = 0; next_diff_idx < diff_size3D; next_diff_idx++)
 			{
 				const int data_idx = next_diff_idx;
@@ -144,25 +139,6 @@ namespace dlex_cnn
 			}
 		}
 	}
-
-#ifdef USE_CUDA
-	template <typename Dtype>
-	void CrossEntropyLossOp<Dtype>::forward_gpu(
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next)
-	{
-		forward(prev, next);
-	}
-	template <typename Dtype>
-	void CrossEntropyLossOp<Dtype>::backward_gpu(
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff,
-		const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff)
-	{
-		backward(prev, next, prev_diff, next_diff);
-	}
-#endif
 
 	INSTANTIATE_CLASS(CrossEntropyLossOp);
 

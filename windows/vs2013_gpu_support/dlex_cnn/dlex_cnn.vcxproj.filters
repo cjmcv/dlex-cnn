@@ -253,5 +253,8 @@
     <CudaCompile Include="..\..\..\core\src\operator\softmax_op.cu">
       <Filter>源文件\src\operator</Filter>
     </CudaCompile>
+    <CudaCompile Include="..\..\..\core\src\operator\cross_entropy_lop.cu">
+      <Filter>源文件\src\operator</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

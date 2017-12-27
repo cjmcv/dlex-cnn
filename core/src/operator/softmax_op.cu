@@ -169,6 +169,8 @@ namespace dlex_cnn
 
 			SoftmaxBackwardKernel2<Dtype> << <DLEX_GET_BLOCKS(prev_diff_size3D), DLEX_CUDA_NUM_THREADS >> >(
 				prev_diff_size3D, next_data, next_diff, prev_diff);
+			
+			CUDA_POST_KERNEL_CHECK;
 		}
 	}
 	template void SoftmaxOp<float>::forward_gpu(

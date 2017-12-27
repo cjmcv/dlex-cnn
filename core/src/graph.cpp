@@ -373,20 +373,8 @@ namespace dlex_cnn
 			}
 
 		}
-
-		//// 注意 当前为取[0]号输出，后面支持多输出（兼容前向？或在计算图模型中处理？）！！！
-
-		//for (int i = (int)(nodes_.size()) - 2; i >= 0; i--)
-		//{
-		//	//printf("backward[%d].\n", i);
-		//	timer.Start();
-		//	nodes_[i]->inte_ops_->getOpDiff()[0]->setCpuZero();
-		//	nodes_[i]->inte_ops_->backward(nodes_[i]->cpu_data_, nodes_[nodes_[i]->outputs_index_[0]]->cpu_data_,
-		//		nodes_[i]->inte_ops_->getOpDiff(), nodes_[nodes_[i]->outputs_index_[0]]->inte_ops_->getOpDiff());
-		//	float us = timer.MilliSeconds();
-		//	printf("time[%d]: %f ms\n", i, us);
-		//}
-		return 0;//nodes_[nodes_.size() - 1]->cpu_data_[2];
+		//// 注意 当前为取[0]号输出，后面支持多输出?
+		return 0;
 	}
 
 	template <typename Dtype>
