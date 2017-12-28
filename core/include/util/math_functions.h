@@ -72,6 +72,16 @@ namespace dlex_cnn
 		Dtype* C);
 
 	template <typename Dtype>
+	void add_bias_gpu(const int num, const int len, const Dtype* bias, Dtype* dst);
+	template <typename Dtype>
+	void add_bias_gpu(const int num, const int ch_size, const int len, const Dtype* bias, Dtype* dst);
+
+	template <typename Dtype>
+	void backward_bias_gpu(const int num, const int len, Dtype* next_diff, Dtype* bias_gradient);
+	template <typename Dtype>
+	void backward_bias_gpu(const int num, const int ch_size, const int len, Dtype* next_diff, Dtype* bias_gradient);
+
+	template <typename Dtype>
 	void im2col_gpu(const Dtype* data_im, const int channels,
 		const int height, const int width, const int kernel_h, const int kernel_w,
 		const int pad_h, const int pad_w, const int stride_h, const int stride_w,

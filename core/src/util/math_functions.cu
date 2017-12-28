@@ -88,6 +88,105 @@ namespace dlex_cnn
 			N, M, K, &alpha, B, ldb, A, lda, &beta, C, N));
 	}
 
+	///////////////////// add_bias ///////////////////////
+	template <typename Dtype>
+	__global__ void add_bias_kernel(const int n, const Dtype* bias, Dtype* dst)
+	{
+		CUDA_KERNEL_LOOP(index, n)
+		{
+			dst[index] += bias[index];
+		}
+	}
+
+	template <typename Dtype>
+	void add_bias_gpu(const int num, const int len, const Dtype* bias, Dtype* dst)
+	{
+		for (int n = 0; n < num; n++)
+		{
+			Dtype* dst_n = dst + n * len;
+			add_bias_kernel<Dtype> << <DLEX_GET_BLOCKS(len), DLEX_CUDA_NUM_THREADS >> >(
+				len, bias, dst_n);
+		}
+	}
+	template void add_bias_gpu<float>(const int num, const int len, const float* bias, float* dst);
+	template void add_bias_gpu<double>(const int num, const int len, const double* bias, double* dst);
+
+	template <typename Dtype>
+	__global__ void add_bias_kernel(const int n, const int len, const Dtype* bias, Dtype* dst)
+	{
+		CUDA_KERNEL_LOOP(index, n)
+		{
+			Dtype b = bias[index];
+			Dtype *dst_index = dst + index * len;
+			for (int k = 0; k < len; k++)
+				dst_index[k] += b;
+		}
+	}
+
+	template <typename Dtype>
+	void add_bias_gpu(const int num, const int ch_size, const int len, const Dtype* bias, Dtype* dst)
+	{
+		for (int n = 0; n < num; n++)
+		{
+			Dtype* dst_n = dst + n * ch_size * len;
+			add_bias_kernel<Dtype> << <DLEX_GET_BLOCKS(ch_size), DLEX_CUDA_NUM_THREADS >> >(
+				ch_size, len, bias, dst_n);
+		}
+	}
+	template void add_bias_gpu<float>(const int num, const int ch_size, const int len, const float* bias, float* dst);
+	template void add_bias_gpu<double>(const int num, const int ch_size, const int len, const double* bias, double* dst);
+
+
+	///////////////////// backward_bias ///////////////////////
+	template <typename Dtype>
+	__global__ void backward_bias_kernel(const int n, Dtype* next_diff_n, Dtype* bias_gradient)
+	{
+		CUDA_KERNEL_LOOP(index, n)
+		{
+			bias_gradient[index] += 1.0f * next_diff_n[index];
+		}
+	}
+
+	template <typename Dtype>
+	void backward_bias_gpu(const int num, const int len, Dtype* next_diff, Dtype* bias_gradient)
+	{
+		for (int n = 0; n < num; n++)
+		{
+			Dtype* next_diff_n = next_diff + n * len;
+			backward_bias_kernel<Dtype> << <DLEX_GET_BLOCKS(len), DLEX_CUDA_NUM_THREADS >> >(
+				len, next_diff_n, bias_gradient);
+		}
+	}
+	template void backward_bias_gpu<float>(const int num, const int len, float* next_diff, float* bias_gradient);
+	template void backward_bias_gpu<double>(const int num, const int len, double* next_diff, double* bias_gradient);
+
+	template <typename Dtype>
+	__global__ void backward_bias_kernel(const int n, const int len, Dtype* next_diff_n, Dtype* bias_gradient)
+	{
+		CUDA_KERNEL_LOOP(index, n)
+		{
+			Dtype b = 0;
+			Dtype* next_diff_nl = next_diff_n + index*len;
+			for (int k = 0; k < len; k++)
+			{
+				b += 1.0f*next_diff_nl[k];
+			}
+			bias_gradient[index] += b;
+		}
+	}
+	template <typename Dtype>
+	void backward_bias_gpu(const int num, const int ch_size, const int len, Dtype* next_diff, Dtype* bias_gradient)
+	{
+		for (int n = 0; n < num; n++)
+		{
+			Dtype* next_diff_n = next_diff + n * ch_size * len;
+			backward_bias_kernel<Dtype> << <DLEX_GET_BLOCKS(ch_size), DLEX_CUDA_NUM_THREADS >> >(
+				ch_size, len, next_diff_n, bias_gradient);
+		}
+	}
+	template void backward_bias_gpu<float>(const int num, const int ch_size, const int len, float* next_diff, float* bias_gradient);
+	template void backward_bias_gpu<double>(const int num, const int ch_size, const int len, double* next_diff, double* bias_gradient);
+
 	///////////////////// im2col ///////////////////////
 	template <typename Dtype>
 	__global__ void im2col_gpu_kernel(const int n, const Dtype* data_im,

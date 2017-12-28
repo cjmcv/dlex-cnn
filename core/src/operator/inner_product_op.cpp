@@ -288,8 +288,8 @@ namespace dlex_cnn
 		};
 		worker(0, prev[0]->getShape()[tind::eNum]);
 
-		//if (param_.blas_enable)
-		//	add_bias(prev[0]->getShape()[tind::eNum], next_data_size[tind::e3D], bias_data, next_data);
+		if (param_.blas_enable)
+			add_bias_gpu(prev[0]->getShape()[tind::eNum], next_data_size[tind::e3D], bias_data, next_data);
 	}
 
 	template <typename Dtype>
@@ -302,7 +302,7 @@ namespace dlex_cnn
 		const Dtype* prev_data = (Dtype*)prev[0]->getPushGpuData();
 		const Dtype* next_data = (Dtype*)next[0]->getPushGpuData();
 		Dtype* prev_diff_data = (Dtype*)prev_diff[0]->getGpuData();
-		const Dtype* next_diff_data = (Dtype*)next_diff[0]->getPushGpuData();
+		Dtype* next_diff_data = (Dtype*)next_diff[0]->getPushGpuData();
 		const Dtype* weight_data = (Dtype*)prev[1]->getPushGpuData();
 
 		const std::vector<int> prev_diff_size = prev_diff[0]->getSize();
@@ -374,20 +374,19 @@ namespace dlex_cnn
 		//div by batch size
 		div_inplace_gpu(weight_size[tind::e4D], (Dtype)next_data_shape[tind::eNum], weight_gradient_data);
 
-		//////////////////////////////////////////////////////////////////////////
-		////update bias
-		//if (param_.blas_enable)
-		//{
-		//	//get bias diff	
-		//	Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getPushCpuData();
-		//	const std::vector<int> biasGradSize = gradient_[1]->getSize();
+		////////////////////////////////////////////////////////////////////////
+		//update bias
+		if (param_.blas_enable)
+		{
+			//get bias diff
+			gradient_[1]->setGpuZero();
+			Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getGpuData();
+			const std::vector<int> biasGradSize = gradient_[1]->getSize();
+			backward_bias_gpu(next_data_shape[tind::eNum], biasGradSize[tind::e3D], next_diff_data, bias_gradient_data);
 
-		//	gradient_[1]->setCpuZero();
-		//	backward_bias(next_data_shape[tind::eNum], biasGradSize[tind::e3D], next_diff_data, bias_gradient_data);
-
-		//	//div by batch size
-		//	div_inplace_gpu(biasGradSize[tind::e4D], (Dtype)next_data_shape[tind::eNum], bias_gradient_data);
-		//}
+			//div by batch size
+			div_inplace_gpu(biasGradSize[tind::e4D], (Dtype)next_data_shape[tind::eNum], bias_gradient_data);
+		}
 	}
 #endif
 	INSTANTIATE_CLASS(InnerProductOp);

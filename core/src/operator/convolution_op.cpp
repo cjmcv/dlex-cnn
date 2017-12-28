@@ -342,8 +342,8 @@ namespace dlex_cnn
 				(Dtype)0, next_data + ni * next_size[tind::e3D]);
 		}
 
-		//if (param_.blas_enable)
-		//	add_bias(next_shape[tind::eNum], next_shape[tind::eChannels], next_size[tind::e2D], bias_data, next_data);
+		if (param_.blas_enable)
+			add_bias_gpu(next_shape[tind::eNum], next_shape[tind::eChannels], next_size[tind::e2D], bias_data, next_data);
 	}
 
 	template <typename Dtype>
@@ -427,12 +427,12 @@ namespace dlex_cnn
 		}
 		div_inplace_gpu(kernel_size[tind::e4D], (Dtype)next_shape[tind::eNum], kernel_gradient_data);
 
-		////update bias gradient
-		//gradient_[1]->setGpuZero();
-		//Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getGpuData();
+		//update bias gradient
+		gradient_[1]->setGpuZero();
+		Dtype* bias_gradient_data = (Dtype *)gradient_[1]->getGpuData();
 
-		//backward_bias(next_diff_shape[tind::eNum], next_diff_shape[tind::eChannels], next_diff_size[tind::e2D], next_diff_data, bias_gradient_data);
-		//div_inplace_gpu(bias_size[tind::e4D], (Dtype)next_shape[tind::eNum], bias_gradient_data);
+		backward_bias_gpu(next_diff_shape[tind::eNum], next_diff_shape[tind::eChannels], next_diff_size[tind::e2D], next_diff_data, bias_gradient_data);
+		div_inplace_gpu(bias_size[tind::e4D], (Dtype)next_shape[tind::eNum], bias_gradient_data);
 
 	}
 #endif
