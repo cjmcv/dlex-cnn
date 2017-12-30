@@ -11,7 +11,7 @@
 #include <vector>
 #include <cstdint>
 #include <algorithm>
-#include "io/dataloader.h"
+#include "io/data_struct.h"
 
 namespace dlex_cnn
 {

@@ -5,8 +5,8 @@
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
-#ifndef DLEX_PREFETCH_HPP_
-#define DLEX_PREFETCH_HPP_
+#ifndef DLEX_DATA_PREFETCH_HPP_
+#define DLEX_DATA_PREFETCH_HPP_
 
 #include "task.h"
 #include "tensor.h"
@@ -49,4 +49,4 @@ namespace dlex_cnn
 	};
 }
 
-#endif //DLEX_PREFETCH_HPP_
+#endif //DLEX_DATA_PREFETCH_HPP_
