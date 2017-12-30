@@ -68,7 +68,7 @@ namespace dlex_cnn
 				int ret = getNodeIndex(in_node_names[idx], index);
 				if (ret != 0)
 				{
-					DLOG_ERR("[ Graph::addNode ]: Can not get node with name %s \n", in_node_names[idx].c_str());
+					DLOG_ERR("[ Graph::addNode ]: Can not get node with name %s.", in_node_names[idx].c_str());
 					continue;
 				}
 				node->addInputName(in_node_names[idx]); // Create link from current node to previous node
@@ -135,12 +135,12 @@ namespace dlex_cnn
 	{
 		if (input_data.size() != in_node_names_.size())
 		{ 
-			DLOG_ERR("[ Graph::setInNode ]: input_data should have the same size with node_names\n");
+			DLOG_ERR("[ Graph::setInNode ]: input_data should have the same size with node_names.");
 			return -1;
 		}
 		if (input_data.size() <= 0)
 		{
-			DLOG_ERR("[ Graph::setInNode ]: input_data is invalid\n");
+			DLOG_ERR("[ Graph::setInNode ]: input_data is invalid.");
 			return -1;
 		}
 
@@ -149,7 +149,7 @@ namespace dlex_cnn
 		{
 			if (data_num != input_data[i]->getShape()[0])
 			{
-				DLOG_ERR("[ Graph::setInNode ]: Each block of data should has the same num\n");
+				DLOG_ERR("[ Graph::setInNode ]: Each block of data should has the same num.");
 				return -1;
 			}
 		}
@@ -160,7 +160,7 @@ namespace dlex_cnn
 			int ret = getNodeIndex(in_node_names_[i], index);
 			if (ret != 0)
 			{
-				DLOG_ERR("[ Graph::setInNode ]: Can not get node with name %s \n", in_node_names_[i].c_str());
+				DLOG_ERR("[ Graph::setInNode ]: Can not get node with name %s.", in_node_names_[i].c_str());
 				return -1;
 			}
 
@@ -185,12 +185,12 @@ namespace dlex_cnn
 	{
 		if (label_data.size() != out_node_names_.size())
 		{
-			DLOG_ERR("[ Graph::setOutNode ]: label_data should have the same size with node_names\n");
+			DLOG_ERR("[ Graph::setOutNode ]: label_data should have the same size with node_names.");
 			return -1;
 		}
 		if (label_data.size() <= 0)
 		{
-			DLOG_ERR("[ Graph::setOutNode ]: label_data is invalid\n");
+			DLOG_ERR("[ Graph::setOutNode ]: label_data is invalid.");
 			return -1;
 		}
 
@@ -202,7 +202,7 @@ namespace dlex_cnn
 			//printf("s1 set out node\n");
 			if (ret != 0)
 			{
-				DLOG_ERR("[ Graph::setOutNode ]: Can not get node with name %s. \n", out_node_names_[i].c_str());
+				DLOG_ERR("[ Graph::setOutNode ]: Can not get node with name %s.", out_node_names_[i].c_str());
 				return -1;
 			}
 			
@@ -210,7 +210,7 @@ namespace dlex_cnn
 			const int vec_size = nodes_[index]->getDataVec().size();
 			if (vec_size != 3)
 			{
-				DLOG_ERR("[ Graph::setOutNode ]: Output node is not contains 3 tenosr. \n");
+				DLOG_ERR("[ Graph::setOutNode ]: Output node is not contains 3 tenosr.");
 				return - 1;
 			}
 			/*if (nodes_[i]->inte_ops_->getOpDiff()[0]->getSize()[tind::e4D] != nodes_[i]->cpu_data_[0]->getSize()[tind::e4D])
@@ -235,12 +235,12 @@ namespace dlex_cnn
 		//printf("NetWork forward begin.\n");
 		if (nodes_.size() <= 1)
 		{
-			DLOG_ERR("[ Graph::forwardGraph ]: A graph should has more than 2 nodes. \n");
+			DLOG_ERR("[ Graph::forwardGraph ]: A graph should has more than 2 nodes.");
 			return -1;
 		}
 		if (in_nodes_map_.size() <= 0 || out_nodes_map_.size() <= 0)
 		{
-			DLOG_ERR("[ Graph::forwardGraph ]: input node or output node is empty. \n");
+			DLOG_ERR("[ Graph::forwardGraph ]: input node or output node is empty.");
 			return -1;
 		}
 
@@ -287,8 +287,12 @@ namespace dlex_cnn
 			}
 			else
 			{
+#ifdef USE_CUDA
 				nodes_[output_idx[0]]->getDataVec()[0]->setGpuZero();
 				inte_op_idx->forward_gpu(nodes_[idx]->getDataVec(), nodes_[output_idx[0]]->getDataVec());
+#else
+				DLOG_ERR("CUDA programs are invalid, Please open the marco USE_CUDA");
+#endif
 			}
 
 			//float *outdata0 = (float *)nodes_[idx]->getDataVec()[1]->getPushCpuData();
@@ -312,12 +316,12 @@ namespace dlex_cnn
 	{
 		if (nodes_.size() <= 1)
 		{
-			DLOG_ERR("[ Graph::backwardGraph ]: A graph should has more than 2 nodes. \n");
+			DLOG_ERR("[ Graph::backwardGraph ]: A graph should has more than 2 nodes.");
 			return -1;
 		}
 		if (in_nodes_map_.size() <= 0 || out_nodes_map_.size() <= 0)
 		{
-			DLOG_ERR("[ Graph::backwardGraph ]: input node or output node is empty. \n");
+			DLOG_ERR("[ Graph::backwardGraph ]: input node or output node is empty.");
 			return -1;
 		}
 
@@ -367,9 +371,13 @@ namespace dlex_cnn
 			}
 			else
 			{
+#ifdef USE_CUDA
 				inte_op_idx->getOpDiff()[0]->setGpuZero();
 				inte_op_idx->backward_gpu(data_idx, nodes_[output_idx[0]]->getDataVec(),
 					inte_op_idx->getOpDiff(), nodes_[output_idx[0]]->getInteOp()->getOpDiff());
+#else
+				DLOG_ERR("CUDA programs are invalid, Please open the marco USE_CUDA");
+#endif	
 			}
 
 		}
@@ -386,12 +394,12 @@ namespace dlex_cnn
 		int ret = getNodeIndex(node_name, index);
 		if (ret != 0)
 		{
-			DLOG_ERR("[ Graph::getLoss ]: Can not get node with name < %s >.\n", node_name.c_str());
+			DLOG_ERR("[ Graph::getLoss ]: Can not get node with name < %s >.", node_name.c_str());
 			return -1;
 		}
 		if (nodes_[index]->getInteOp()->getOpType() != "Output")
 		{
-			DLOG_ERR("[ Graph::getLoss ]: The node with name < %s >, is not an output node.\n", node_name.c_str());
+			DLOG_ERR("[ Graph::getLoss ]: The node with name < %s >, is not an output node.", node_name.c_str());
 			return -1;
 		}
 		loss = *(Dtype *)(nodes_[index]->getDataVec()[2]->getPushCpuData());
@@ -406,7 +414,7 @@ namespace dlex_cnn
 		int ret = getNodeIndex(node_name, index);
 		if (ret != 0)
 		{
-			DLOG_ERR("[ Graph::getNodeData ]: Can not get node with name < %s >.\n", node_name.c_str());
+			DLOG_ERR("[ Graph::getNodeData ]: Can not get node with name < %s >.", node_name.c_str());
 			return -1;
 		}
 		data = nodes_[index]->getDataVec()[0];
@@ -420,7 +428,7 @@ namespace dlex_cnn
 		//printf("NetWork forward begin.\n");
 		if (nodes_.size() <= 1)
 		{
-			DLOG_ERR("[ Graph::forwardGraph ]: A graph should has more than 2 nodes. \n");
+			DLOG_ERR("[ Graph::forwardGraph ]: A graph should has more than 2 nodes.");
 			return -1;
 		}
 
@@ -438,34 +446,34 @@ namespace dlex_cnn
 		while (!nodes_idx_stack_.empty())	//DFS , 后需添加depends
 		{
 			int idx = nodes_idx_stack_.top();
-			printf("================================================(%d)== \n", idx);
+			DLOG_INFO("================================================(%d)==", idx);
 			nodes_idx_stack_.pop();
 			
 			const std::string cur_node_name = nodes_[idx]->getName();
 			const std::shared_ptr<Op<Dtype>> inte_op_idx = nodes_[idx]->getInteOp();
-			printf("*  node name: <%s> , op type: <%s>.\n", cur_node_name.c_str(), inte_op_idx->getOpType().c_str());
+			DLOG_INFO("*  node name: <%s> , op type: <%s>.", cur_node_name.c_str(), inte_op_idx->getOpType().c_str());
 
 			// weight / blas
 			const std::vector<std::shared_ptr<Tensor<Dtype>>> data_vec = nodes_[idx]->getDataVec();
 			const std::vector<int> data_shape = data_vec[0]->getShape();
-			printf("*  data: (%d, %d, %d, %d). \n", data_shape[tind::eNum], data_shape[tind::eChannels], data_shape[tind::eHeight], data_shape[tind::eWidth]);
+			DLOG_INFO("*  data: (%d, %d, %d, %d).", data_shape[tind::eNum], data_shape[tind::eChannels], data_shape[tind::eHeight], data_shape[tind::eWidth]);
 			if (data_vec.size() >= 2)
 			{
 				const std::vector<int> weight_shape = data_vec[1]->getShape();
-				printf("*  weight: (%d, %d, %d, %d). \n", weight_shape[tind::eNum], weight_shape[tind::eChannels], weight_shape[tind::eHeight], weight_shape[tind::eWidth]);
+				DLOG_INFO("*  weight: (%d, %d, %d, %d).", weight_shape[tind::eNum], weight_shape[tind::eChannels], weight_shape[tind::eHeight], weight_shape[tind::eWidth]);
 				
 				if (data_vec.size() >= 3)
 				{
 					const std::vector<int> blas_shape = data_vec[2]->getShape();
-					printf("*  blas: (%d, %d, %d, %d). \n", blas_shape[tind::eNum], blas_shape[tind::eChannels], blas_shape[tind::eHeight], blas_shape[tind::eWidth]);
+					DLOG_INFO("*  blas: (%d, %d, %d, %d).", blas_shape[tind::eNum], blas_shape[tind::eChannels], blas_shape[tind::eHeight], blas_shape[tind::eWidth]);
 				}
 				else
-					printf("*  blas: None. \n");
+					DLOG_INFO("*  blas: None. ");
 			}
 			else
 			{
-				printf("*  weight: None. \n");
-				printf("*  blas: None. \n");
+				DLOG_INFO("*  weight: None.");
+				DLOG_INFO("*  blas: None.");
 			}	
 
 			// gradient / diff
@@ -473,19 +481,19 @@ namespace dlex_cnn
 			if (gradient_vec.size() != 0)
 			{
 				const std::vector<int> shape = gradient_vec[0]->getShape();
-				printf("*  gradient: (%d, %d, %d, %d). \n", shape[tind::eNum], shape[tind::eChannels], shape[tind::eHeight], shape[tind::eWidth]);
+				DLOG_INFO("*  gradient: (%d, %d, %d, %d).", shape[tind::eNum], shape[tind::eChannels], shape[tind::eHeight], shape[tind::eWidth]);
 			}
 			else
-				printf("*  gradient: None. \n");
+				DLOG_INFO("*  gradient: None.");
 
 			const std::vector<std::shared_ptr<Tensor<Dtype>>> diff_vec = inte_op_idx->getOpDiff();
 			if (diff_vec.size() != 0)
 			{
 				const std::vector<int> shape = diff_vec[0]->getShape();
-				printf("*  diff: (%d, %d, %d, %d). \n", shape[tind::eNum], shape[tind::eChannels], shape[tind::eHeight], shape[tind::eWidth]);
+				DLOG_INFO("*  diff: (%d, %d, %d, %d).", shape[tind::eNum], shape[tind::eChannels], shape[tind::eHeight], shape[tind::eWidth]);
 			}
 			else
-				printf("*  diff: None. \n");
+				DLOG_INFO("*  diff: None.");
 
 			// input / output
 			const std::vector<int> input_idx = nodes_[idx]->getInputIdx();
@@ -493,7 +501,7 @@ namespace dlex_cnn
 			for (int i = 0; i < input_idx.size(); i++)
 			{
 				const std::vector<int> shape = nodes_[input_idx[i]]->getOutputShape(); // getDataVec()[0]->getShape();
-				printf("*  %s <%s> (%d, %d, %d, %d) -> %s. \n", nodes_[input_idx[i]]->getName().c_str(),
+				DLOG_INFO("*  %s <%s> (%d, %d, %d, %d) -> %s.", nodes_[input_idx[i]]->getName().c_str(),
 					nodes_[input_idx[i]]->getInteOp()->getOpType().c_str(),
 					shape[tind::eNum], shape[tind::eChannels], shape[tind::eHeight], shape[tind::eWidth],
 					cur_node_name.c_str());
@@ -501,7 +509,7 @@ namespace dlex_cnn
 			for (int i = 0; i < output_idx.size(); i++)
 			{
 				const std::vector<int> shape = nodes_[output_idx[i]]->getInputShape(); // getDataVec()[0]->getShape();
-				printf("*  %s -> %s <%s> (%d, %d, %d, %d). \n", cur_node_name.c_str(),
+				DLOG_INFO("*  %s -> %s <%s> (%d, %d, %d, %d).", cur_node_name.c_str(),
 					nodes_[output_idx[i]]->getName().c_str(),
 					nodes_[output_idx[i]]->getInteOp()->getOpType().c_str(),
 					shape[tind::eNum], shape[tind::eChannels], shape[tind::eHeight], shape[tind::eWidth]);
@@ -608,7 +616,7 @@ namespace dlex_cnn
 				// Create node here according to previous information.
 				std::shared_ptr<dlex_cnn::Op<Dtype>> node_op = dlex_cnn::OpFactory<Dtype>::getInstance().createOpByType(op_type);
 				if (node_op == NULL)
-					DLOG_ERR("[ Graph<Dtype>::readText2Graph ]: Can not create Op by type (%s) \n", op_type.c_str());
+					DLOG_ERR("[ Graph<Dtype>::readText2Graph ]: Can not create Op by type (%s).", op_type.c_str());
 				node_op->setOpParam(cstr);
 				std::vector < std::shared_ptr<dlex_cnn::Op<Dtype>> > node_ops;
 				node_ops.push_back(node_op);
@@ -682,7 +690,7 @@ namespace dlex_cnn
 
 			char *name = (char *)malloc(sizeof(char) * name_len);
 			fread(name, sizeof(char), name_len, fp);
-			printf("params name: %s\n", name);
+			DLOG_INFO("params name: %s.", name);
 
 			// Search all of the nodes in graph for finding the node that has the same name.
 			for (int j = 0; j < nodes_.size(); j++)	// 加载结构时，需要检查重名的情况，确保到这里不会有重名node

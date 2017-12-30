@@ -22,12 +22,12 @@ namespace dlex_cnn {
 		name_ = name;
 		graph_.reset(new Graph<Dtype>());
 
-		printf("NetWork constructed.\n");
+		DLOG_INFO("NetWork constructed.");
 	}
 	template <typename Dtype>
 	NetWork<Dtype>::~NetWork()
 	{
-		printf("NetWork destructed.\n");
+		DLOG_INFO("NetWork destructed.");
 	}
 	template <typename Dtype>
 	int NetWork<Dtype>::netParamsInit()
@@ -77,7 +77,13 @@ namespace dlex_cnn {
 		{
 			int ret = 0;
 			if (Task::mode() == tind::GPU)
+			{
+#ifdef USE_CUDA
 				input_data_tensor->checkPushGpuData();
+#else
+				DLOG_ERR("CUDA programs are invalid, Please open the marco USE_CUDA");
+#endif	
+			}
 			input_data_vec_.clear();
 			input_data_vec_.push_back(input_data_tensor);
 			ret = graph_->setInNode(input_data_vec_);
@@ -85,7 +91,14 @@ namespace dlex_cnn {
 			if (label_data_tensor != NULL)
 			{
 				if (Task::mode() == tind::GPU)
+				{
+#ifdef USE_CUDA
 					label_data_tensor->checkPushGpuData();
+#else
+					DLOG_ERR("CUDA programs are invalid, Please open the marco USE_CUDA");
+#endif				
+				}
+
 				label_data_vec_.clear();
 				label_data_vec_.push_back(label_data_tensor);
 				ret += graph_->setOutNode(label_data_vec_);
@@ -113,7 +126,14 @@ namespace dlex_cnn {
 				if (Task::mode() == tind::CPU)
 					optimizer_->update(nodes[i]);
 				else
+				{
+#ifdef USE_CUDA
 					optimizer_->update_gpu(nodes[i]);
+#else
+					DLOG_ERR("CUDA programs are invalid, Please open the marco USE_CUDA");
+#endif
+				}
+					
 			}
 		}
 		return 0;
@@ -248,7 +268,7 @@ namespace dlex_cnn {
 			std::shared_ptr<dlex_cnn::Optimizer<Dtype>> optimizer;
 			if (dlex_cnn::Optimizer<Dtype>::getOptimizerByStr(opt_str, optimizer))
 			{
-				DLOG_ERR("[ NetWork::readHyperParams ]: Can not find optimizer by name - %s \n", opt_str.c_str());
+				DLOG_ERR("[ NetWork::readHyperParams ]: Can not find optimizer by name - %s.", opt_str.c_str());
 				return -1;
 			}
 			this->setOptimizer(optimizer);
@@ -257,7 +277,7 @@ namespace dlex_cnn {
 				this->setLearningRate(lr);
 			else
 			{
-				DLOG_ERR("[ NetWork::readHyperParams ]: Invalid learning rate -> () \n", lr);
+				DLOG_ERR("[ NetWork::readHyperParams ]: Invalid learning rate -> ().", lr);
 				return -1;
 			}
 
@@ -287,13 +307,13 @@ namespace dlex_cnn {
 	template <typename Dtype>
 	int NetWork<Dtype>::netWorkShow()
 	{
-		printf("***************************************************** \n");
-		printf("**************  Network's name: <%s>. *************\n", name_.c_str());
-		printf("======================= Graph ======================= \n");
+		DLOG_INFO("***************************************************** ");
+		DLOG_INFO("**************  Network's name: <%s>. *************\n", name_.c_str());
+		DLOG_INFO("======================= Graph ======================= ");
 		graph_->graphShow();
-		printf(">>>>>>>>>>>>>>>>>>>>> Optimizer <<<<<<<<<<<<<<<<<<<<< \n");
-		printf("lr: %f\n", optimizer_->getLearningRate());
-		printf("***************************************************** \n");
+		DLOG_INFO(">>>>>>>>>>>>>>>>>>>>> Optimizer <<<<<<<<<<<<<<<<<<<<< ");
+		DLOG_INFO("lr: %f\n", optimizer_->getLearningRate());
+		DLOG_INFO("***************************************************** ");
 		return 0;
 	}
 	INSTANTIATE_CLASS(NetWork);

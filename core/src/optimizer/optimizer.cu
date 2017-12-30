@@ -4,7 +4,7 @@
 // > brief  
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
-
+#ifdef USE_CUDA
 #include "util/device.h"
 #include "optimizer/optimizer.h"
 
@@ -50,3 +50,4 @@ namespace dlex_cnn
 	template void SGD<float>::update_gpu(std::shared_ptr< Node<float> > node);
 	template void SGD<double>::update_gpu(std::shared_ptr< Node<double> > node);
 }//namespace
+#endif //USE_CUDA

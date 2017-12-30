@@ -15,12 +15,12 @@ namespace dlex_cnn
 	{
 		if (num <= 0 || channels <= 0 || height <= 0 || width <= 0)
 		{
-			DLOG_ERR("[ Tensor::Tensor ]: num <= 0 || channels <= 0 || height <= 0 || width <= 0.\n");
+			DLOG_ERR("[ Tensor::Tensor ]: num <= 0 || channels <= 0 || height <= 0 || width <= 0.");
 		}
 		else if (num > MAX_SHAPE_SIZE || height > MAX_SHAPE_SIZE || width > MAX_SHAPE_SIZE)
 		{
 			DLOG_ERR("[ Tensor::Tensor ]: num(%d) > MAX_SHAPE_SIZE || \
-					 					 height(%d) > MAX_SHAPE_SIZE || width(%d) > MAX_SHAPE_SIZE.\n",
+					 					 height(%d) > MAX_SHAPE_SIZE || width(%d) > MAX_SHAPE_SIZE.",
 										 num, height, width);
 		}
 
@@ -47,12 +47,12 @@ namespace dlex_cnn
 		const int shapeSize = shape.size();
 		if (shapeSize < 1 || shapeSize > MAX_SHAPE_SIZE)
 		{
-			DLOG_ERR("[ Tensor::Tensor ]: shape.size() < 1 || shape.size() > MAX_SHAPE_SIZE.\n");
+			DLOG_ERR("[ Tensor::Tensor ]: shape.size() < 1 || shape.size() > MAX_SHAPE_SIZE.");
 		}
 		else if (shape[0] > MAX_SHAPE_SIZE || shape[2] > MAX_SHAPE_SIZE || shape[3] > MAX_SHAPE_SIZE)
 		{
 			DLOG_ERR("[ Tensor::Tensor ]: num(%d) > MAX_SHAPE_SIZE || \
-					 					 height(%d) > MAX_SHAPE_SIZE || width(%d) > MAX_SHAPE_SIZE.\n",
+					 					 height(%d) > MAX_SHAPE_SIZE || width(%d) > MAX_SHAPE_SIZE.",
 										 shape[0], shape[2], shape[3]);
 		}
 
@@ -88,7 +88,7 @@ namespace dlex_cnn
 		cpu_data_ = (void *)malloc(sizeof(Dtype) * size_[tind::e4D]);
 		if (cpu_data_ == NULL)
 		{
-			DLOG_ERR("[ Tensor::mallocCpuData ]: Can not malloc for gpu_data_.\n");
+			DLOG_ERR("[ Tensor::mallocCpuData ]: Can not malloc for gpu_data_.");
 			return -1;
 		}
 		else
@@ -105,10 +105,14 @@ namespace dlex_cnn
 			mem_head_ = tind::eHeadAtCPU;
 			break;
 		case tind::eHeadAtGPU:
+#ifdef USE_CUDA
 			if (cpu_data_ == NULL)
 				mallocCpuData();
 			cpyInplace(tind::eDevice2Host);
 			mem_head_ = tind::eHeadAtCPU;
+#else
+			DLOG_ERR("CUDA programs are invalid, Please open the marco USE_CUDA");
+#endif
 			break;
 		default:
 			break;
@@ -123,7 +127,7 @@ namespace dlex_cnn
 		CUDA_DCHECK(cudaMalloc(&gpu_data_, sizeof(Dtype) * size_[tind::e4D]));
 		if (gpu_data_ == NULL)
 		{
-			DLOG_ERR("[ Tensor::mallocGpuData ]: Can not malloc for gpu_data_.\n");
+			DLOG_ERR("[ Tensor::mallocGpuData ]: Can not malloc for gpu_data_.");
 			return -1;
 		}
 		else
@@ -156,7 +160,7 @@ namespace dlex_cnn
 	{
 		if (dst_tensor.shape_ != this->shape_ || dst_tensor.size_ != this->size_)
 		{
-			DLOG_ERR("[ Tensor::copyDataTo ]: src tensor and dst tensor should have the same size.\n");
+			DLOG_ERR("[ Tensor::copyDataTo ]: src tensor and dst tensor should have the same size.");
 			return;
 		}
 		switch (cp_mode)
@@ -164,7 +168,7 @@ namespace dlex_cnn
 		case tind::eHost2Host:
 			if (dst_tensor.getCpuData() == NULL || this->cpu_data_ == NULL)
 			{
-				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getCpuData() == NULL || this->cpu_data_ == NULL.\n");
+				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getCpuData() == NULL || this->cpu_data_ == NULL.");
 				return;
 			}
 
@@ -175,7 +179,7 @@ namespace dlex_cnn
 		case tind::eHost2Device:
 			if (dst_tensor.getGpuData() == NULL || this->cpu_data_ == NULL)
 			{
-				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getGpuData() == NULL || this->cpu_data_ == NULL.\n");
+				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getGpuData() == NULL || this->cpu_data_ == NULL.");
 				return;
 			}
 			CUDA_DCHECK(cudaMemcpy(dst_tensor.gpu_data_, this->cpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D], cudaMemcpyHostToDevice));
@@ -184,7 +188,7 @@ namespace dlex_cnn
 		case tind::eDevice2Device:
 			if (dst_tensor.getGpuData() == NULL || this->gpu_data_ == NULL)
 			{
-				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getGpuData() == NULL || this->gpu_data_ == NULL.\n");
+				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getGpuData() == NULL || this->gpu_data_ == NULL.");
 				return;
 			}
 			CUDA_DCHECK(cudaMemcpy(dst_tensor.gpu_data_, this->gpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D], cudaMemcpyDeviceToDevice));
@@ -193,7 +197,7 @@ namespace dlex_cnn
 		case tind::eDevice2Host:
 			if (dst_tensor.getCpuData() == NULL || this->gpu_data_ == NULL)
 			{
-				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getCpuData() == NULL || this->gpu_data_ == NULL.\n");
+				DLOG_ERR("[ Tensor::copyDataTo ]: dst_tensor.getCpuData() == NULL || this->gpu_data_ == NULL.");
 				return;
 			}
 			CUDA_DCHECK(cudaMemcpy(dst_tensor.cpu_data_, this->gpu_data_, sizeof(Dtype) * dst_tensor.size_[tind::e4D], cudaMemcpyDeviceToHost));
@@ -201,7 +205,7 @@ namespace dlex_cnn
 			break;
 #endif
 		default:
-			DLOG_ERR("[ Tensor::copyDataTo ]: TensorCopyMode is invalid.\n");
+			DLOG_ERR("[ Tensor::copyDataTo ]: TensorCopyMode is invalid.");
 			break;
 		}
 	}

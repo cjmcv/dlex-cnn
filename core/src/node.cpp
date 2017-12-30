@@ -49,7 +49,7 @@ namespace dlex_cnn
 		}
 		else
 		{
-			DLOG_ERR("[ Node::hybridOpMap ]: sub_ops_.size() >= 4 that has not been implemented.\n");
+			DLOG_ERR("[ Node::hybridOpMap ]: sub_ops_.size() >= 4 that has not been implemented.");
 			return -1;
 		}
 
@@ -60,7 +60,7 @@ namespace dlex_cnn
 	{
 		if (sub_ops_.size() <= 0)
 		{
-			DLOG_ERR("[ Node::inferInteOp ]: sub_ops_.size() <= 0.\n");
+			DLOG_ERR("[ Node::inferInteOp ]: sub_ops_.size() <= 0.");
 			return -1;
 		}
 		if (sub_ops_.size() == 1)
@@ -87,7 +87,7 @@ namespace dlex_cnn
 			}
 			if (s_index == -1)
 			{
-				DLOG_ERR("[ Node::inferInteOp ]: Can not find the hop with name < %s > in hopPhaseMap.\n", inte_op_str);
+				DLOG_ERR("[ Node::inferInteOp ]: Can not find the hop with name < %s > in hopPhaseMap.", inte_op_str);
 				return -1;
 			}
 			//printf("inte_ops = %s\n", hopPhaseMap[s_index][phase_ + 1].c_str());
