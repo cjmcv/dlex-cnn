@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief 
+// > brief  Node, the main component of Graph.
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
@@ -87,11 +87,6 @@ namespace dlex_cnn
 
 		// Infer and generate inte_ops_ on the basis of sub_ops_ and phase_
 		int inferInteOp();
-
-
-		// 网络结构: 可见，输入输出都行，也可在内部用字符串写网络结构
-		// name, index, in_idx_count, in_idx, （out_idx_count, out_idx,全部加载完毕后，再数，建立） in_shape（根据前一个node决定）, out_shape（推断）
-		// op_param
 
 	private:
 		int phase_;

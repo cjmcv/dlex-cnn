@@ -44,7 +44,9 @@ namespace dlex_cnn
 		void *instant_ = NULL;
 		// Buffer for prefetch.
 		TensorPair base_storage_[PREFETCH_COUNT];
+		// Store the pointers of empty buffer.
 		BlockingQueue < TensorPair* > free_;
+		// Store the pointers of buffers that contains useful data.
 		BlockingQueue < TensorPair* > full_;
 	};
 }

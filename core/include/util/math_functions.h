@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief  
+// > brief  math_function.h
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
@@ -26,6 +26,8 @@ namespace dlex_cnn
 	template <typename Dtype>
 	void div_inplace_cpu(const int N, const Dtype alpha, Dtype* data);
 
+	// Reference to Caffe.
+	// Make it possible to compute conv and deconv operation using gemm.
 	template <typename Dtype>
 	void im2col_cpu(const Dtype* data_im, const int channels,
 		const int height, const int width, const int kernel_h, const int kernel_w,

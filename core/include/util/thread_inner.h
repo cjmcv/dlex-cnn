@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief  
+// > brief  Internal thread. It is mainly used in prefetcher.
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
@@ -23,9 +23,11 @@ namespace dlex_cnn
 		void startInnerThread();
 		void stopInnerThread();
 
+		// To chech wether the inner thread has been started. 
 		bool is_started() const;
 
 	protected:
+		// Virtual function, should be override by the classes which needs a internal thread to assist.
 		virtual void entryInnerThread() {}
 		bool must_stop();
 

@@ -40,7 +40,9 @@ namespace dlex_cnn
 		virtual int setOpParam(const std::string &op_param_str) override;
 
 	private:
+		// For forward.
 		std::function<Dtype(Dtype)> p_act;
+		// For backward.
 		std::function<Dtype(Dtype, Dtype)> p_rev_act;
 
 		inline Dtype relu(Dtype x) { return std::max(x, Dtype(0)) + param_.negative_slope * std::min(x, Dtype(0)); }
@@ -53,6 +55,7 @@ namespace dlex_cnn
 		inline Dtype rev_tanh(Dtype nx, Dtype diff_next) { return diff_next * (1 - nx * nx); }
 
 	private:
+		// Bind activation function.
 		int setOpFunc();
 
 		inline virtual const std::string &getOpType() const override { return op_type_; };

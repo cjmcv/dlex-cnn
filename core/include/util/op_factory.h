@@ -1,7 +1,8 @@
 ////////////////////////////////////////////////////////////////
 // > Copyright (c) 2017 by Contributors. 
 // > https://github.com/cjmcv
-// > brief  
+// > brief  A factory for operators.
+//          allows users to create an operator only by string.
 // > author Jianming Chen
 ////////////////////////////////////////////////////////////////
 
@@ -61,7 +62,7 @@ public:
 		return getOpFunc(param_str);
 	}
 
-	// Registerer, set the mapping relation between operator class name and it's specific pointer function.
+	// Registerer, set the mapping relation between operator's class name and it's specific pointer function.
 	int registerOpClass(std::string type, opCreator getOpFunc)
 	{
 		if (op_creator_map_.count(type) != 0)
@@ -73,7 +74,7 @@ public:
 		return 0;
 	}
 
-	// singleton mode
+	// Singleton mode. Only one OpFactory exist.
 	static OpFactory& getInstance()
 	{
 		static OpFactory factory;

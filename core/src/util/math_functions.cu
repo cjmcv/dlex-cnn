@@ -1,3 +1,10 @@
+////////////////////////////////////////////////////////////////
+// > Copyright (c) 2017 by Contributors. 
+// > https://github.com/cjmcv
+// > brief  math_function.cu
+// > author Jianming Chen
+////////////////////////////////////////////////////////////////
+
 #ifdef USE_CUDA
 #include "util/device.h"
 #include "util/math_functions.h"

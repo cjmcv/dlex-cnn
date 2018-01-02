@@ -26,8 +26,8 @@ namespace dlex_cnn
 	{
 		enum TensorSizeIndex  { e1D, e2D, e3D, e4D };
 		enum TensorShapeIndex { eNum, eChannels, eHeight, eWidth };
-		enum TensorCopyMode { eHost2Host, eHost2Device, eDevice2Device, eDevice2Host };
-		enum TensorMemHead { eUninitialized, eHeadAtCPU, eHeadAtGPU, eSynced };
+		enum TensorCopyMode   { eHost2Host, eHost2Device, eDevice2Device, eDevice2Host };
+		enum TensorMemHead    { eUninitialized, eHeadAtCPU, eHeadAtGPU, eSynced };
 	}
 
 	template <typename Dtype>
@@ -45,12 +45,15 @@ namespace dlex_cnn
 		inline void setMemHead(tind::TensorMemHead mem_head) { mem_head_ = mem_head; }
 
 		int mallocCpuData();
+
+		// Get cpu data pointer only.
 		inline void *getCpuData() {
 			if (cpu_data_ == NULL)
 				mallocCpuData();
 			mem_head_ = tind::eHeadAtCPU;
 			return cpu_data_;
 		}
+		// Get cpu data pointer, and push data from gpu to cpu if necessary.
 		void checkPushCpuData();
 		inline void *getPushCpuData() {
 			checkPushCpuData();
@@ -63,7 +66,7 @@ namespace dlex_cnn
 			set_cpu(size_[tind::e4D], alpha, dst);
 		};
 
-		// Just copy data, without changing their size
+		// Just copy data, without changing their size.
 		void copyDataTo(Tensor<Dtype> &dst_tensor, tind::TensorCopyMode mode);
 
 #ifdef USE_CUDA
@@ -86,15 +89,19 @@ namespace dlex_cnn
 			set_gpu(size_[tind::e4D], alpha, dst);
 		};
 
-		// Push data from cpu to gpu.
+		// Push data from cpu to gpu by cudaMemcpyAsync.
 		void asyncCpy2GPU(const cudaStream_t& stream);
-		
+		// Copy data between CPU and GPU within one Tensor.
 		void cpyInplace(tind::TensorCopyMode cp_mode);
 #endif
 	private:
+		// Take a tag to tell where the current memory has been saved (CPU or GPU).
 		int mem_head_;
+		// A pointer to the memory in CPU.
 		void *cpu_data_;
+		// A pointer to the memory in GPU.
 		void *gpu_data_;
+		// A member for cudaGetDevice.
 		int gpu_device_;
 
 		// eNum, eChannels, eHeight, eWidth
