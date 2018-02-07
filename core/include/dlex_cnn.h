@@ -33,18 +33,18 @@
 //
 #include "trainer/typical_network.h"
 
-static void registerOpClass()
-{	//register
-	dlex_cnn::OpFactory<float>::getInstance().registerOpClass("Input", dlex_cnn::CreateInputOp<float>);
-	dlex_cnn::OpFactory<float>::getInstance().registerOpClass("Output", dlex_cnn::CreateOutputOp<float>);
-	dlex_cnn::OpFactory<float>::getInstance().registerOpClass("InnerProduct", dlex_cnn::CreateInnerProductOp<float>);
-	dlex_cnn::OpFactory<float>::getInstance().registerOpClass("Convolution", dlex_cnn::CreateConvolutionOp<float>);
-	dlex_cnn::OpFactory<float>::getInstance().registerOpClass("Deconvolution", dlex_cnn::CreateDeconvolutionOp<float>);
-	dlex_cnn::OpFactory<float>::getInstance().registerOpClass("Pooling", dlex_cnn::CreatePoolingOp<float>);
-	dlex_cnn::OpFactory<float>::getInstance().registerOpClass("Activation", dlex_cnn::CreateActivationOp<float>);
-	dlex_cnn::OpFactory<float>::getInstance().registerOpClass("Softmax", dlex_cnn::CreateSoftmaxOp<float>);
-	dlex_cnn::OpFactory<float>::getInstance().registerOpClass("CrossEntropyLoss", dlex_cnn::CreateCrossEntropyLossOp<float>);
-	dlex_cnn::OpFactory<float>::getInstance().registerOpClass("SoftmaxCrossEntropyLossH", dlex_cnn::CreateSoftmaxCrossEntropyLossHOp<float>);
+//register
+static void RegisterOpClass() {
+  dlex_cnn::OpFactory<float>::GetInstance().RegisterOpClass("Input", dlex_cnn::CreateInputOp<float>);
+  dlex_cnn::OpFactory<float>::GetInstance().RegisterOpClass("Output", dlex_cnn::CreateOutputOp<float>);
+  dlex_cnn::OpFactory<float>::GetInstance().RegisterOpClass("InnerProduct", dlex_cnn::CreateInnerProductOp<float>);
+  dlex_cnn::OpFactory<float>::GetInstance().RegisterOpClass("Convolution", dlex_cnn::CreateConvolutionOp<float>);
+  dlex_cnn::OpFactory<float>::GetInstance().RegisterOpClass("Deconvolution", dlex_cnn::CreateDeconvolutionOp<float>);
+  dlex_cnn::OpFactory<float>::GetInstance().RegisterOpClass("Pooling", dlex_cnn::CreatePoolingOp<float>);
+  dlex_cnn::OpFactory<float>::GetInstance().RegisterOpClass("Activation", dlex_cnn::CreateActivationOp<float>);
+  dlex_cnn::OpFactory<float>::GetInstance().RegisterOpClass("Softmax", dlex_cnn::CreateSoftmaxOp<float>);
+  dlex_cnn::OpFactory<float>::GetInstance().RegisterOpClass("CrossEntropyLoss", dlex_cnn::CreateCrossEntropyLossOp<float>);
+  dlex_cnn::OpFactory<float>::GetInstance().RegisterOpClass("SoftmaxCrossEntropyLossH", dlex_cnn::CreateSoftmaxCrossEntropyLossHOp<float>);
 }
 
 #endif  // DLEX_DLEX_HPP_

@@ -11,22 +11,20 @@
 #ifdef USE_OP_TEST
 
 #include "operator/pooling_op.h"
-namespace dlex_cnn
-{
-	template <typename Dtype>
-	class PoolingOpTest
-	{
-		template<typename T> friend class PoolingOp;
+namespace dlex_cnn {
+template <typename Dtype>
+class PoolingOpTest {
+  template<typename T> friend class PoolingOp;
 
-	public:
-		PoolingOpTest() {};
-		virtual ~PoolingOpTest() {};
+public:
+  PoolingOpTest() {};
+  virtual ~PoolingOpTest() {};
 
-	public:
-		void exec();
-	};
+public:
+  void Exec();
+};
 }
-void testPool();
+void TestPool();
 
 #endif // USE_OP_TEST
 

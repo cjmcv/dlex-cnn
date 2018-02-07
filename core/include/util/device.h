@@ -17,20 +17,20 @@
 #include <cublas_v2.h>
 #include <ctime>
 
-namespace dlex_cnn
-{
-	const char* cublasGetErrorString(cublasStatus_t error);
-	const char* curandGetErrorString(curandStatus_t error);
+namespace dlex_cnn {
 
-	// CUDA: use 512 threads per block
-	const int DLEX_CUDA_NUM_THREADS = 512;
+const char* cublasGetErrorString(cublasStatus_t error);
+const char* curandGetErrorString(curandStatus_t error);
 
-	// CUDA: number of blocks for threads.
-	inline int DLEX_GET_BLOCKS(const int N) {
-		return (N + DLEX_CUDA_NUM_THREADS - 1) / DLEX_CUDA_NUM_THREADS;
-	}
+// CUDA: use 512 threads per block
+const int DLEX_CUDA_NUM_THREADS = 512;
 
-	// CUDA: grid stride looping
+// CUDA: number of blocks for threads.
+inline int DLEX_GET_BLOCKS(const int N) {
+  return (N + DLEX_CUDA_NUM_THREADS - 1) / DLEX_CUDA_NUM_THREADS;
+}
+
+// CUDA: grid stride looping
 #define CUDA_KERNEL_LOOP(i, n) \
 	for (int i = blockIdx.x * blockDim.x + threadIdx.x; \
        i < (n); \
@@ -42,8 +42,8 @@ namespace dlex_cnn
 		if(error != cudaSuccess) { \
 			DLOG_ERR("CUDA_DCHECK: %s", cudaGetErrorString(error)); \
 			throw(CUDA_DCHECK_EXC);	\
-		}\
-	} while (0)
+            		}\
+      	} while (0)
 
 #define CURAND_DCHECK(condition) \
 	do { \
@@ -51,8 +51,8 @@ namespace dlex_cnn
 		if(status != CURAND_STATUS_SUCCESS) { \
 			DLOG_ERR("CURAND_DCHECK: %s", curandGetErrorString(status)); \
 			throw(CURAND_DCHECK_EXC);	\
-		} \
-	} while (0)
+            		} \
+      	} while (0)
 
 #define CUBLAS_DCHECK(condition) \
 	do { \
@@ -60,33 +60,32 @@ namespace dlex_cnn
 		if(status != CUBLAS_STATUS_SUCCESS) { \
 			DLOG_ERR("CUBLAS_DCHECK: %s", cublasGetErrorString(status)); \
 			throw(CUBLAS_DCHECK_EXC);	\
-		} \
-    } while (0)
+            		} \
+          } while (0)
 
-	// Check for error after kernel execution and exit loudly if there is one.
+// Check for error after kernel execution and exit loudly if there is one.
 #define CUDA_POST_KERNEL_CHECK CUDA_DCHECK(cudaPeekAtLastError())
 
-	// Handle manager for cublas and curand.
-	class CuHandleManager
-	{
-	public:
-		CuHandleManager();
-		~CuHandleManager();
+// Handle manager for cublas and curand.
+class CuHandleManager {
+public:
+  CuHandleManager();
+  ~CuHandleManager();
 
-		static CuHandleManager& Get();
-		inline static cublasHandle_t cublas_handle() {
-			return Get().cublas_handle_;
-		}
-		inline static curandGenerator_t curand_generator() {
-			return Get().curand_generator_;
-		}
+  static CuHandleManager& Get();
+  inline static cublasHandle_t cublas_handle() {
+    return Get().cublas_handle_;
+  }
+  inline static curandGenerator_t curand_generator() {
+    return Get().curand_generator_;
+  }
 
-	private:
-		long long seedgen();
+private:
+  long long seedgen();
 
-		cublasHandle_t cublas_handle_;
-		curandGenerator_t curand_generator_;
-	};
+  cublasHandle_t cublas_handle_;
+  curandGenerator_t curand_generator_;
+};
 }
 #endif	//USE_CUDA
 

@@ -11,18 +11,16 @@
 #include <iostream>
 #include "network_creator.h"
 
-namespace dlex_cnn
-{
-	class TypicalNet
-	{
-    public:
-		template <typename Dtype>
-		int mlp(const int num, const int channels, const int height, const int width, NetWork<Dtype> &network);
-		template <typename Dtype>
-		int lenet(const int num, const int channels, const int height, const int width, NetWork<Dtype> &network);
-		template <typename Dtype>
-		int mix(const int num, const int channels, const int height, const int width, NetWork<Dtype> &network);
-	};
+namespace dlex_cnn {
+class TypicalNet {
+public:
+  template <typename Dtype>
+  int mlp(const int num, const int channels, const int height, const int width, NetWork<Dtype> &network);
+  template <typename Dtype>
+  int lenet(const int num, const int channels, const int height, const int width, NetWork<Dtype> &network);
+  template <typename Dtype>
+  int mix(const int num, const int channels, const int height, const int width, NetWork<Dtype> &network);
+};
 }
 
 #endif

@@ -4,9 +4,60 @@
 #include "operator_test/convolution_op_test.h"
 #include "operator_test/deconvolution_op_test.h"
 #include "operator_test/pooling_op_test.h"
+#include "util_test/util_test.h"
+
+class A
+{
+public:
+	A() {};
+	virtual ~A() {};
+
+public:
+	void(*batch_loader)(int) = NULL;
+	void load_batch(int a) 
+	{ 
+		if (batch_loader != NULL)
+			batch_loader(a);
+		else
+			printf("didn't set\n");
+	}
+};
+
+class B
+{
+public:
+	B() {};
+	virtual ~B() {};
+
+	static void blTest(int kk)
+	{
+		printf("kk = %d\n", kk);
+	}
+};
+
+#define DLOG_TEST(format, ...) fprintf(stderr,"ERROR: "#format"\n", ##__VA_ARGS__);
+
+template<typename T>
+void Print(T value)
+{
+	std::cout << value << std::endl;
+}
+
+//template<typename T>
+//void Print(T head, Rail... rail)
+//{
+//	std::cout << head << ", ";
+//	Print(rail...);
+//}
+
+#define DLOG_TEST2(format, ...) fprintf(stderr,"ERROR: "#format"\n", ##__VA_ARGS__);
 
 int main(int argc, char* argv[])
 {
+	//A ac;
+	//ac.batch_loader = B::blTest;
+	//ac.load_batch(550);
+
 	//float A[] = { 1, 2, 3, 4, 
 	//	1, 2, 3, 4,
 	//	1, 2, 3, 4 };
@@ -25,11 +76,12 @@ int main(int argc, char* argv[])
 	//for (int i = 0; i < 15; i++)
 	//	printf("%f, ", C[i]);
 	//system("pause");
-	//return test_threadPool(argc, argv);
+	
+	//TestThreadPool();
 
-	//testPool();
-	//testConv();
-	//testDeconv();
+	//TestPool();
+	//TestConv();
+	//TestDeconv();
 
 	//bool ret = DCHECK_GE(15, 15);
 	//printf("ret = %d\n", ret);
@@ -40,10 +92,14 @@ int main(int argc, char* argv[])
 	//DLOG_ERR("123%d, %d", i, i+1);
 	//DLOG_ERR("123%d", i);
 	//DLOG_ERR("smal");
-	//system("pause");
+	//int a = 99;
+	//int b = 66;
+	////printf("abc:%d, %d", a, b);
+	////std::cout << "abc: %d, %d" << (a, b) << "\n";, a, b
+	//Print("abc:%d, %d");
+	MnistTrain();
+	//MnistTest();	
 
-
-	mnistTrain();
-	//mnistTest();
+	system("pause");
 	return 0;
 }

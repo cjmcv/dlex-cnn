@@ -17,10 +17,7 @@
 #include "tensor.h"
 #include "util/op_factory.h"
 
-
-
-namespace dlex_cnn
-{
+namespace dlex_cnn {
 
 #ifndef HOP_PHASEMAP_NUM
 #define HOP_PHASEMAP_NUM 2
@@ -34,45 +31,40 @@ namespace dlex_cnn
 #define OP_TRIPLET_NUM 3
 #endif
 
-	// MOVE those list to other place
+// MOVE those list to other place
 
-	// dstOp, trainOp, testOp
-	const std::string hopPhaseMap[][3] =
-	{
-		"SoftmaxCrossEntropyLossH", "SoftmaxCrossEntropyLossH", "Softmax",
-		"SigmoidLoss", "SigmoidLoss", "Sigmoidss"
-	};
+// dstOp, trainOp, testOp
+const std::string kHopPhaseMap[][3] = {
+  "SoftmaxCrossEntropyLossH", "SoftmaxCrossEntropyLossH", "Softmax",
+  "SigmoidLoss", "SigmoidLoss", "Sigmoidss"
+};
 
-	const std::string opListDouble[][4] = 
-	{ 
-		"SoftmaxCrossEntropyLossH", "Softmax", "CrossEntropyLoss", "0",
-		"SigmoidLoss", "Sigmoidss", "CrossEntropyLoss", "1" 
-	};
+const std::string kOpListDouble[][4] = {
+  "SoftmaxCrossEntropyLossH", "Softmax", "CrossEntropyLoss", "0",
+  "SigmoidLoss", "Sigmoidss", "CrossEntropyLoss", "1"
+};
 
-	const std::string opListTriplet[][5] = 
-	{ 
-		"asd", "fgh", "jkl", "jklsa", "0",
-		"asd", "fgh", "jkl", "jklsa", "1",
-		"asd", "fgh", "jkl", "jklsa", "2" 
-	};
+const std::string kOpListTriplet[][5] = {
+  "asd", "fgh", "jkl", "jklsa", "0",
+  "asd", "fgh", "jkl", "jklsa", "1",
+  "asd", "fgh", "jkl", "jklsa", "2"
+};
 
-	struct HybridOpParam : public OpParam
-	{
+struct HybridOpParam : public OpParam {
 
-	};
+};
 
-	template <typename Dtype>
-	class HybridOp : public Op<Dtype>
-	{
-	public:
-		explicit HybridOp();
-		virtual ~HybridOp();
+template <typename Dtype>
+class HybridOp : public Op<Dtype> {
+public:
+  explicit HybridOp();
+  virtual ~HybridOp();
 
-		int setSubOp(const std::vector<std::shared_ptr<Op<Dtype>>> &sub_ops);
+  int SetSubOp(const std::vector<std::shared_ptr<Op<Dtype>>> &sub_ops);
 
-	protected:
-		std::vector<std::shared_ptr<Op<Dtype>>> sub_ops_;
-	};
+protected:
+  std::vector<std::shared_ptr<Op<Dtype>>> sub_ops_;
+};
 
 }
 

@@ -19,65 +19,64 @@
 #include "tensor.h"
 #include "io/data_prefetcher.h"
 
-namespace dlex_cnn 
-{
-	template <typename Dtype>
-	class NetWork
-	{
-	public:
-		NetWork(std::string name);
-		virtual ~NetWork();
-	public:
-		DataPrefetcher<Dtype> prefetcher_;
+namespace dlex_cnn {
+template <typename Dtype>
+class NetWork {
+public:
+  NetWork(std::string name);
+  virtual ~NetWork();
 
-		int netParamsInit();
+  int NetParamsInit();
 
-		int saveBinModel(const std::string &model_file);
-		int loadBinModel(const std::string &model_file);
-		
-		int saveStageModel(const std::string &path, const int stage);	
-		int readHyperParams(FILE *fp);
-		int loadStageModel(const std::string &path, const int stage);
+  int SaveBinModel(const std::string &model_file);
+  int LoadBinModel(const std::string &model_file);
 
-		std::shared_ptr<Tensor<Dtype>> testBatch(const std::shared_ptr<Tensor<Dtype>> input_data_tensor, const std::shared_ptr<Tensor<Dtype>> label_data_tensor = NULL);
-	
-		void setOptimizer(std::shared_ptr<Optimizer<Dtype>> optimizer);
-		void setLearningRate(const float lr);
+  int SaveStageModel(const std::string &path, const int stage);
+  int ReadHyperParams(FILE *fp);
+  int LoadStageModel(const std::string &path, const int stage);
 
-		inline int setIONodeName(const std::vector<std::string> &in_node_names, const std::vector<std::string> &out_node_names);
-		int feedDataByPrefetcher();
-		float trainBatch(const std::shared_ptr<Tensor<Dtype>> input_data_tensor = NULL, 
-			const std::shared_ptr<Tensor<Dtype>> label_data_tensor = NULL);
-		int getNodeData(const std::string &node_name, std::shared_ptr<Tensor<Dtype>> &data);
-		inline const std::shared_ptr<Graph<Dtype>> getGraph() { return graph_; };
+  std::shared_ptr<Tensor<Dtype>> TestBatch(const std::shared_ptr<Tensor<Dtype>> input_data_tensor, const std::shared_ptr<Tensor<Dtype>> label_data_tensor = NULL);
 
-		void addNode(const std::string &node_name, 
-			const std::vector<std::shared_ptr<Op<Dtype>>> &op, 
-			const std::vector<std::string> &in_node_names = std::vector<std::string>());
-		int switchPhase(int phase);
+  void SetOptimizer(std::shared_ptr<Optimizer<Dtype>> optimizer);
+  void SetLearningRate(const float lr);
 
-		// fill the input data and label date for training first, then compute graph forward
-		int forward(const std::shared_ptr<Tensor<Dtype>> input_data_tensor = NULL, const std::shared_ptr<Tensor<Dtype>> label_data_tensor = NULL);
-		// compute graph backward and update nodes'paramaters
-		int backward();
+  inline int SetIONodeName(const std::vector<std::string> &in_node_names, const std::vector<std::string> &out_node_names);
+  int FeedDataByPrefetcher();
+  float TrainBatch(const std::shared_ptr<Tensor<Dtype>> input_data_tensor = NULL,
+    const std::shared_ptr<Tensor<Dtype>> label_data_tensor = NULL);
+  int GetNodeData(const std::string &node_name, std::shared_ptr<Tensor<Dtype>> &data);
+  inline const std::shared_ptr<Graph<Dtype>> get_graph() { return graph_; };
 
-		int netWorkShow();
-		
-	private:
-		int device_id_;
-		// Train/Test, should be the same as graph's
-		int phase_ = tind::Train;
-		std::string name_;
+  void AddNode(const std::string &node_name,
+    const std::vector<std::shared_ptr<Op<Dtype>>> &op,
+    const std::vector<std::string> &in_node_names = std::vector<std::string>());
+  int SwitchPhase(int phase);
 
-		// Mainly contains nodes and operators
-		std::shared_ptr<Graph<Dtype>> graph_;
-		// Optimizer to update node's paramater during training
-		std::shared_ptr<Optimizer<Dtype>> optimizer_;
-		
-		// As the intermediate variable to transfer input/label data.
-		std::vector<std::shared_ptr<Tensor<Dtype>>> input_data_vec_;
-		std::vector<std::shared_ptr<Tensor<Dtype>>> label_data_vec_;
-	};
+  // fill the input data and label date for training first, then compute graph Forward
+  int Forward(const std::shared_ptr<Tensor<Dtype>> input_data_tensor = NULL, const std::shared_ptr<Tensor<Dtype>> label_data_tensor = NULL);
+  // compute graph Backward and update nodes'paramaters
+  int Backward();
+
+  int NetWorkShow();
+
+public:
+  DataPrefetcher<Dtype> prefetcher_;
+
+private:
+  int device_id_;
+  // Train/Test, should be the same as graph's
+  int phase_ = tind::Train;
+  std::string name_;
+
+  // Mainly contains nodes and operators
+  std::shared_ptr<Graph<Dtype>> graph_;
+  // Optimizer to update node's paramater during training
+  std::shared_ptr<Optimizer<Dtype>> optimizer_;
+
+  // As the intermediate variable to transfer input/label data.
+  std::vector<std::shared_ptr<Tensor<Dtype>>> input_data_vec_;
+  std::vector<std::shared_ptr<Tensor<Dtype>>> label_data_vec_;
+};
 
 }
 #endif DLEX_NETWORK_HPP_

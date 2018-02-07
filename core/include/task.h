@@ -10,27 +10,24 @@
 
 #include <iostream>
 
-namespace dlex_cnn
-{
-	namespace tind
-	{
-		enum Mode { CPU, GPU };
-	}
+namespace dlex_cnn {
+namespace tind {
+  enum Mode { CPU, GPU };
+}
 
-	class Task
-	{
-	public:
-		Task();
-		virtual ~Task();
+class Task {
+public:
+  Task();
+  virtual ~Task();
 
-	public:
-		static Task& Get();
-		inline static void set_mode(tind::Mode mode) { Get().device_mode_ = mode; }
-		inline static tind::Mode mode() { return Get().device_mode_; }
+public:
+  static Task& Get();
+  inline static void set_mode(tind::Mode mode) { Get().device_mode_ = mode; }
+  inline static tind::Mode mode() { return Get().device_mode_; }
 
-	private:
-		tind::Mode device_mode_;
-	};
+private:
+  tind::Mode device_mode_;
+};
 }
 
 #endif

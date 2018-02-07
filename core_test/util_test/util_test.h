@@ -15,6 +15,6 @@
 #include "util/thread_pool.h"
 #include "util/timer.h"
 
-int test_threadPool();
+int TestThreadPool();
 
 #endif

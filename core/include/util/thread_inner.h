@@ -13,27 +13,26 @@
 #include <memory>
 
 
-namespace dlex_cnn
-{
-	class ThreadInner {
-	public:
-		ThreadInner();
-		virtual ~ThreadInner();
+namespace dlex_cnn {
+class ThreadInner {
+public:
+  ThreadInner();
+  virtual ~ThreadInner();
 
-		void startInnerThread();
-		void stopInnerThread();
+  void StartInnerThread();
+  void StopInnerThread();
 
-		// To chech wether the inner thread has been started. 
-		bool is_started() const;
+  // To chech wether the inner thread has been started. 
+  bool is_started() const;
 
-	protected:
-		// Virtual function, should be override by the classes which needs a internal thread to assist.
-		virtual void entryInnerThread() {}
-		bool must_stop();
+protected:
+  // Virtual function, should be override by the classes which needs a internal thread to assist.
+  virtual void EntryInnerThread() {}
+  bool must_stop();
 
-	private:
-		bool interrupt_flag_;
-		std::shared_ptr<std::thread> thread_;
-	};
+private:
+  bool interrupt_flag_;
+  std::shared_ptr<std::thread> thread_;
+};
 }
 #endif //DLEX_THREAD_INNER_HPP_

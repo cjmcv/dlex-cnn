@@ -10,8 +10,7 @@
 
 #include <iostream>
 
-namespace dlex_cnn
-{
+namespace dlex_cnn {
 #ifndef FLT_MIN
 #define FLT_MIN 1.175494351e-38F 
 #endif
@@ -53,7 +52,7 @@ enum EN_ErrCode {
 };
 
 // String process
-std::string fetchSubStr(std::string &src_str, std::string start_str, std::string end_str);
+std::string FetchSubStr(std::string &src_str, std::string start_str, std::string end_str);
 
 }
 

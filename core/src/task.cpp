@@ -7,25 +7,19 @@
 
 #include "task.h"
 
-namespace dlex_cnn
-{
-	static Task *gTask = NULL;
+namespace dlex_cnn {
+static Task *gTask = NULL;
 
-	Task::Task()
-	{
-		device_mode_ = tind::CPU;
-	}
+Task::Task() {
+  device_mode_ = tind::CPU;
+}
 
-	Task::~Task()
-	{
+Task::~Task() {}
 
-	}
+Task& Task::Get() {
+  if (gTask == NULL)
+    gTask = new Task();
 
-	Task& Task::Get()
-	{
-		if (gTask == NULL)
-			gTask = new Task();
-
-		return *gTask;
-	}
+  return *gTask;
+}
 }

@@ -11,22 +11,20 @@
 #ifdef USE_OP_TEST
 
 #include "operator/deconvolution_op.h"
-namespace dlex_cnn
-{
-	template <typename Dtype>
-	class DeconvolutionOpTest
-	{
-		template<typename T> friend class DeconvolutionOp;
+namespace dlex_cnn {
+template <typename Dtype>
+class DeconvolutionOpTest {
+  template<typename T> friend class DeconvolutionOp;
 
-	public:
-		DeconvolutionOpTest() {};
-		virtual ~DeconvolutionOpTest() {};
+public:
+  DeconvolutionOpTest() {};
+  virtual ~DeconvolutionOpTest() {};
 
-	public:
-		void exec();
-	};
+public:
+  void Exec();
+};
 }
-void testDeconv();
+void TestDeconv();
 
 #endif //USE_OP_TEST
 

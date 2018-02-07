@@ -16,78 +16,71 @@
 //#include "dlex_datatype.h"
 #include "tensor.h"
 
+namespace dlex_cnn{
+namespace tind {
+  enum OpCategory { eNormOp, eLossOp, eHybridOp };
+}
 
-namespace dlex_cnn
-{
-	namespace tind
-	{
-		enum OpCategory { eNormOp, eLossOp, eHybridOp };
-	}
+struct OpParam {};
 
-	struct OpParam
-	{
+template <typename Dtype>
+class Op {
+public:
+  explicit Op();
+  virtual ~Op();
 
-	};
+  // Set operator's parameters by specific string from model file.
+  virtual int SetOpParam(const std::string &op_param_str) { return -1; };
 
-	template <typename Dtype>
-	class Op
-	{
-	public:
-		explicit Op();
-		virtual ~Op();
+  // Generate operator's parameter string for model saving.
+  virtual std::string GenOpParamStr() const { return ""; };
 
-		// Set operator's parameters by specific string from model file.
-		virtual int setOpParam(const std::string &op_param_str) { return -1; };
+  virtual int InferOutShape(std::vector<int> &in_shape, std::vector<int> &out_shape) { return -1; };
 
-		// Generate operator's parameter string for model saving.
-		virtual std::string genOpParamStr() const { return ""; };
+  // Allocate memory buffer for node, including data/weight/blas.
+  virtual int AllocBuf4Node(const std::vector<int> &in_shape,
+    const std::vector<int> &out_shape,
+    std::vector<std::shared_ptr<Tensor<Dtype>>> &data) const {
+    return -1;
+  };
 
-		virtual int inferOutShape(std::vector<int> &in_shape, std::vector<int> &out_shape) { return -1; };
+  // Allocate memory buffer for training, including gradient and difference in operator
+  virtual int AllocOpBuf4Train(const std::vector<int> &in_shape, const std::vector<int> &out_shape) { return -1; };
 
-		// Allocate memory buffer for node, including data/weight/blas.
-		virtual int allocBuf4Node(const std::vector<int> &in_shape,
-			const std::vector<int> &out_shape,
-			std::vector<std::shared_ptr<Tensor<Dtype>>> &data) const {
-			return -1;
-		};
+  virtual std::vector<std::shared_ptr<Tensor<Dtype>>> &get_op_gradient() { return gradient_; };
+  virtual std::vector<std::shared_ptr<Tensor<Dtype>>> &get_op_diff() { return diff_; };
+  virtual const std::string &get_op_type() const { return " "; };
+  virtual const int get_op_category() const { return tind::eNormOp; };
 
-		// Allocate memory buffer for training, including gradient and difference in operator
-		virtual int allocOpBuf4Train(const std::vector<int> &in_shape, const std::vector<int> &out_shape) { return -1; };
-
-		virtual std::vector<std::shared_ptr<Tensor<Dtype>>> &getOpGradient() { return gradient_; };
-		virtual std::vector<std::shared_ptr<Tensor<Dtype>>> &getOpDiff() { return diff_; };
-		virtual const std::string &getOpType() const { return " "; };
-		virtual const int getOpCategory() const { return tind::eNormOp; };
-
-		virtual void forward(
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) {};
-		virtual void backward(
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff, 
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) {};
+  virtual void Forward(
+    const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
+    const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) {};
+  virtual void Backward(
+    const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
+    const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+    const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff,
+    const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) {};
 #ifdef USE_CUDA
-		virtual void forward_gpu(
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev, 
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) {};
-		virtual void backward_gpu(
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff,
-			const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) {};
+  virtual void Forward_gpu(
+    const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
+    const std::vector<std::shared_ptr<Tensor<Dtype>>> &next) {};
+  virtual void Backward_gpu(
+    const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev,
+    const std::vector<std::shared_ptr<Tensor<Dtype>>> &next,
+    const std::vector<std::shared_ptr<Tensor<Dtype>>> &prev_diff,
+    const std::vector<std::shared_ptr<Tensor<Dtype>>> &next_diff) {};
 #endif
 
-	private:
-		// Gradient, including weightGradient/blasGradient, has the same size with weight.
-		// Will be used in optimizer for updating weight/blas during backward operation.
-		// Should be cleaned at each backward iteration
-		std::vector<std::shared_ptr<Tensor<Dtype>>> gradient_;
+private:
+  // Gradient, including weightGradient/blasGradient, has the same size with weight.
+  // Will be used in optimizer for updating weight/blas during Backward operation.
+  // Should be cleaned at each Backward iteration
+  std::vector<std::shared_ptr<Tensor<Dtype>>> gradient_;
 
-		// Difference, has the same size with input data, will be used in backward operation for updating gradient;
-		std::vector<std::shared_ptr<Tensor<Dtype>>> diff_;
-		OpParam param_;
-	};
+  // Difference, has the same size with input data, will be used in Backward operation for updating gradient;
+  std::vector<std::shared_ptr<Tensor<Dtype>>> diff_;
+  OpParam param_;
+};
 
 }
 

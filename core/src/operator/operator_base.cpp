@@ -7,17 +7,12 @@
 
 #include "operator/operator_base.h"
 
-namespace dlex_cnn
-{
-	template <typename Dtype>
-	Op<Dtype>::Op()
-	{
+namespace dlex_cnn {
+template <typename Dtype>
+Op<Dtype>::Op() {}
 
-	}
-	template <typename Dtype>
-	Op<Dtype>::~Op()
-	{
+template <typename Dtype>
+Op<Dtype>::~Op() {}
 
-	}
-	INSTANTIATE_CLASS(Op);
+INSTANTIATE_CLASS(Op);
 }
