@@ -1,0 +1,232 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\core\include\common.h" />
+    <ClInclude Include="..\..\..\core\include\dlex_cnn.h" />
+    <ClInclude Include="..\..\..\core\include\graph.h" />
+    <ClInclude Include="..\..\..\core\include\io\data_prefetcher.h" />
+    <ClInclude Include="..\..\..\core\include\io\data_struct.h" />
+    <ClInclude Include="..\..\..\core\include\network.h" />
+    <ClInclude Include="..\..\..\core\include\node.h" />
+    <ClInclude Include="..\..\..\core\include\operator\activation_simple_op.h" />
+    <ClInclude Include="..\..\..\core\include\operator\convolution_op.h" />
+    <ClInclude Include="..\..\..\core\include\operator\cross_entropy_lop.h" />
+    <ClInclude Include="..\..\..\core\include\operator\deconvolution_op.h" />
+    <ClInclude Include="..\..\..\core\include\operator\inner_product_op.h" />
+    <ClInclude Include="..\..\..\core\include\operator\input_op.h" />
+    <ClInclude Include="..\..\..\core\include\operator\operator_base.h" />
+    <ClInclude Include="..\..\..\core\include\operator\operator_hybrid.h" />
+    <ClInclude Include="..\..\..\core\include\operator\output_op.h" />
+    <ClInclude Include="..\..\..\core\include\operator\pooling_op.h" />
+    <ClInclude Include="..\..\..\core\include\operator\softmax_cross_entropy_hop.h" />
+    <ClInclude Include="..\..\..\core\include\operator\softmax_op.h" />
+    <ClInclude Include="..\..\..\core\include\optimizer\optimizer.h" />
+    <ClInclude Include="..\..\..\core\include\task.h" />
+    <ClInclude Include="..\..\..\core\include\tensor.h" />
+    <ClInclude Include="..\..\..\core\include\trainer\network_creator.h" />
+    <ClInclude Include="..\..\..\core\include\trainer\typical_network.h" />
+    <ClInclude Include="..\..\..\core\include\util\blocking_queue.h" />
+    <ClInclude Include="..\..\..\core\include\util\device.h" />
+    <ClInclude Include="..\..\..\core\include\util\math_functions.h" />
+    <ClInclude Include="..\..\..\core\include\util\op_factory.h" />
+    <ClInclude Include="..\..\..\core\include\util\thread_inner.h" />
+    <ClInclude Include="..\..\..\core\include\util\thread_pool.h" />
+    <ClInclude Include="..\..\..\core\include\util\timer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\core\src\common.cpp" />
+    <ClCompile Include="..\..\..\core\src\graph.cpp" />
+    <ClCompile Include="..\..\..\core\src\io\data_prefetcher.cpp" />
+    <ClCompile Include="..\..\..\core\src\network.cpp" />
+    <ClCompile Include="..\..\..\core\src\node.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\activation_simple_op.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\convolution_op.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\cross_entropy_lop.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\deconvolution_op.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\inner_product_op.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\input_op.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\operator_base.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\operator_hybrid.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\output_op.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\pooling_op.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\softmax_cross_entropy_hop.cpp" />
+    <ClCompile Include="..\..\..\core\src\operator\softmax_op.cpp" />
+    <ClCompile Include="..\..\..\core\src\optimizer\optimizer.cpp" />
+    <ClCompile Include="..\..\..\core\src\task.cpp" />
+    <ClCompile Include="..\..\..\core\src\tensor.cpp" />
+    <ClCompile Include="..\..\..\core\src\trainer\network_creator.cpp" />
+    <ClCompile Include="..\..\..\core\src\trainer\typical_network\lenet.cpp" />
+    <ClCompile Include="..\..\..\core\src\trainer\typical_network\mix.cpp" />
+    <ClCompile Include="..\..\..\core\src\trainer\typical_network\mlp.cpp" />
+    <ClCompile Include="..\..\..\core\src\util\blocking_queue.cpp" />
+    <ClCompile Include="..\..\..\core\src\util\device.cpp" />
+    <ClCompile Include="..\..\..\core\src\util\math_functions.cpp" />
+    <ClCompile Include="..\..\..\core\src\util\thread_inner.cpp" />
+    <ClCompile Include="..\..\..\core\src\util\thread_pool.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="..\..\..\core\src\operator\activation_simple_op.cu" />
+    <CudaCompile Include="..\..\..\core\src\operator\cross_entropy_lop.cu" />
+    <CudaCompile Include="..\..\..\core\src\operator\pooling_op.cu" />
+    <CudaCompile Include="..\..\..\core\src\operator\softmax_op.cu" />
+    <CudaCompile Include="..\..\..\core\src\optimizer\optimizer.cu" />
+    <CudaCompile Include="..\..\..\core\src\util\math_functions.cu" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CB9738F1-BA3F-448D-8742-9C80DDD4AF34}</ProjectGuid>
+    <RootNamespace>dlex_cnn</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 8.0.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"
+copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;WIN64;_DEBUG;_CONSOLE;USE_OP_TEST;USE_CUDA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../../core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"
+copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+    <CudaCompile>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+    </CudaCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"
+copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_CONSOLE;USE_OP_TEST;USE_CUDA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../../core/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"
+copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+    <CudaCompile>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+    </CudaCompile>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 8.0.targets" />
+  </ImportGroup>
+</Project>
