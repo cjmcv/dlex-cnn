@@ -13,13 +13,13 @@ A simple convolution neural network framework for exercise.
 ![](./res/readme_image/basic-module.png "Basic modules")
 
 ## Experiment
-lenet-mnist
 ![](./res/readme_image/lenet-mnist.png "lenet-mnist")
 
 ## Build
 Windows: Just open the project file with VS2013 or VS2015, and compile it.
 
 Linux: 
+
 Build libdlex_cnn.so
 ```
 cd linux/cmake
